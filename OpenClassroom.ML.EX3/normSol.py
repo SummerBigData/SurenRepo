@@ -18,13 +18,20 @@ for m in range(len(y)):
 # We want to normalize the data. Divide by the standard deviation and subtract the mean. Done in 2 loops so the mean and stdev don't change in the loop
 x1Temp = [0 for m in range(len(y))]
 x2Temp = [0 for m in range(len(y))]
+
 for m in range(len(x1)):
-	x1Temp[m] = (x1[m]  - np.mean(x1))/ np.std(x1)
-	x2Temp[m] = (x2[m]  - np.mean(x2))/ np.std(x2)
+	x1Temp[m] = x1[m] / np.std(x1)
+	x2Temp[m] = x2[m] / np.std(x2)
 
 for m in range(len(x1)):
 	x1[m] = x1Temp[m]
 	x2[m] = x2Temp[m]
+
+for m in range(len(x1)):
+	x1[m] = x1[m] - np.mean(x1Temp)
+	x2[m] = x2[m] - np.mean(x2Temp)
+
+
 
 
 # Initialize and fill the x and theta matricies we will use

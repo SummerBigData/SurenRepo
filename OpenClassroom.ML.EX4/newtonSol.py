@@ -1,16 +1,25 @@
+# Written by: 	Suren Gourapura
+# Written on: 	May 21, 2018
+# Purpose: 	To solve exercise 4 on Logistic Regression in OpenClassroom
+# Goal:		Take the provided data and calculate the line that best seperates the data. Plot the line on the data
+# 		and plot the cost function vs. number of iterations. Calculate the best theta values and what percent 
+# 		chance a student who scores x1 = 20, x2 = 80 have on passing the final.
+
 # Import the modules
 import numpy as np
 import matplotlib.pyplot as plt
-from math import exp
+from math import exp, log
 
 # Calculate the Hypothesis
 def hypothesis(theta, xArr):
 	thetaArr = np.asarray(theta)
 	oldhypo = np.matmul(thetaArr, np.transpose(xArr) )
-	newhypo = [0 for m in oldhypo]
-	for m in range(len(oldhypo)):
-		newhypo[m] = 1/(1+exp(-1*oldhypo[m]))
+	newhypo = [0 for i in oldhypo]
+	for i in range(len(oldhypo)):
+		newhypo[i] = 1/(1+exp(-1*oldhypo[i]))
 	return newhypo
+
+
 
 # Calculate the Hessian
 def Hessian(theta, xArr, m):
@@ -28,6 +37,8 @@ def Hessian(theta, xArr, m):
 	H = (1.0/m)*H
 	return H
 
+
+
 # Calculate grad J
 def gradJ(theta, xArr, yArr, m):
 	GradJ = [0 for i in range(3)]
@@ -36,6 +47,7 @@ def gradJ(theta, xArr, yArr, m):
 	for i in range(m):
 		GradJ = np.add(GradJ, np.multiply((hypoArr[i] - yArr[i]), xArr[i]) )
 	return (1.0/m)*GradJ
+
 
 
 # Obtain the x and y data values and convert them from arrays to lists
@@ -51,34 +63,33 @@ for m in range(len(y)):
 	x2[m] = xarr[m][1].tolist()
 
 m = len(x1)
-# We want to normalize the data. Divide by the standard deviation and subtract the mean. Done in 2 loops so the mean and stdev don't change in the loop
+
+# We want to normalize the data. Divide by the standard deviation and subtract the mean. Done in 2 loops so the mean and stdev don't change in the loop. We record these so we can undo the effects later
 x1Temp = [0 for i in range(len(y))]
 x2Temp = [0 for i in range(len(y))]
-x1StdStor = 0
-
+x1Std  = np.std(x1)
+x2Std  = np.std(x2)
+x1Mean = np.mean(x1)
+x2Mean = np.mean(x2)
 
 for i in range(m):
-	x1Temp[i] = x1[i] / np.std(x1)
-	x2Temp[i] = x2[i] / np.std(x2)
+	x1Temp[i] = (x1[i] - x1Mean )/ x1Std
+	x2Temp[i] = (x2[i] - x2Mean )/ x2Std
 
 for i in range(m):
 	x1[i] = x1Temp[i]
 	x2[i] = x2Temp[i]
-
-for i in range(m):
-	x1[i] = x1[i] - np.mean(x1Temp)
-	x2[i] = x2[i] - np.mean(x2Temp)
 
 # Initialize and fill the x and theta matricies we will use
 xArr = np.transpose( np.array([[1]*len(x1), x1, x2]) )
 yArr = yarr
 
 # Initialize the theta and temptheta lists we will use
-theta = [1,2,3]
+theta = [0,0,0]
 temptheta = [0,0,0]
 
 # Initialize gen as the number of generations the code runs for. Also Initialize allTheta to record all values of theta calculated
-gen = 50
+gen = 5
 allTheta = [[0 for i in range(3)] for j in range(gen + 1)]
 
 # Iterate the following for gen number of times
@@ -92,36 +103,59 @@ for g in range(gen):
         	theta[j] = temptheta[j]
 		allTheta[g + 1][j] = theta[j]	# Also record the value of thetas for calculating J_Cost
 
-## To display the result, we create a list with J values for points from the calculated thetas
-#J_Cost = [0 for g in range(gen + 1)] # The '+ 1' is there so that the zeroth generation is also recorded
-
-#for g in range(gen + 1):
-#	J_Cost[g] = (1.0 / len(x1)) * 0.5 * np.sum( (hypothesis(allTheta[g], x1, x2)- y) ** 2) # Calculate and store the J values
-
-# print best theta vals
-print(theta)
-
-# Make an array that stores the predicted x2 values for the given x1 values. For plotting the seperation line
+# For plotting the seperation line, make an array that stores the predicted x2 values for the given x1 values. 
 detail = 100
-x1Range = 5
+x1Range = 3
 plotx2 = [0 for i in range(detail)]
 plotx1 = np.arange(-x1Range, x1Range, x1Range / (detail*0.5))
 
 for i in range(detail):
 	plotx2[i] = -1 * theta[0]/theta[2] - theta[1]* plotx1[i] /theta[2]
 
-np.random.seed(19680801)
+# Now we fix the scaling
+for i in range(detail):
+	plotx1[i] = plotx1[i]*x1Std + x1Mean
+	plotx2[i] = plotx2[i]*x2Std + x2Mean
+for i in range(m):
+	x1[i] = x1[i]*x1Std + x1Mean
+	x2[i] = x2[i]*x2Std + x2Mean
+
+# Calculate the actual, unscaled thetas
+actTheta = [0,0,0]
+actTheta[0] = theta[0] - theta[1]*x1Mean/x1Std - theta[2]*x2Mean/x2Std
+actTheta[1] = theta[1]/x1Std
+actTheta[2] = theta[2]/x2Std
+print('Best Theta Value')
+print(actTheta)
+
+# For plotting the progress per generation, make the cost array and calculate it's values
+J = [0 for i in range(gen)]
+generations = [i for i in range(gen)]
+
+for i in range(gen):
+	for j in range(m):
+		hypo = hypothesis(allTheta[i], xArr)
+		J[i] = J[i] + (1.0/m)*(  -1*y[j]*log(hypo[j]) - (1-y[j])*log(1 - hypo[j])  )
+# Calculate the probability that a student with x1 = 20, x2 = 80 will not be admitted
+print('Probability that [x1 = 20: x2 = 80] will pass the final')
+print(1 - 1/(1+exp(-actTheta[0] - actTheta[1]*20 - actTheta[2]*80 )) )
+
 # Plot the result using matplotlib
-colors = y
-plt.scatter(x1, x2, s = 100, c = colors, alpha=0.5)
+#colors = y
+plt.scatter(x1, x2, s = 100, c = y, alpha=0.5)
 plt.plot(plotx1, plotx2, 'g--') # Other color choices('o',  'r--')
 plt.xlabel('Exam 1 Score')
 plt.ylabel('Exam 2 Score')
 plt.title('Admission Results')
-plt.legend(['Data', 'Decision Boundary'])
+plt.legend(['Decision Boundary', 'Data'])
 plt.show()
 
-
+# Plot the fitting function's performance versus generations
+plt.plot(generations, J, 'g--') # Other color choices('o',  'r--')
+plt.xlabel('Generations')
+plt.ylabel('J Cost')
+plt.title("Newton's Method ")
+plt.show()
 
 
 

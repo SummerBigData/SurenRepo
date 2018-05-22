@@ -85,11 +85,11 @@ xArr = np.transpose( np.array([[1]*len(x1), x1, x2]) )
 yArr = yarr
 
 # Initialize the theta and temptheta lists we will use
-theta = [0,0,0]
+theta = [1,1,1]
 temptheta = [0,0,0]
 
 # Initialize gen as the number of generations the code runs for. Also Initialize allTheta to record all values of theta calculated
-gen = 5
+gen = 1
 allTheta = [[0 for i in range(3)] for j in range(gen + 1)]
 
 # Iterate the following for gen number of times
@@ -105,7 +105,7 @@ for g in range(gen):
 
 # For plotting the seperation line, make an array that stores the predicted x2 values for the given x1 values. 
 detail = 100
-x1Range = 3
+x1Range = 5
 plotx2 = [0 for i in range(detail)]
 plotx1 = np.arange(-x1Range, x1Range, x1Range / (detail*0.5))
 
@@ -127,12 +127,12 @@ actTheta[1] = theta[1]/x1Std
 actTheta[2] = theta[2]/x2Std
 print('Best Theta Value')
 print(actTheta)
-
+print(allTheta[0])
 # For plotting the progress per generation, make the cost array and calculate it's values
-J = [0 for i in range(gen)]
-generations = [i for i in range(gen)]
+J = [0 for i in range(gen+1)]
+generations = [i for i in range(gen+1)]
 
-for i in range(gen):
+for i in range(gen+1):
 	for j in range(m):
 		hypo = hypothesis(allTheta[i], xArr)
 		J[i] = J[i] + (1.0/m)*(  -1*y[j]*log(hypo[j]) - (1-y[j])*log(1 - hypo[j])  )

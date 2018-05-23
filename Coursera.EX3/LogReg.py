@@ -7,7 +7,7 @@
 import numpy as np
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
-#import matplotlib.image as mpimg
+import matplotlib.image as mpimg
 from math import exp, log
 from scipy.optimize import minimize
 import scipy.io
@@ -126,3 +126,32 @@ numPercent = numPercent * (1/ 500.0)
 
 print numPercent
 
+
+#x = np.asarray([[1,1,5], [1,2,6], [1,3,7], [1,4,8]])
+#theta = np.asarray([1,2,3])
+#y = np.asarray([4,3,2,1])
+#print('Jgrad Hard')
+#print(gradJ(theta, x, y))
+#print(np.concatenate((theta, np.asarray([0 for i in range(5)]) ), axis=0))
+
+## Generate an image. The image is inverted for some reason, so we transpose the matrix first
+## We are plotting the first instance of each number in the data
+#pic0 = np.transpose(np.reshape(xarr[0], (20, 20)))
+#pic1 = np.transpose(np.reshape(xarr[500], (20, 20)))
+#pic2 = np.transpose(np.reshape(xarr[1000], (20, 20)))
+#pic3 = np.transpose(np.reshape(xarr[1500], (20, 20)))
+#pic4 = np.transpose(np.reshape(xarr[2000], (20, 20)))
+#pic5 = np.transpose(np.reshape(xarr[2500], (20, 20)))
+#pic6 = np.transpose(np.reshape(xarr[3000], (20, 20)))
+#pic7 = np.transpose(np.reshape(xarr[3500], (20, 20)))
+#pic8 = np.transpose(np.reshape(xarr[4000], (20, 20)))
+#pic9 = np.transpose(np.reshape(xarr[4500], (20, 20)))
+
+## Stitch these all together into one picture
+#picAll = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
+
+## 'binary' for black on white, 'gray' for white on black. 
+## See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
+
+#imgplot = plt.imshow(picAll, cmap="binary") 
+#plt.show()

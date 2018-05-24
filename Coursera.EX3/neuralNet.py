@@ -83,19 +83,38 @@ print numPercent
 # Generate an image. The image is inverted for some reason, so we transpose the matrix first
 # We are plotting the first instance of each number in the data
 a1t = a1.T
-pic0 = np.transpose(np.reshape(a1t[1], (5, 5)))
-pic1 = np.transpose(np.reshape(a1t[500], (5, 5)))
-pic2 = np.transpose(np.reshape(a1t[1000], (5, 5)))
-pic3 = np.transpose(np.reshape(a1t[1500], (5, 5)))
-pic4 = np.transpose(np.reshape(a1t[2000], (5, 5)))
-pic5 = np.transpose(np.reshape(a1t[2500], (5, 5)))
-pic6 = np.transpose(np.reshape(a1t[3000], (5, 5)))
-pic7 = np.transpose(np.reshape(a1t[3500], (5, 5)))
-pic8 = np.transpose(np.reshape(a1t[4000], (5, 5)))
-pic9 = np.transpose(np.reshape(a1t[4500], (5, 5)))
+#pic0 = np.transpose(np.reshape(a1t[1], (5, 5)))
+#pic1 = np.transpose(np.reshape(a1t[500], (5, 5)))
+#pic2 = np.transpose(np.reshape(a1t[1000], (5, 5)))
+#pic3 = np.transpose(np.reshape(a1t[1500], (5, 5)))
+#pic4 = np.transpose(np.reshape(a1t[2000], (5, 5)))
+#pic5 = np.transpose(np.reshape(a1t[2500], (5, 5)))
+#pic6 = np.transpose(np.reshape(a1t[3000], (5, 5)))
+#pic7 = np.transpose(np.reshape(a1t[3500], (5, 5)))
+#pic8 = np.transpose(np.reshape(a1t[4000], (5, 5)))
+#pic9 = np.transpose(np.reshape(a1t[4500], (5, 5)))
 
-# Stitch these all together into one picture
-picAll = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
+picAll = [ [0 for i in range(95)] for j in range(5)]
+
+for k in range(10):
+	pic0 = np.transpose(np.reshape(a1t[0+500*k], (5, 5)))
+	pic1 = np.transpose(np.reshape(a1t[1+500*k], (5, 5)))
+	pic2 = np.transpose(np.reshape(a1t[2+500*k], (5, 5)))
+	pic3 = np.transpose(np.reshape(a1t[3+500*k], (5, 5)))
+	pic4 = np.transpose(np.reshape(a1t[4+500*k], (5, 5)))
+	pic5 = np.transpose(np.reshape(a1t[5+500*k], (5, 5)))
+	pic6 = np.transpose(np.reshape(a1t[6+500*k], (5, 5)))
+	pic7 = np.transpose(np.reshape(a1t[7+500*k], (5, 5)))
+	pic8 = np.transpose(np.reshape(a1t[8+500*k], (5, 5)))
+	pic9 = np.transpose(np.reshape(a1t[9+500*k], (5, 5)))
+	space = np.asarray([ [0 for i in range(5)] for j in range(5)])
+
+	# Stitch these all together into one picture
+	picRow = np.concatenate((pic0, space, pic1, space, pic2, space, pic3, space, pic4, space, pic5, space, pic6, 			space, pic7, space, pic8, space, pic9), axis = 1)
+	
+	emptyRow = [[0 for i in range(95)] for j in range(5)]
+	
+	picAll = np.concatenate((picAll, picRow, emptyRow), axis = 0)
 
 # 'binary' for black on white, 'gray' for white on black. 
 # See https://matplotlib.org/examples/color/colormaps_reference.html for more color options

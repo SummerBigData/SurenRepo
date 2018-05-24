@@ -1,13 +1,13 @@
 # Written by: 	Suren Gourapura
 # Written on: 	May 22, 2018
 # Purpose: 	To solve exercise 3 on Multi-class Classification and Neural Networks in Coursera
-# Goal:		?
+# Goal:		To use the given theta matrices to see the classification power of a neural network
 
 # Import the modules
 import numpy as np
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
-#import matplotlib.image as mpimg
+import matplotlib.image as mpimg
 from math import exp, log
 from scipy.optimize import minimize
 import scipy.io
@@ -49,10 +49,10 @@ xArr = np.hstack(( np.asarray([[1] for i in range(n)]) , xvals))
 a1 = hypothesis(theta1, xArr)
 
 # Add a row of 1's on top of the a1 matrix
-a1 = np.vstack(( np.asarray([1 for i in range(n)]) , a1))
+a1Arr = np.vstack(( np.asarray([1 for i in range(n)]) , a1))
 
 # Calculate and store the output from a1 and theta2 (this contains the solutions)
-guessAll = hypothesis(theta2, a1.T)
+guessAll = hypothesis(theta2, a1Arr.T)
 
 # We need to parse through this 10 x 5000, find the highest values, and record them in a 5000 1D array
 guessBest = np.asarray([0 for i in range(n)])
@@ -74,10 +74,34 @@ for i in range(n):
 	elif guessBest[i]+1 == yvals[i]:
 		numPercent[ yvals[i] ] = numPercent[ yvals[i] ] + 1.0
 
-
 numPercent = numPercent * (1/ 500.0)
-
 print numPercent
+
+
+# We also want to plot the a1 data as pictures, to see the hidden layer
+
+# Generate an image. The image is inverted for some reason, so we transpose the matrix first
+# We are plotting the first instance of each number in the data
+a1t = a1.T
+pic0 = np.transpose(np.reshape(a1t[1], (5, 5)))
+pic1 = np.transpose(np.reshape(a1t[500], (5, 5)))
+pic2 = np.transpose(np.reshape(a1t[1000], (5, 5)))
+pic3 = np.transpose(np.reshape(a1t[1500], (5, 5)))
+pic4 = np.transpose(np.reshape(a1t[2000], (5, 5)))
+pic5 = np.transpose(np.reshape(a1t[2500], (5, 5)))
+pic6 = np.transpose(np.reshape(a1t[3000], (5, 5)))
+pic7 = np.transpose(np.reshape(a1t[3500], (5, 5)))
+pic8 = np.transpose(np.reshape(a1t[4000], (5, 5)))
+pic9 = np.transpose(np.reshape(a1t[4500], (5, 5)))
+
+# Stitch these all together into one picture
+picAll = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
+
+# 'binary' for black on white, 'gray' for white on black. 
+# See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
+
+imgplot = plt.imshow(picAll, cmap="binary") 
+plt.show()
 
 
 

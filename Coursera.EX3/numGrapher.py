@@ -16,17 +16,17 @@ n = 5000	# number of data points (number of 'number' pictures)
 f = 400		# number of features (pixels)
 
 # Generate an image. The image is inverted for some reason, so we transpose the matrix first
-# We are plotting the first instance of each number in the data
-pic0 = np.transpose(np.reshape(xarr[0], (20, 20)))
-pic1 = np.transpose(np.reshape(xarr[500], (20, 20)))
-pic2 = np.transpose(np.reshape(xarr[1000], (20, 20)))
-pic3 = np.transpose(np.reshape(xarr[1500], (20, 20)))
-pic4 = np.transpose(np.reshape(xarr[2000], (20, 20)))
-pic5 = np.transpose(np.reshape(xarr[2500], (20, 20)))
-pic6 = np.transpose(np.reshape(xarr[3000], (20, 20)))
-pic7 = np.transpose(np.reshape(xarr[3500], (20, 20)))
-pic8 = np.transpose(np.reshape(xarr[4000], (20, 20)))
-pic9 = np.transpose(np.reshape(xarr[4500], (20, 20)))
+# We are plotting the third instance of each number in the data
+pic0 = np.transpose(np.reshape(xarr[2], (20, 20)))
+pic1 = np.transpose(np.reshape(xarr[502], (20, 20)))
+pic2 = np.transpose(np.reshape(xarr[1002], (20, 20)))
+pic3 = np.transpose(np.reshape(xarr[1502], (20, 20)))
+pic4 = np.transpose(np.reshape(xarr[2002], (20, 20)))
+pic5 = np.transpose(np.reshape(xarr[2502], (20, 20)))
+pic6 = np.transpose(np.reshape(xarr[3002], (20, 20)))
+pic7 = np.transpose(np.reshape(xarr[3502], (20, 20)))
+pic8 = np.transpose(np.reshape(xarr[4002], (20, 20)))
+pic9 = np.transpose(np.reshape(xarr[4502], (20, 20)))
 
 # Stitch these all together into one picture
 picAll = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)

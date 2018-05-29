@@ -19,7 +19,8 @@ hypo = np.asarray([[i+8*j for i in range(8)] for j in range(4)])
 #print hypo
 arr = np.asarray([1,3,5,6,2,4,6])
 vec = Linearize(yarr, hypo)
-print vec
+
 a, b = Unlinearize(vec, 7, 4, 4, 8)
-print a, yarr
-print b, hypo
+Vec = np.array([0 for i in range(5)])
+print Vec
+print np.insert(Vec, 1, 5)

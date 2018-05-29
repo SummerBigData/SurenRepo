@@ -1,7 +1,7 @@
 # Written by: 	Suren Gourapura
 # Written on: 	May 25, 2018
 # Purpose: 	To solve exercise 4 on Multi-class Classification and Neural Networks in Coursera
-# Goal:		Use backpropagation to find the best theta values (A complete Neural Network Code)
+# Goal:		Use backpropagation to find the best theta values (a complete Neural Network Code)
 
 # Import the modules
 import numpy as np
@@ -79,7 +79,7 @@ def GenYMat(yvals, n):
 
 def BackProp(thetaAll, xArr, yArr, lamb, n):
 
-	print 'BackProp iteration'
+	print 'BackProp iter. Theta[0] = ', thetaAll[0]
 
 	# Seperate and reshape the Theta values
 	theta1, theta2 = UnLin(thetaAll, 25, 401, 10, 26)
@@ -103,17 +103,41 @@ def BackProp(thetaAll, xArr, yArr, lamb, n):
 		# Note: we use the bias row to calculate Delta2 but not Delta1, so it is removed below
 		Delta1 = Delta1 + np.delete( np.outer(column(xArr.T, t), delta2).T , 0, 0)	
 
-	# Since the calculation calls for [if j=0, D = Delta/m], we make Theta matrices so [Theta(j=0)=1 for all i].
-	Theta2 = np.delete(theta2, 0, 1)	# Remove the bias layers
-	Theta1 = np.delete(theta1, 0, 1)	# Now, these are 10 x 25, 25 x 400 respectively
+#	# Since the calculation calls for [if j=0, D = Delta/m], we make Theta matrices so [Theta(j=0)=1 for all i].
+#	Theta2 = np.delete(theta2, 0, 1)	# Remove the bias layers
+#	Theta1 = np.delete(theta1, 0, 1)	# Now, these are 10 x 25, 25 x 400 respectively
 
-	Theta2 = np.hstack(( np.asarray([[0] for i in range(10)]) , Theta2))	# Add the bias layer as 1's
-	Theta1 = np.hstack(( np.asarray([[0] for i in range(25)]) , Theta1))	# Now, these are 10 x 26, 25 x 401 respectively
-	# Now we calculate D normally and the j = 0 case is taken care of
-	D2 = (Delta2 + lamb * Theta2) / (n+0.0) 	# 10 x 26
-	D1 = (Delta1 + lamb * Theta1) / (n+0.0)		# 25 x 401
+#	Theta2 = np.hstack(( np.asarray([[0] for i in range(10)]) , Theta2))	# Add the bias layer as 1's
+#	Theta1 = np.hstack(( np.asarray([[0] for i in range(25)]) , Theta1))	# Now, these are 10 x 26, 25 x 401 respectively
+#	# Now we calculate D normally and the j = 0 case is taken care of
+#	D2 = (Delta2 + lamb * Theta2) / (n+0.0) 	# 10 x 26
+#	D1 = (Delta1 + lamb * Theta1) / (n+0.0)		# 25 x 401
+
+	D2 = (Delta2 ) / (n+0.0) 	# 10 x 26
+	D1 = (Delta1 ) / (n+0.0)		# 25 x 401
+
+
 	DAll = Lin(D1, D2)
+	print DAll[0]
 	return DAll
+
+
+
+def GradCheck(thetaAll, xArr, yArr, lamb, n):
+	e = 10**(-4)
+	Grad = np.zeros(len(thetaAll))
+
+	for i in range(len(thetaAll)):
+		if i%10 == 0:
+			print 'GradCheck Iter. ', i
+		eVec = np.zeros(len(thetaAll)-1)
+		eVec = np.insert(eVec, i, e)
+		tPlus = RegJCost(thetaAll + eVec, xArr, yArr, lamb, n)
+		tMinus = RegJCost(thetaAll - eVec, xArr, yArr, lamb, n)
+		Grad[i] = (tPlus - tMinus)/(2*e)
+	return Grad
+
+
 
 
 
@@ -158,9 +182,9 @@ eps = 0.12	# used for generating random theta matrices
 xArr = np.hstack(( np.asarray([[1] for i in range(n)]) , xvals))
 yArr = GenYMat(yvals, n)
 
-#print RegJCost(theta1, theta2, xArr, yArr, lamb, n) # Outputting 10.537, not 0.38377
-theta1 = randTheta(25, 401, eps)
-theta2 = randTheta(10, 26, eps)
+##print RegJCost(theta1, theta2, xArr, yArr, lamb, n) # Outputting 10.537, not 0.38377
+#theta1 = randTheta(25, 401, eps)
+#theta2 = randTheta(10, 26, eps)
 # Reshape and splice theta1, theta2
 thetaAll = Lin(theta1, theta2)
 
@@ -168,10 +192,17 @@ thetaAll = Lin(theta1, theta2)
  
 Cost = RegJCost(thetaAll, xArr, yArr, lamb, n)
 print Cost
-# We need to also store the best guess calculated by each theta value, so we use a 10 x 5000 matrix
-guessAll = [0 for i in range(len(thetaAll))]
 
-# Calculate the best theta values for a given j and store them. BFGS
+Grad = BackProp(thetaAll, xArr, yArr, lamb, n)
+gradCheck = GradCheck(thetaAll, xArr, yArr, lamb, n)
+
+print Grad[0:5]
+print gradCheck[0:5]
+
+## We need to also store the best guess calculated by each theta value, so we use a 10 x 5000 matrix
+#guessAll = [0 for i in range(len(thetaAll))]
+
+## Calculate the best theta values for a given j and store them. BFGS
 #res = minimize(fun=RegJCost, x0= thetaAll, method='CG', jac=BackProp, args=(xArr, yArr, lamb, n))
 #guessAll = res.x
 

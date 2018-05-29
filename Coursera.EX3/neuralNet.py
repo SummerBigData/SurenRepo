@@ -9,7 +9,6 @@ from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from math import exp, log
-from scipy.optimize import minimize
 import scipy.io
 
 

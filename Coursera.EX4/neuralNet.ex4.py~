@@ -168,10 +168,10 @@ thetaAll = Lin(theta1, theta2)
  
 Cost = RegJCost(thetaAll, xArr, yArr, lamb, n)
 print Cost
-# We need to also store the best guess calculated by each theta value, so we use a 10 x 5000 matrix
-guessAll = [0 for i in range(len(thetaAll))]
+## We need to also store the best guess calculated by each theta value, so we use a 10 x 5000 matrix
+#guessAll = [0 for i in range(len(thetaAll))]
 
-# Calculate the best theta values for a given j and store them. BFGS
+## Calculate the best theta values for a given j and store them. BFGS
 #res = minimize(fun=RegJCost, x0= thetaAll, method='CG', jac=BackProp, args=(xArr, yArr, lamb, n))
 #guessAll = res.x
 

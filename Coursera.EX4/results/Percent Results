@@ -13,6 +13,9 @@ Trained on 4500 in mixed order, tested on 500 in mixed order, tol=10e-2
 Trained on 4500 in mixed order, tested on 500 in mixed order, tol=10e-4
 [ 1.    0.92  0.92  0.98  1.    0.96  0.96  0.96  0.96  0.96]
 
+Trained on 4500 in mixed order, tested on 500 in mixed order, no tol
+[ 1.    0.92  0.92  0.98  1.    0.98  0.98  0.94  0.98  0.94]
+
 
 
 

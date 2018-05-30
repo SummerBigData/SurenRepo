@@ -23,7 +23,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 5000 #FIX
+		return 4500 	# CHANGE THIS TO ADJUST TRAINING SET SIZE
 	if char == 'f1':	# number of features (pixels)
 		return 400
 	if char == 'f2':	# number of features (hidden layer)
@@ -170,15 +170,37 @@ def UnLin(vec, a1, a2, b1, b2):
 		return np.reshape(a, (a1, a2)) , np.reshape(b, (b1, b2))
 
 
-# Take the xvals matrix and extract the first instances of each number so that the total is now g('n')
-def trunc(xvals, yvals):	
-	f = g('n') / 10			# Pick out n/10 instances for each number
-	xVals = xvals[0:f, 0:400]	# Put the zeros in
-	yVals = yvals[0:f]
+# Take the xvals matrix and extract the first or last instances of each number so that the total is now g('n') training samples
+def trunc(xvals, yvals, pos):	
+	f = g('n') / 10					# Pick out n/10 instances for each number
+	if pos == 'first':				# If the user wants the first 'f' values
+		xVals = xvals[0:f, 0:g('f1')]		# Put the zeros in
+		yVals = yvals[0:f]
+		for i in range(9):			# Put in the rest
+			xVals = np.append(xVals, xvals[500*(i+1) : f+500*(i+1), 0:g('f1')], axis=0)
+			yVals = np.append(yVals, yvals[500*(i+1) : f+500*(i+1)])
+	if pos == 'last':				# If the user wants the last 'f' values
+		xVals = xvals[500-f:500, 0:g('f1')]	# Put the zeros in
+		yVals = yvals[500-f:500]
+		for i in range(9):			# Put in the rest
+			xVals = np.append(xVals, xvals[500*(i+2)-f : 500*(i+2), 0:g('f1')], axis=0)
+			yVals = np.append(yVals, yvals[500*(i+2)-f : 500*(i+2)])
+	return xVals, yVals
 
-	for i in range(9):
-		xVals = np.append(xVals, xvals[500*(i+1) : f+500*(i+1), 0:400], axis=0)
-		yVals = np.append(yVals, yvals[500*(i+1) : f+500*(i+1)])
+
+# Reorder the data randomly
+def randData(xvals, yvals):
+	# Reshape the y values into a column, so hstack can work
+	yvals = np.column_stack(yvals).T
+	# Combine the x and y values so that the shuffling doesn't seperate them
+	XandY = np.hstack((xvals, yvals))
+	# Shuffle the matrix. We are shuffling the rows here
+	np.random.shuffle(XandY)
+	# Reseperate the matrices
+	xVals = XandY[0:g('n'),0:g('f1')]
+	yVals = XandY[0:g('n'),g('f1'):g('f1')+1]
+	# Convert the y values back as integers and as vectors, not matrices
+	yVals = np.ravel(yVals.astype(int))
 	return xVals, yVals
 
 
@@ -201,7 +223,10 @@ theta1 = weights['Theta1']	# 25 x 401 matrix that takes x to a_1
 theta2 = weights['Theta2']	# 10 x 26 matrix that takes a_1 to output (y)
 
 # Truncate the data to a more manageable piece
-#xvals, yvals = trunc(xvals, yvals)
+xvals, yvals = trunc(xvals, yvals, 'first')
+
+# Reorder the data randomly
+xvals, yvals = randData(xvals, yvals)
 
 # Form the correct x and y arrays, with xArr[0:5000, 0:1] being a column of 1's
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , xvals))	# 5000 x 401
@@ -222,13 +247,13 @@ print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.5
 # Check the gradient function. ~1.0405573537e-05 for randomized thetas
 #print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
 
-# Calculate the best theta values for a given j and store them.
-res = minimize(fun=RegJCost, x0= thetaAll, method='CG',tol=10**(-4), jac=BackProp, args=(xArr, yArr))
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4
+res = minimize(fun=RegJCost, x0= thetaAll, method='CG',tol=10e-3, jac=BackProp, args=(xArr, yArr))
 bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas5000.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas4500.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

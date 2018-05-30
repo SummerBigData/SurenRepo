@@ -1,0 +1,14 @@
+Trained on all 5000 (in orig. order), tested on 5000 in mixed order, tol=10e-4
+[ 0.998  0.996  0.996  0.99   0.994  1.     0.994  0.994  1.     0.984]
+
+Trained on 4500 in mixed order, tested on 500 in mixed order, tol=10e-3
+[ 1.    0.92  0.84  0.94  1.    0.8   0.96  0.9   0.88  0.82]
+
+Trained on 4500 in mixed order, tested on 500 in mixed order, tol=10e-2
+[ 0.    1.    0.    0.    0.08  0.    0.    0.    0.    0.  ]
+[ 0.  0.  0.  0.  0.  0.  1.  0.  0.  0.]
+[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  1.] <-- HL pic
+
+Trained on 4500 in mixed order, tested on 500 in mixed order, tol=10e-3
+[ 1.    0.94  0.84  0.9   1.    0.86  0.92  0.88  0.86  0.82]
+

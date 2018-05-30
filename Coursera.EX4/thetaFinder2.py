@@ -8,12 +8,16 @@ import numpy as np
 from math import exp, log
 from scipy.optimize import minimize
 import scipy.io
+import time
 
 from scipy.optimize import check_grad
 
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
+
+
+gStep = 0
 
 # These are the global constants used in the code
 def g(char):
@@ -65,6 +69,7 @@ def FullHypo(theta1, theta2, xArr):
 # Calculate the regularized Cost J(theta) using ALL thetas. yArr.shape = 5000 x 10
 # Note: both thetas are fed in as one vector, need to be seperated and reshaped 
 def RegJCost(thetaAll, xArr, yArr):
+	#start = time.time()
 	# Seperate and reshape the Theta values
 	theta1, theta2 = UnLin(thetaAll, g('f2'), g('f1')+1, 10, g('f2')+1)
 
@@ -74,6 +79,9 @@ def RegJCost(thetaAll, xArr, yArr):
 	
 	J = J + (0.5 * g('lamb')/g('n'))*(   np.sum(theta1**2) - np.sum(column(theta1, 0)**2) + 
 		np.sum(theta2**2) - np.sum(column(theta2, 0)**2) )
+
+	#end = time.time()
+	#print('RegJCost', end - start)
 	return J
 
 
@@ -93,8 +101,14 @@ def GenYMat(yvals):
 
 
 def BackProp(thetaAll, xArr, yArr):
+	# To keep track of how many times this code is called
+	global gStep
+	gStep += 1
+	if gStep % 50 == 0:
+		print 'Global Step: ', gStep
 
 	#print 'BackProp iter. Theta[0] = ', thetaAll[0]
+	#start = time.time()
 
 	# Seperate and reshape the Theta values
 	theta1, theta2 = UnLin(thetaAll, g('f2'), g('f1')+1, 10, g('f2')+1)
@@ -125,7 +139,7 @@ def BackProp(thetaAll, xArr, yArr):
 	Theta2 = np.hstack(( np.asarray([[0] for i in range(10)]) , Theta2))	# Add the bias layer as 0's
 	Theta1 = np.hstack(( np.asarray([[0] for i in range(g('f2'))]) , Theta1))	# Now, these are 10 x 26, 25 x 401 respectively
 	# Now we calculate D normally and the j = 0 case is taken care of
-	D2 = (Delta2 + g('lamb') * Theta2) / (g('n')+0.0) 	# 10 x 26
+	D2 = (Delta2 + g('lamb') * Theta2) / (g('n')+0.0) 		# 10 x 26
 	D1 = (Delta1 + g('lamb') * Theta1) / (g('n')+0.0)		# 25 x 401
 
 #	D2 = (Delta2 ) / (n+0.0) 		10 x 26
@@ -134,6 +148,9 @@ def BackProp(thetaAll, xArr, yArr):
 
 	DAll = Lin(D1, D2)
 	#print DAll[0]
+	#end = time.time()
+	#print('BackProp', end - start)
+
 	return DAll
 
 
@@ -175,7 +192,13 @@ def trunc(xvals, yvals):
 
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
-	
+
+
+
+# To see how long the code runs for, we start a timestamp
+totStart = time.time()
+
+
 # PREPARING DATA
 # Obtain the data values and convert them from arrays to lists
 data = scipy.io.loadmat('ex4data1.mat')
@@ -185,8 +208,8 @@ yvals = data['y']
 theta1 = weights['Theta1']	# 25 x 401 matrix that takes x to a_1
 theta2 = weights['Theta2']	# 10 x 26 matrix that takes a_1 to output (y)
 
-## Truncate the data to a more manageable piece
-#xvals, yvals = trunc(xvals, yvals)
+# Truncate the data to a more manageable piece
+xvals, yvals = trunc(xvals, yvals)
 
 # Form the correct x and y arrays, with xArr[0:5000, 0:1] being a column of 1's
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , xvals))	# 5000 x 401
@@ -200,24 +223,23 @@ theta2 = randTheta(10, g('f2')+1)
 thetaAll = Lin(theta1, theta2)
 
 
-
-
+# MINIMIZING THETAS
 # Check the cost of the initial theta matrices
 print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
 
-## Check the gradient function. ~1.0405573537e-05 for randomized thetas
+# Check the gradient function. ~1.0405573537e-05 for randomized thetas
 #print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
 
-# Calculate the best theta values for a given j and store them. BFGS
-res = minimize(fun=RegJCost, x0= thetaAll, method='CG', jac=BackProp, args=(xArr, yArr))
+# Calculate the best theta values for a given j and store them.
+res = minimize(fun=RegJCost, x0= thetaAll, method='CG',tol=10**(-4), jac=BackProp, args=(xArr, yArr))
 bestThetas = res.x
 
-print bestThetas.shape
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas5000.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas500.out', bestThetas, delimiter=',')
 
-
-
+# Stop the timestamp and print out the total time
+totend = time.time()
+print'thetaFinder.py took ', totend - totStart, 'seconds to run'
 
 

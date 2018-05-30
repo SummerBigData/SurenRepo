@@ -18,7 +18,7 @@ from scipy.optimize import check_grad
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 5000 #FIX
+		return 500 #FIX
 	if char == 'f1':	# number of features (pixels)
 		return 400
 	if char == 'f2':	# number of features (hidden layer)
@@ -185,8 +185,8 @@ yvals = data['y']
 theta1 = weights['Theta1']	# 25 x 401 matrix that takes x to a_1
 theta2 = weights['Theta2']	# 10 x 26 matrix that takes a_1 to output (y)
 
-## Truncate the data to a more manageable piece
-#xvals, yvals = trunc(xvals, yvals)
+# Truncate the data to a more manageable piece
+xvals, yvals = trunc(xvals, yvals)
 
 # Form the correct x and y arrays, with xArr[0:5000, 0:1] being a column of 1's
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , xvals))	# 5000 x 401
@@ -205,8 +205,8 @@ thetaAll = Lin(theta1, theta2)
 # Check the cost of the initial theta matrices
 print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
 
-## Check the gradient function. ~1.0405573537e-05 for randomized thetas
-#print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
+# Check the gradient function. ~1.0405573537e-05 for randomized thetas
+print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
 
 # Calculate the best theta values for a given j and store them. BFGS
 res = minimize(fun=RegJCost, x0= thetaAll, method='CG', jac=BackProp, args=(xArr, yArr))
@@ -215,7 +215,7 @@ bestThetas = res.x
 print bestThetas.shape
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas5000.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas500.out', bestThetas, delimiter=',')
 
 
 

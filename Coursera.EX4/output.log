@@ -2,3 +2,22 @@ Initial Theta JCost:  6.873162554101839
 Global Step:  50
 Global Step:  100
 Global Step:  150
+Global Step:  200
+Global Step:  250
+Global Step:  300
+Global Step:  350
+Global Step:  400
+Global Step:  450
+Global Step:  500
+Global Step:  550
+Global Step:  600
+Global Step:  650
+Global Step:  700
+Global Step:  750
+Global Step:  800
+Global Step:  850
+Global Step:  900
+Global Step:  950
+Global Step:  1000
+Final Theta JCost 0.31516726935148015
+thetaFinder.py took  1762.60292792 seconds to run

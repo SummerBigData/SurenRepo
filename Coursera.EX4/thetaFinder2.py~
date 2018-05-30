@@ -228,7 +228,7 @@ bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas5000.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas500.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

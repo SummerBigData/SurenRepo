@@ -249,10 +249,10 @@ print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.5
 # Calculate the best theta values for a given j and store them. Usually tol=10e-4
 res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=0, jac=BackProp, args=(xArr, yArr))
 bestThetas = res.x
-, 
+
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas4500.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas4500.1.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

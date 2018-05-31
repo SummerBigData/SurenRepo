@@ -214,8 +214,8 @@ totStart = time.time()
 
 # PREPARING DATA
 # Obtain the data values and convert them from arrays to lists
-data = scipy.io.loadmat('ex4data1.mat')
-weights = scipy.io.loadmat('ex4weights.mat')
+data = scipy.io.loadmat('data/ex4data1.mat')
+weights = scipy.io.loadmat('data/ex4weights.mat')
 xvals = data['X']		# 5000 x 400 
 yvals = data['y']
 theta1 = weights['Theta1']	# 25 x 401 matrix that takes x to a_1

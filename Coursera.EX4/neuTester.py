@@ -115,7 +115,7 @@ def randData(xvals, yvals):
 
 # PREPARING DATA
 # Obtain the data values and convert them from arrays to lists
-data = scipy.io.loadmat('ex4data1.mat')
+data = scipy.io.loadmat('data/ex4data1.mat')
 xvals = data['X']		# 5000 x 400 
 yvals = data['y']
 

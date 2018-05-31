@@ -123,7 +123,7 @@ yvals = data['y']
 bestThetas = np.genfromtxt('neuralThetas4500.1.out', dtype=float)
 
 # Truncate the data to a more manageable piece
-xvals, yvals = trunc(xvals, yvals, 'first')
+xvals, yvals = trunc(xvals, yvals, 'last')
 
 # Reorder the data randomly
 xvals, yvals = randData(xvals, yvals)

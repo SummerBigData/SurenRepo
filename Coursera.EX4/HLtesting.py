@@ -155,7 +155,7 @@ picAll = np.concatenate((hspace, picRa2, hspace, picRa1, hspace, picFa2, hspace)
 
 # Display the pictures
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/RevProp'+str(numb),transparent=True, format='png')
+plt.savefig('results/RevProp'+str(numb)+'.png',transparent=True, format='png')
 plt.show()
 
 

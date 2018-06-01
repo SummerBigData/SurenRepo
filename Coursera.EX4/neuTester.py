@@ -125,8 +125,8 @@ bestThetas = np.genfromtxt('neuralThetas4500.1.out', dtype=float)
 # Truncate the data to a more manageable piece
 xvals, yvals = trunc(xvals, yvals, 'last')
 
-# Reorder the data randomly
-xvals, yvals = randData(xvals, yvals)
+## Reorder the data randomly
+#xvals, yvals = randData(xvals, yvals)
 
 
 # Form the correct x and y arrays, with xArr[0:5000, 0:1] being a column of 1's
@@ -142,6 +142,11 @@ bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
 # Calculate the best guess given the best theta values
 guesses = FullHypo(bestTheta1, bestTheta2, xArr)	#10 x 5000
 
+
+
+
+
+
 # We need to parse through this 10 x 5000, find the highest values, and record them in a 5000 1D array
 guessBest = np.asarray([0 for i in range(g('n'))])
 
@@ -153,63 +158,159 @@ for j in range(g('n')):
 # If testing on truncated data, this might not work without modifications
 print "Here are some sections of the guessBest vector"
 f = g('n')/10
-print guessBest[f-10:f+10], guessBest[2*f-10:2*f+10], guessBest[3*f-10:3*f+10], guessBest[9*f-10:9*f+10]
+print guessBest[f-1:f+1], guessBest[2*f-10:2*f+10], guessBest[3*f-10:3*f+10], guessBest[9*f-10:9*f+10]
+print ' '
+numNumbers = np.zeros((10)).astype(int)
 
-
-
-# CALCULATE PERCENT CORRECT
-# Now we want to see what percent of each number the code got right
-numPercent = np.array([0.0 for i in range(10)])
-
-# Since yvals[i]==10 is referring to 0, we hardcode this translation in.
-#Increment numPercent[i] for each number i it gets right.
 for i in range(g('n')):
-	if yvals[i] == 10 and guessBest[i] == 0:
-		numPercent[0] = numPercent[0] + 1.0
-	elif guessBest[i] == yvals[i]:
-		numPercent[ yvals[i] ] = numPercent[ yvals[i] ] + 1.0
+	if guessBest[i]==0:
+		numNumbers[0] +=1
+	if guessBest[i]==1:
+		numNumbers[1] +=1
+	if guessBest[i]==2:
+		numNumbers[2] +=1
+	if guessBest[i]==3:
+		numNumbers[3] +=1
+	if guessBest[i]==4:
+		numNumbers[4] +=1
+	if guessBest[i]==5:
+		numNumbers[5] +=1
+	if guessBest[i]==6:
+		numNumbers[6] +=1
+	if guessBest[i]==7:
+		numNumbers[7] +=1
+	if guessBest[i]==8:
+		numNumbers[8] +=1
+	if guessBest[i]==9:
+		numNumbers[9] +=1
 
-print 'Number of data points identified correctly per number:'
-print numPercent
-print 'Number of total data points identified correctly:', sum(numPercent)
-numPercent = numPercent * (10.0/ g('n'))
+Mat0 = np.zeros((numNumbers[0], 10))
+Mat1 = np.zeros((numNumbers[1], 10))
+Mat2 = np.zeros((numNumbers[2], 10))
+Mat3 = np.zeros((numNumbers[3], 10))
+Mat4 = np.zeros((numNumbers[4], 10))
+Mat5 = np.zeros((numNumbers[5], 10))
+Mat6 = np.zeros((numNumbers[6], 10))
+Mat7 = np.zeros((numNumbers[7], 10))
+Mat8 = np.zeros((numNumbers[8], 10))
+Mat9 = np.zeros((numNumbers[9], 10))
 
-print 'Percent correct per number:'
-print numPercent
-print 'Total percent correct:', np.mean(numPercent)
+
+index = np.zeros((10)).astype(int)
+
+for i in range(g('n')):
+	if guessBest[i]==0:
+		Mat0[index[0]] = guesses.T[i]
+		index[0] += 1
+	if guessBest[i]==1:
+		Mat1[index[1]] = guesses.T[i]
+		index[1] += 1
+	if guessBest[i]==2:
+		Mat2[index[2]] = guesses.T[i]
+		index[2] += 1
+	if guessBest[i]==3:
+		Mat3[index[3]] = guesses.T[i]
+		index[3] += 1
+	if guessBest[i]==4:
+		Mat4[index[4]] = guesses.T[i]
+		index[4] += 1
+	if guessBest[i]==5:
+		Mat5[index[5]] = guesses.T[i]
+		index[5] += 1
+	if guessBest[i]==6:
+		Mat6[index[6]] = guesses.T[i]
+		index[6] += 1
+	if guessBest[i]==7:
+		Mat7[index[7]] = guesses.T[i]
+		index[7] += 1
+	if guessBest[i]==8:
+		Mat8[index[8]] = guesses.T[i]
+		index[8] += 1
+	if guessBest[i]==9:
+		Mat9[index[9]] = guesses.T[i]
+		index[9] += 1
+
+Ave0 = np.mean(Mat0, axis=0)
+Ave1 = np.mean(Mat1, axis=0)
+Ave2 = np.mean(Mat2, axis=0)
+Ave3 = np.mean(Mat3, axis=0)
+Ave4 = np.mean(Mat4, axis=0)
+Ave5 = np.mean(Mat5, axis=0)
+Ave6 = np.mean(Mat6, axis=0)
+Ave7 = np.mean(Mat7, axis=0)
+Ave8 = np.mean(Mat8, axis=0)
+Ave9 = np.mean(Mat9, axis=0)
+
+print(np.array2string(Ave0, separator=','))
+print(np.array2string(Ave1, separator=','))
+print(np.array2string(Ave2, separator=','))
+print(np.array2string(Ave3, separator=','))
+print(np.array2string(Ave4, separator=','))
+print(np.array2string(Ave5, separator=','))
+print(np.array2string(Ave6, separator=','))
+print(np.array2string(Ave7, separator=','))
+print(np.array2string(Ave8, separator=','))
+print(np.array2string(Ave9, separator=','))
+
+
+# We want to categorize these guesses into an organized 
 
 
 
-# PLOT HIDDEN LAYER
-# Generate an image. The image is inverted for some reason, so we transpose the matrix first
-# We are plotting the first ten instances of each number in the data
-a1 = hypothesis(bestTheta1, xArr)
-a1t = a1.T
 
-picAll = [ [0 for i in range(95)] for j in range(5)]
-f = g('n')/10
-for k in range(10):
-	pic0 = np.transpose(np.reshape(a1t[0+f*k], (5, 5)))
-	pic1 = np.transpose(np.reshape(a1t[1+f*k], (5, 5)))
-	pic2 = np.transpose(np.reshape(a1t[2+f*k], (5, 5)))
-	pic3 = np.transpose(np.reshape(a1t[3+f*k], (5, 5)))
-	pic4 = np.transpose(np.reshape(a1t[4+f*k], (5, 5)))
-	pic5 = np.transpose(np.reshape(a1t[5+f*k], (5, 5)))
-	pic6 = np.transpose(np.reshape(a1t[6+f*k], (5, 5)))
-	pic7 = np.transpose(np.reshape(a1t[7+f*k], (5, 5)))
-	pic8 = np.transpose(np.reshape(a1t[8+f*k], (5, 5)))
-	pic9 = np.transpose(np.reshape(a1t[9+f*k], (5, 5)))
-	space = np.asarray([ [0 for i in range(5)] for j in range(5)])
+## CALCULATE PERCENT CORRECT
+## Now we want to see what percent of each number the code got right
+#numPercent = np.array([0.0 for i in range(10)])
 
-	# Stitch these all together into one picture
-	picRow = np.concatenate((pic0, space, pic1, space, pic2, space, pic3, space, pic4, space, pic5, space, pic6, space, pic7, space, pic8, space, pic9), axis = 1)
-	
-	emptyRow = [[0 for i in range(95)] for j in range(5)]
-	
-	picAll = np.concatenate((picAll, picRow, emptyRow), axis = 0)
+## Since yvals[i]==10 is referring to 0, we hardcode this translation in.
+##Increment numPercent[i] for each number i it gets right.
+#for i in range(g('n')):
+#	if yvals[i] == 10 and guessBest[i] == 0:
+#		numPercent[0] = numPercent[0] + 1.0
+#	elif guessBest[i] == yvals[i]:
+#		numPercent[ yvals[i] ] = numPercent[ yvals[i] ] + 1.0
 
-# 'binary' for black on white, 'gray' for white on black. 
-# See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
+#print 'Number of data points identified correctly per number:'
+#print numPercent
+#print 'Number of total data points identified correctly:', sum(numPercent)
+#numPercent = numPercent * (10.0/ g('n'))
 
-imgplot = plt.imshow(picAll, cmap="binary") 
-plt.show()
+#print 'Percent correct per number:'
+#print numPercent
+#print 'Total percent correct:', np.mean(numPercent)
+
+
+
+## PLOT HIDDEN LAYER
+## Generate an image. The image is inverted for some reason, so we transpose the matrix first
+## We are plotting the first ten instances of each number in the data
+#a1 = hypothesis(bestTheta1, xArr)
+#a1t = a1.T
+
+#picAll = [ [0 for i in range(95)] for j in range(5)]
+#f = g('n')/10
+#for k in range(10):
+#	pic0 = np.transpose(np.reshape(a1t[0+f*k], (5, 5)))
+#	pic1 = np.transpose(np.reshape(a1t[1+f*k], (5, 5)))
+#	pic2 = np.transpose(np.reshape(a1t[2+f*k], (5, 5)))
+#	pic3 = np.transpose(np.reshape(a1t[3+f*k], (5, 5)))
+#	pic4 = np.transpose(np.reshape(a1t[4+f*k], (5, 5)))
+#	pic5 = np.transpose(np.reshape(a1t[5+f*k], (5, 5)))
+#	pic6 = np.transpose(np.reshape(a1t[6+f*k], (5, 5)))
+#	pic7 = np.transpose(np.reshape(a1t[7+f*k], (5, 5)))
+#	pic8 = np.transpose(np.reshape(a1t[8+f*k], (5, 5)))
+#	pic9 = np.transpose(np.reshape(a1t[9+f*k], (5, 5)))
+#	space = np.asarray([ [0 for i in range(5)] for j in range(5)])
+
+#	# Stitch these all together into one picture
+#	picRow = np.concatenate((pic0, space, pic1, space, pic2, space, pic3, space, pic4, space, pic5, space, pic6, space, pic7, space, pic8, space, pic9), axis = 1)
+#	
+#	emptyRow = [[0 for i in range(95)] for j in range(5)]
+#	
+#	picAll = np.concatenate((picAll, picRow, emptyRow), axis = 0)
+
+## 'binary' for black on white, 'gray' for white on black. 
+## See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
+
+#imgplot = plt.imshow(picAll, cmap="binary") 
+#plt.show()

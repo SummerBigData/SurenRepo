@@ -87,7 +87,7 @@ def ForProp(aL, theta):
 
 # PREPARING DATA
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('neuralThetas4500.out', dtype=float)
+bestThetas = np.genfromtxt('neuralThetas4500.1.out', dtype=float)
 
 # Seperate and reform the theta matrices
 bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
@@ -96,13 +96,17 @@ bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
 
 # REVERSE PROPAGATE
 # Prepare the output layer. 'numb' is the number it will generate
-numb = 9
-a3 = np.zeros(10)
-for  i in range(10):
-	if i == numb:
-		a3[i] = 0.999	# We can't make these 1 and 0 since the inverse sigmoid doesn't like those values
-	else:
-		a3[i] = 0.001
+numb = 3
+#a3 = np.zeros(10)
+#for  i in range(10):
+#	if i == numb:
+#		a3[i] = 0.999	# We can't make these 1 and 0 since the inverse sigmoid doesn't like those values
+#	else:
+#		a3[i] = 0.001
+a3 = np.array([  3.72642259e-03,  2.58019391e-03,  9.34899206e-03,  8.75294055e-01,   1.83352066e-03,  2.92327749e-02,  6.99613542e-05,  1.43447250e-03,   7.18752968e-03,  1.02925693e-02])
+
+
+
 # Reverse propagate to layer 2
 a2 = RevProp(a3, bestTheta2)
 
@@ -136,8 +140,8 @@ picFa2 = np.transpose(np.reshape(np.ravel(Normalize(a2)), (5,5)))
 # Propagate to a3. These are the probabilities
 a3 = ForProp(a2, bestTheta2)
 np.set_printoptions(suppress=True)
-print np.ravel(a3)
 
+print(np.array2string(np.ravel(a3), separator=','))
 
 
 # DISPLAY PICTURES
@@ -155,7 +159,7 @@ picAll = np.concatenate((hspace, picRa2, hspace, picRa1, hspace, picFa2, hspace)
 
 # Display the pictures
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/RevProp'+str(numb)+'.png',transparent=True, format='png')
+plt.savefig('results/RevPropReAvg'+str(numb)+'.png',transparent=True, format='png')
 plt.show()
 
 

@@ -25,7 +25,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 500 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 5000 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -236,7 +236,7 @@ datx = np.ravel(datx).reshape((g('n'), g('f1')))
 print datx.shape
 
 # Reorder the data randomly
-#datx, daty = randData(datx, daty)
+datx, daty = randData(datx, daty)
 
 # Form the correct x and y arrays, with a column of 1's in the xArr
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')
@@ -277,12 +277,12 @@ print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.5
 print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
 
 # Calculate the best theta values for a given j and store them. Usually tol=10e-4
-res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-3, jac=BackProp, args=(xArr, yArr))
+res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-4, jac=BackProp, args=(xArr, yArr))
 bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas500MNIST.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas5000MNIST.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

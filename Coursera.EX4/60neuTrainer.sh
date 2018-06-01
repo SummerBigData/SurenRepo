@@ -1,4 +1,4 @@
-#PBS -N Coursera_CalcThetas
+#PBS -N CalcThetasMNIST5k
 #PBS -l walltime=90:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB

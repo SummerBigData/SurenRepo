@@ -3,11 +3,19 @@
 Initial Theta JCost: neuTrainerMNIST500.py:53: RuntimeWarning: overflow encountered in exp
   newhypo = 1/(1+np.exp(-oldhypo))
  7.68931128306034
-5.425208306286297e-06
+5.421.0658385866710563e-05
 Global Step:  50
 Global Step:  100
 Global Step:  150
 Global Step:  200
 Global Step:  250
-Final Theta JCost 1.693270318547184
-neuTrainerMNIST.py took  240.171462059 seconds to run
+Global Step:  300
+Global Step:  350
+Global Step:  400
+Global Step:  450
+Global Step:  500
+Global Step:  550
+Global Step:  600
+Global Step:  650
+Final Theta JCost 1.0153376514821142
+neuTrainerMNIST.py took  3932.16802597 seconds to run

@@ -19,7 +19,7 @@ import gzip
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 59950 	# CHANGE THIS TO ADJUST TRAINING SET SIZE
+		return 10000 	# CHANGE THIS TO ADJUST TRAINING SET SIZE
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -128,8 +128,8 @@ def randData(xvals, yvals):
 
 # PREPARING DATA
 # Obtain the data values and convert them from arrays to lists
-datx = read_idx('data/train-images-idx3-ubyte.gz', g('n'))
-daty = read_idx('data/train-labels-idx1-ubyte.gz', g('n'))
+datx = read_idx('data/t10k-images-idx3-ubyte.gz', g('n'))
+daty = read_idx('data/t10k-labels-idx1-ubyte.gz', g('n'))
 
 datx = np.ravel(datx).reshape((g('n'), g('f1')))
 
@@ -140,7 +140,7 @@ datx, daty = randData(datx, daty)
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')	
 
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('neuralThetas50MNIST-3..out', dtype=float)
+bestThetas = np.genfromtxt('thetaArrs/theta50MNIST-4.out', dtype=float)
 print bestThetas.shape
 
 # Seperate and reform the theta matrices

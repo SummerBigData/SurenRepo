@@ -25,7 +25,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 500 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 50000 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -50,8 +50,9 @@ def read_idx(filename, n=None):
 # Calculate the Hypothesis (for layer l to l+1)
 def hypothesis(thetaArr, xArr):
 	oldhypo = np.matmul(thetaArr, np.transpose(xArr) )
-	newhypo = 1/(1+np.exp(-oldhypo))
-	return newhypo
+	oldhypo = np.array(oldhypo, dtype=np.float128)
+	newhypo = 1.0/(1.0+np.exp(-oldhypo))	
+	return np.array(newhypo, dtype=np.float64)
 
 
 # Calculate the Sigmoid's gradient UNUSED IN CODE
@@ -236,7 +237,7 @@ datx = np.ravel(datx).reshape((g('n'), g('f1')))
 print datx.shape
 
 # Reorder the data randomly
-datx, daty = randData(datx, daty)
+#datx, daty = randData(datx, daty)
 
 # Form the correct x and y arrays, with a column of 1's in the xArr
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')
@@ -274,15 +275,15 @@ thetaAll = Lin(theta1, theta2)
 print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
 
 # Check the gradient function. ~1.0405573537e-05 for randomized thetas
-print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
+# print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
 
 # Calculate the best theta values for a given j and store them. Usually tol=10e-4
-res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-4, jac=BackProp, args=(xArr, yArr))
+res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-3, jac=BackProp, args=(xArr, yArr))
 bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas500MNIST.out', bestThetas, delimiter=',')
+np.savetxt('thetaArrs/theta50MNIST-3.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

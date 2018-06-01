@@ -1,0 +1,15 @@
+/users/PAS1383/osu10171/SurenRepo/Coursera.EX4
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=00:09:22
+walltime=00:09:29
+mem=0.032 GB
+vmem=0.563 GB
+-----------------------
+Resource units charged (estimate):
+-----------------------

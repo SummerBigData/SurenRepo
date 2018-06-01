@@ -11,8 +11,8 @@ import scipy.io
 import time
 import struct as st
 import gzip
-
-#from scipy.optimize import check_grad
+#import matplotlib.pyplot as plt
+from scipy.optimize import check_grad
 
 
 
@@ -25,11 +25,11 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 500 	# CHANGE THIS TO ADJUST TRAINING SET SIZE
+		return 500 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
-		return 25
+		return 36
 	if char == 'lamb':	# the 'overfitting knob'
 		return 1
 	if char == 'eps':	# used for generating random theta matrices
@@ -182,22 +182,22 @@ def UnLin(vec, a1, a2, b1, b2):
 		return np.reshape(a, (a1, a2)) , np.reshape(b, (b1, b2))
 
 
-# Take the xvals matrix and extract the first or last instances of each number so that the total is now g('n') training samples
-def trunc(xvals, yvals, pos):	
-	f = g('n') / 10					# Pick out n/10 instances for each number
-	if pos == 'first':				# If the user wants the first 'f' values
-		xVals = xvals[0:f, 0:g('f1')]		# Put the zeros in
-		yVals = yvals[0:f]
-		for i in range(9):			# Put in the rest
-			xVals = np.append(xVals, xvals[500*(i+1) : f+500*(i+1), 0:g('f1')], axis=0)
-			yVals = np.append(yVals, yvals[500*(i+1) : f+500*(i+1)])
-	if pos == 'last':				# If the user wants the last 'f' values
-		xVals = xvals[500-f:500, 0:g('f1')]	# Put the zeros in
-		yVals = yvals[500-f:500]
-		for i in range(9):			# Put in the rest
-			xVals = np.append(xVals, xvals[500*(i+2)-f : 500*(i+2), 0:g('f1')], axis=0)
-			yVals = np.append(yVals, yvals[500*(i+2)-f : 500*(i+2)])
-	return xVals, yVals
+## Take the xvals matrix and extract the first or last instances of each number so that the total is now g('n') training samples
+#def trunc(xvals, yvals, pos):	
+#	f = g('n') / 10					# Pick out n/10 instances for each number
+#	if pos == 'first':				# If the user wants the first 'f' values
+#		xVals = xvals[0:f, 0:g('f1')]		# Put the zeros in
+#		yVals = yvals[0:f]
+#		for i in range(9):			# Put in the rest
+#			xVals = np.append(xVals, xvals[500*(i+1) : f+500*(i+1), 0:g('f1')], axis=0)
+#			yVals = np.append(yVals, yvals[500*(i+1) : f+500*(i+1)])
+#	if pos == 'last':				# If the user wants the last 'f' values
+#		xVals = xvals[500-f:500, 0:g('f1')]	# Put the zeros in
+#		yVals = yvals[500-f:500]
+#		for i in range(9):			# Put in the rest
+#			xVals = np.append(xVals, xvals[500*(i+2)-f : 500*(i+2), 0:g('f1')], axis=0)
+#			yVals = np.append(yVals, yvals[500*(i+2)-f : 500*(i+2)])
+#	return xVals, yVals
 
 
 # Reorder the data randomly
@@ -232,55 +232,63 @@ daty = read_idx('data/train-labels-idx1-ubyte.gz', g('n'))
 
 print datx.shape, daty.shape
 
-test = array([[[155,  33, 129],
-        [161, 218,   6]],
+datx = np.ravel(datx).reshape((g('n'), g('f1')))
+print datx.shape
 
-       [[215, 142, 235],
-        [143, 249, 164]],
+# Reorder the data randomly
+datx, daty = randData(datx, daty)
 
-       [[221,  71, 229],
-        [ 56,  91, 120]],
+# Form the correct x and y arrays, with a column of 1's in the xArr
+xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')
+yArr = GenYMat(daty)							# g('n') x 10
+				
+# Randomize theta1 and theta2. Comment this out to use their theta values (weights)
+theta1 = randTheta(g('f2'), g('f1')+1)
+theta2 = randTheta(10, g('f2')+1)
 
-       [[236,   4, 177],
-        [171, 105,  40]]])
-
-print test.flatten(order
-
-## Truncate the data to a more manageable piece
-#xvals, yvals = trunc(xvals, yvals, 'first')
-
-## Reorder the data randomly
-#xvals, yvals = randData(xvals, yvals)
-
-## Form the correct x and y arrays, with xArr[0:5000, 0:1] being a column of 1's
-#xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , xvals))	# 5000 x 401
-#yArr = GenYMat(yvals)							# 5000 x 10
-#						
-## Randomize theta1 and theta2. Comment this out to use their theta values (weights)
-#theta1 = randTheta(g('f2'), g('f1')+1)
-#theta2 = randTheta(10, g('f2')+1)
-
-## Reshape and splice theta1, theta2
-#thetaAll = Lin(theta1, theta2)
+# Reshape and splice theta1, theta2
+thetaAll = Lin(theta1, theta2)
 
 
-## MINIMIZING THETAS
-## Check the cost of the initial theta matrices
-#print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
 
-## Check the gradient function. ~1.0405573537e-05 for randomized thetas
-##print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
+#Show a random set of numbers in the dataset. Go up and include plt
+#pic0 = np.reshape(datx[0], (28,28))
+#pic1 = np.reshape(datx[1], (28,28))
+#pic2 = np.reshape(datx[2], (28,28))
+#pic3 = np.reshape(datx[3], (28,28))
+#pic4 = np.reshape(datx[4], (28,28))
+#pic5 = np.reshape(datx[5], (28,28))
+#pic6 = np.reshape(datx[6], (28,28))
+#pic7 = np.reshape(datx[7], (28,28))
+#pic8 = np.reshape(datx[8], (28,28))
+#pic9 = np.reshape(datx[9], (28,28))
+## Stitch these all together into one picture
+#picAll = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.show()
 
-## Calculate the best theta values for a given j and store them. Usually tol=10e-4
-#res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=0, jac=BackProp, args=(xArr, yArr))
-#bestThetas = res.x
 
-#print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-#np.savetxt('neuralThetas4500.1.out', bestThetas, delimiter=',')
+# MINIMIZING THETAS
+# Check the cost of the initial theta matrices
+print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
 
-## Stop the timestamp and print out the total time
-#totend = time.time()
-#print'thetaFinder.py took ', totend - totStart, 'seconds to run'
+# Check the gradient function. ~1.0405573537e-05 for randomized thetas
+print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
+
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4
+res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-4, jac=BackProp, args=(xArr, yArr))
+bestThetas = res.x
+
+print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
+
+np.savetxt('neuralThetas50MNIST.out', bestThetas, delimiter=',')
+
+# Stop the timestamp and print out the total time
+totend = time.time()
+print'neuTrainerMNIST.py took ', totend - totStart, 'seconds to run'
+
+
+
 
 

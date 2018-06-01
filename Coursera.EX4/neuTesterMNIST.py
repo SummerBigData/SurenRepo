@@ -44,8 +44,9 @@ def read_idx(filename, n=None):
 # Calculate the Hypothesis (for layer l to l+1)
 def hypothesis(thetaArr, xArr):
 	oldhypo = np.matmul(thetaArr, np.transpose(xArr) )
-	newhypo = 1/(1+np.exp(-oldhypo))
-	return newhypo
+	oldhypo = np.array(oldhypo, dtype=np.float128)
+	newhypo = 1.0/(1.0+np.exp(-oldhypo))	
+	return np.array(newhypo, dtype=np.float64)
 
 
 # Calculate the Hypothesis (layer 3) using just layer 1. xArr.shape -> 5000 x 401
@@ -141,6 +142,7 @@ xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x 
 # Obtain the best theta values from the text file
 bestThetas = np.genfromtxt('neuralThetas500MNIST.out', dtype=float)
 print bestThetas.shape
+
 # Seperate and reform the theta matrices
 bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
 
@@ -224,5 +226,9 @@ for k in range(10):
 # 'binary' for black on white, 'gray' for white on black. 
 # See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
 
-imgplot = plt.imshow(picAll, cmap="binary") 
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
 plt.show()
+
+
+
+

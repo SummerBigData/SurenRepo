@@ -25,7 +25,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 500 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 5000 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -282,7 +282,7 @@ bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('neuralThetas500MNIST.out', bestThetas, delimiter=',')
+np.savetxt('neuralThetas5000MNIST.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

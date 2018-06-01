@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u neuTrainerMNIST.py >& output.log
+python -u neuTrainerMNIST500.py >& output.log

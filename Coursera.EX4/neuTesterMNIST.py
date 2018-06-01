@@ -139,8 +139,8 @@ datx, daty = randData(datx, daty)
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')	
 
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('neuralThetas50MNIST.out', dtype=float)
-
+bestThetas = np.genfromtxt('neuralThetas500MNIST.out', dtype=float)
+print bestThetas.shape
 # Seperate and reform the theta matrices
 bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
 

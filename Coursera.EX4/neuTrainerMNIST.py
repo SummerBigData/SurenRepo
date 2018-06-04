@@ -91,6 +91,11 @@ def RegJCost(thetaAll, xArr, yArr):
 	J = J + (0.5 * g('lamb')/g('n'))*(   np.sum(theta1**2) - np.sum(column(theta1, 0)**2) + 
 		np.sum(theta2**2) - np.sum(column(theta2, 0)**2) )
 
+	global gStep
+	if gStep % 200 == 0:
+		print 'Saving Global Step : ', gStep
+		np.savetxt('thetaArrs/theta50kMNIST-3.out', thetaAll, delimiter=',')
+
 	#end = time.time()
 	#print('RegJCost', end - start)
 	return J
@@ -283,7 +288,7 @@ bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('thetaArrs/theta50MNIST-3.out', bestThetas, delimiter=',')
+np.savetxt('thetaArrs/theta50kMNIST-3.out', bestThetas, delimiter=',')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

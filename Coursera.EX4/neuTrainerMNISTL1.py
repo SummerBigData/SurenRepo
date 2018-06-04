@@ -25,17 +25,17 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 30000 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 30000	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
 		return 36
 	if char == 'lamb':	# the 'overfitting knob'
-		return 40
+		return 1.0
 	if char == 'eps':	# used for generating random theta matrices
 		return 0.12
 	if char == 'saveThetas':
-		np.savetxt('thetaArrs/theta30kMNIST-3L40.out', thetaAll, delimiter=',')
+		np.savetxt('thetaArrs/theta300MNIST-3L1.out', thetaAll, delimiter=',')
 
 # Read the MNIST dataset
 def read_idx(filename, n=None):

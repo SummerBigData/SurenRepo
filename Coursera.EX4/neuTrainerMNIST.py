@@ -25,7 +25,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 50000 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 300 	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -34,7 +34,8 @@ def g(char):
 		return 1
 	if char == 'eps':	# used for generating random theta matrices
 		return 0.12
-
+	if char == 'saveThetas':
+		np.savetxt('thetaArrs/theta300MNIST-3L1.out', thetaAll, delimiter=',')
 
 # Read the MNIST dataset
 def read_idx(filename, n=None):
@@ -94,7 +95,7 @@ def RegJCost(thetaAll, xArr, yArr):
 	global gStep
 	if gStep % 200 == 0:
 		print 'Saving Global Step : ', gStep
-		np.savetxt('thetaArrs/theta50kMNIST-3.out', thetaAll, delimiter=',')
+		g('saveThetas')
 
 	#end = time.time()
 	#print('RegJCost', end - start)
@@ -288,7 +289,7 @@ bestThetas = res.x
 
 print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-np.savetxt('thetaArrs/theta50kMNIST-3.out', bestThetas, delimiter=',')
+g('saveThetas')
 
 # Stop the timestamp and print out the total time
 totend = time.time()

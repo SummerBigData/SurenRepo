@@ -140,12 +140,12 @@ datx, daty = randData(datx, daty)
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')	
 
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('thetaArrs/theta5000MNIST-3.out', dtype=float)
+bestThetas = np.genfromtxt('thetaArrs/theta300MNIST-3.out', dtype=float)
 print bestThetas.shape
 
 # Seperate and reform the theta matrices
 bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
-
+print bestTheta1.shape, bestTheta2.shape
 
 
 # FORWARD PROPAGATE AND CALCULATE BEST GUESSES
@@ -193,41 +193,41 @@ print 'Total percent correct:', np.mean(numPercent)
 
 
 
-# PLOT HIDDEN LAYER
-# Generate an image. The image is inverted for some reason, so we transpose the matrix first
-# We are plotting the first ten instances of each number in the data
-a1 = hypothesis(bestTheta1, xArr)
-a1t = a1.T
+## PLOT HIDDEN LAYER
+## Generate an image. The image is inverted for some reason, so we transpose the matrix first
+## We are plotting the first ten instances of each number in the data
+#a1 = hypothesis(bestTheta1, xArr)
+#a1t = a1.T
 
-f = g('n')/10
-s = int(np.sqrt(g('f2')))
-picAll = [ [0 for i in range(19*s)] for j in range(5)]
+#f = g('n')/10
+#s = int(np.sqrt(g('f2')))
+#picAll = [ [0 for i in range(19*s)] for j in range(5)]
 
-for k in range(10):
-	pic0 = a1t[0+f*k].reshape((s,s))
-	pic1 = a1t[1+f*k].reshape((s,s))
-	pic2 = a1t[2+f*k].reshape((s,s))
-	pic3 = a1t[3+f*k].reshape((s,s))
-	pic4 = a1t[4+f*k].reshape((s,s))
-	pic5 = a1t[5+f*k].reshape((s,s))
-	pic6 = a1t[6+f*k].reshape((s,s))
-	pic7 = a1t[7+f*k].reshape((s,s))
-	pic8 = a1t[8+f*k].reshape((s,s))
-	pic9 = a1t[9+f*k].reshape((s,s))
-	space = np.asarray([ [0 for i in range(s)] for j in range(s)])
+#for k in range(10):
+#	pic0 = a1t[0+f*k].reshape((s,s))
+#	pic1 = a1t[1+f*k].reshape((s,s))
+#	pic2 = a1t[2+f*k].reshape((s,s))
+#	pic3 = a1t[3+f*k].reshape((s,s))
+#	pic4 = a1t[4+f*k].reshape((s,s))
+#	pic5 = a1t[5+f*k].reshape((s,s))
+#	pic6 = a1t[6+f*k].reshape((s,s))
+#	pic7 = a1t[7+f*k].reshape((s,s))
+#	pic8 = a1t[8+f*k].reshape((s,s))
+#	pic9 = a1t[9+f*k].reshape((s,s))
+#	space = np.asarray([ [0 for i in range(s)] for j in range(s)])
 
-	# Stitch these all together into one picture
-	picRow = np.concatenate((pic0, space, pic1, space, pic2, space, pic3, space, pic4, space, pic5, space, pic6, space, pic7, space, pic8, space, pic9), axis = 1)
-	
-	emptyRow = [[0 for i in range(19*s)] for j in range(s)]
-	
-	picAll = np.concatenate((picAll, picRow, emptyRow), axis = 0)
+#	# Stitch these all together into one picture
+#	picRow = np.concatenate((pic0, space, pic1, space, pic2, space, pic3, space, pic4, space, pic5, space, pic6, space, pic7, space, pic8, space, pic9), axis = 1)
+#	
+#	emptyRow = [[0 for i in range(19*s)] for j in range(s)]
+#	
+#	picAll = np.concatenate((picAll, picRow, emptyRow), axis = 0)
 
-# 'binary' for black on white, 'gray' for white on black. 
-# See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
+## 'binary' for black on white, 'gray' for white on black. 
+## See https://matplotlib.org/examples/color/colormaps_reference.html for more color options
 
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.show()
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.show()
 
 
 

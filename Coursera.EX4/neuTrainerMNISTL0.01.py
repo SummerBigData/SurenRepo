@@ -31,11 +31,11 @@ def g(char):
 	if char == 'f2':	# number of features (hidden layer)
 		return 36
 	if char == 'lamb':	# the 'overfitting knob'
-		return 10
+		return 0.01
 	if char == 'eps':	# used for generating random theta matrices
 		return 0.12
 	if char == 'saveThetas':
-		np.savetxt('thetaArrs/theta30kMNIST-3L10.out', thetaAll, delimiter=',')
+		np.savetxt('thetaArrs/theta300MNIST-3L0.01.out', thetaAll, delimiter=',')
 
 # Read the MNIST dataset
 def read_idx(filename, n=None):

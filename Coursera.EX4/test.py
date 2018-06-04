@@ -55,7 +55,6 @@ print yarr
 hypo = np.asarray([[i+8*j for i in range(10)] for j in range(30)])
 print hypo
 
-
-x, y = trunc(hypo, yarr, 'last')
-print x
-print y
+arr = np.array([1,2,3,4,5,3,2,5,2])
+arr1 = np.array([1,2,3,4,5,6,7,8,9])
+print arr, sum(arr*arr1) / sum(arr)

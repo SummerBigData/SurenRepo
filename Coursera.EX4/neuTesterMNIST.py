@@ -140,7 +140,7 @@ datx, daty = randData(datx, daty)
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')	
 
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('thetaArrs/theta300MNIST-3.out', dtype=float)
+bestThetas = np.genfromtxt('thetaArrs/theta50kMNIST-3.out', dtype=float)
 print bestThetas.shape
 
 # Seperate and reform the theta matrices

@@ -25,7 +25,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 500	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 100	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -230,44 +230,42 @@ def normImg(datx):
 	index = np.zeros((s))
 	for i in range(s):
 		index[i] = i + 1
-# 	This is for identifying the middle of each number. Unnecessary, since only three numbers were off center
-#	for i in range(g('n')):
-#		vmean = np.mean(np.reshape(datx[i], (s,s)), axis=0)
-#		hmean = np.mean(np.reshape(datx[i], (s,s)), axis=1)
-#		hcenter = round(sum(vmean*index) / sum(vmean) -1, 0)
-#		vcenter = round(sum(hmean*index) / sum(hmean) -1, 0)
-#		if hcenter != 14 or vcenter != 14:
-#			print 'yes, ', i, hcenter, vcenter
+	# Calculate the rotated matrix for all data points. First, initialize it
+	rotmat = np.zeros((g('n'), g('f1')))
 
-
-
-	mat3=np.reshape(datx[4], (s,s))
-	hcenter = np.zeros((s))
-	for i in range(s):
-		# Handle the zero case seperately, due to divide by zero. The value here doesn't matter, since the weight will kill it
-		if sum(mat3[i]) == 0:
-			hcenter[i] = -1
-		# Calculate and store the center of each column
-		else:
-			hcenter[i] = sum(mat3[i]*index) / sum(mat3[i])
-
-	weights = np.zeros((s))
-	for i in range(s):
-		if hcenter[i] < 0:
-			weights[i] = 0
-		else:
-			weights[i] = 1
-	print hcenter, weights
+	for i in range(g('n')):
+		# Convert it back to a matrix
+		mat = np.reshape(datx[i], (s,s))
+		hcenter = np.zeros((s))
+		# We need the horizontal centers for each row
+		for j in range(s):
+			# Handle the zero case seperately, due to divide by zero. The value here doesn't matter, since the weight will kill it
+			if sum(mat[j]) == 0:
+				hcenter[j] = -1
+			# Calculate and store the center of each column
+			else:
+				hcenter[j] = sum(mat[j]*index)/ (sum(mat[j])+0.0)
+		# We don't want to include the zero cases, so form a weights matrix to record them
+		weights = np.zeros((s))
+		for j in range(s):
+			if hcenter[j] < 0:
+				weights[j] = 0
+			else:
+				weights[j] = 1
+		print hcenter
+		# Calculate the line of best fit for all of the horizontal centers
+		c = P.polyfit(index,hcenter,1,full=False, w=weights)
+		# Here's some tools to visualize the process
+		print c[0], c[1], atan(c[1])*180.0/pi
+#		bestfit = c[0] + c[1]*index
+#		plt.plot(hcenter,'green', bestfit, 'red')
+#		plt.show()
+		# Rotate, unravel, and record the matrix
 	
-	c = P.polyfit(index,hcenter,1,full=False, w=weights)
-	print c[0], c[1], atan(c[1])*180.0/pi
-	bestfit = c[0] + c[1]*index
-	plt.plot(hcenter,'green', bestfit, 'red')
-	plt.show()
-
-	rotmat3 = rotate(mat3, - atan(c[1])*180.0/pi, reshape=False)
-	return rotmat3
-
+		rotmat[i] = np.ravel(rotate(mat, -1*atan(c[1])*180.0/pi, reshape=False)).reshape(1, g('f1'))
+	
+	
+	return rotmat
 
 
 
@@ -301,22 +299,34 @@ theta2 = randTheta(10, g('f2')+1)
 # Reshape and splice theta1, theta2
 thetaAll = Lin(theta1, theta2)
 
-mat3 = normImg(datx)
+datX = normImg(datx)
 
 #Show a random set of numbers in the dataset. Go up and include plt
-pic0 = np.reshape(datx[0], (28,28))
-pic1 = np.reshape(datx[1], (28,28))
-pic2 = np.reshape(datx[2], (28,28))
-pic3 = np.reshape(datx[3], (28,28))
-pic4 = np.reshape(datx[4], (28,28))
-pic5 = np.reshape(datx[5], (28,28))
-pic6 = np.reshape(datx[6], (28,28))
-pic7 = np.reshape(datx[7], (28,28))
-pic8 = np.reshape(datx[8], (28,28))
-pic9 = np.reshape(datx[9], (28,28))
+pic0 = np.reshape(datx[10], (28,28))
+pic1 = np.reshape(datx[11], (28,28))
+pic2 = np.reshape(datx[12], (28,28))
+pic3 = np.reshape(datx[13], (28,28))
+pic4 = np.reshape(datx[14], (28,28))
+pic5 = np.reshape(datx[15], (28,28))
+pic6 = np.reshape(datx[16], (28,28))
+pic7 = np.reshape(datx[17], (28,28))
+pic8 = np.reshape(datx[18], (28,28))
+pic9 = np.reshape(datx[19], (28,28))
 
+pic0f = np.reshape(datX[10], (28,28))
+pic1f = np.reshape(datX[11], (28,28))
+pic2f = np.reshape(datX[12], (28,28))
+pic3f = np.reshape(datX[13], (28,28))
+pic4f = np.reshape(datX[14], (28,28))
+pic5f = np.reshape(datX[15], (28,28))
+pic6f = np.reshape(datX[16], (28,28))
+pic7f = np.reshape(datX[17], (28,28))
+pic8f = np.reshape(datX[18], (28,28))
+pic9f = np.reshape(datX[19], (28,28))
 # Stitch these all together into one picture
-picAll = np.concatenate((rotate(pic4, 90, reshape=False), rotate(mat3, 90, reshape=False)), axis = 1)
+picAll1 = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
+picAll2 = np.concatenate((pic0f, pic1f, pic2f, pic3f, pic4f, pic5f, pic6f, pic7f, pic8f, pic9f), axis = 1)
+picAll = np.vstack((picAll1, picAll2))
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
 plt.show()
 

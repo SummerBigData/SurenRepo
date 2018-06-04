@@ -1,5 +1,5 @@
-#PBS -N CalcThetasMNIST5k
-#PBS -l walltime=180:00
+#PBS -N CalcThetasMNIST30k0.1
+#PBS -l walltime=240:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u neuTrainerMNISTL0.1.py >& output.log
+python -u neuTrainerMNIST.py 30000 784 36 0.1 0.12 -4 false >& output.log

@@ -12,6 +12,10 @@ from math import exp, log
 import scipy.io
 import struct as st
 import gzip
+# For imgNorm
+from numpy.polynomial import polynomial as P
+from scipy.ndimage import rotate
+from math import atan, pi
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
@@ -120,6 +124,48 @@ def randData(xvals, yvals):
 	yVals = np.ravel(yVals.astype(int))
 	return xVals, yVals
 
+def normImg(datx):
+	# Get the size of the picture matrices
+	s = int(np.sqrt(g('f1')))
+	# Create an array of numbers [1,2,3,4,...] to use for average position computation
+	index = np.zeros((s))
+	for i in range(s):
+		index[i] = i + 1
+	# Calculate the rotated matrix for all data points. First, initialize it
+	rotmat = np.zeros((g('n'), g('f1')))
+
+	for i in range(g('n')):
+		# Convert it back to a matrix
+		mat = np.reshape(datx[i], (s,s))
+		hcenter = np.zeros((s))
+		# We need the horizontal centers for each row
+		for j in range(s):
+			# Handle the zero case seperately, due to divide by zero. The value here doesn't matter, since the weight will kill it
+			if sum(mat[j]) == 0:
+				hcenter[j] = -1
+			# Calculate and store the center of each column
+			else:
+				hcenter[j] = sum(mat[j]*index)/ (sum(mat[j])+0.0)
+		# We don't want to include the zero cases, so form a weights matrix to record them
+		weights = np.zeros((s))
+		for j in range(s):
+			if hcenter[j] < 0:
+				weights[j] = 0
+			else:
+				weights[j] = 1
+#		print hcenter
+		# Calculate the line of best fit for all of the horizontal centers
+		c = P.polyfit(index,hcenter,1,full=False, w=weights)
+		# Here's some tools to visualize the process
+#		print c[0], c[1], atan(c[1])*180.0/pi
+#		bestfit = c[0] + c[1]*index
+#		plt.plot(hcenter,'green', bestfit, 'red')
+#		plt.show()
+		# Rotate, unravel, and record the matrix
+	
+		rotmat[i] = np.ravel(rotate(mat, -1*atan(c[1])*180.0/pi, reshape=False)).reshape(1, g('f1'))
+	return rotmat
+
 
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
@@ -132,6 +178,10 @@ datx = read_idx('data/t10k-images-idx3-ubyte.gz', g('n'))
 daty = read_idx('data/t10k-labels-idx1-ubyte.gz', g('n'))
 
 datx = np.ravel(datx).reshape((g('n'), g('f1')))
+#datx = normImg(datx)
+#print datx.shape
+#imgplot = plt.imshow(datx[1].reshape(28,28), cmap="binary", interpolation='none') 
+#plt.show()
 
 # Reorder the data randomly
 datx, daty = randData(datx, daty)
@@ -140,7 +190,10 @@ datx, daty = randData(datx, daty)
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')	
 
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('thetaArrs/theta50kMNIST-3.out', dtype=float)
+#bestThetas = np.genfromtxt('thetaArrs/theta50kMNIST-3.out', dtype=float)
+bestThetas = np.genfromtxt("thetaArrs/theta300MNIST-4Lamb1.0.out", dtype=float)
+#bestThetas = np.genfromtxt('thetaArrs/theta5000MNIST-3.out', dtype=float)
+
 print bestThetas.shape
 
 # Seperate and reform the theta matrices

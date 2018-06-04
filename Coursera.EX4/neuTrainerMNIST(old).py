@@ -5,16 +5,16 @@
 
 # Import the modules
 import numpy as np
-from math import exp, log, atan, pi
+from math import exp, log
 from scipy.optimize import minimize
 import scipy.io
 import time
 import struct as st
 import gzip
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from scipy.optimize import check_grad
-from numpy.polynomial import polynomial as P
-from scipy.ndimage import rotate
+
+
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
@@ -25,7 +25,7 @@ gStep = 0
 # These are the global constants used in the code
 def g(char):
 	if char == 'n':		# number of data points (number of 'number' pictures)
-		return 100	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
+		return 1000	# CHANGE THIS TO ADJUST TRAINING SET SIZE (up to 60,000)
 	if char == 'f1':	# number of features (pixels)
 		return 784
 	if char == 'f2':	# number of features (hidden layer)
@@ -34,6 +34,10 @@ def g(char):
 		return 1
 	if char == 'eps':	# used for generating random theta matrices
 		return 0.12
+
+# Save an instance of theta values
+def saveTheta(theta):
+	np.savetxt('thetaArrs/thetaNorm300MNIST-3L1.out', theta, delimiter=',')
 
 
 # Read the MNIST dataset
@@ -91,11 +95,6 @@ def RegJCost(thetaAll, xArr, yArr):
 	J = J + (0.5 * g('lamb')/g('n'))*(   np.sum(theta1**2) - np.sum(column(theta1, 0)**2) + 
 		np.sum(theta2**2) - np.sum(column(theta2, 0)**2) )
 
-	global gStep
-	if gStep % 200 == 0:
-		print 'Saving Global Step : ', gStep
-		np.savetxt('thetaArrs/theta50kMNIST-3.out', thetaAll, delimiter=',')
-
 	#end = time.time()
 	#print('RegJCost', end - start)
 	return J
@@ -119,6 +118,9 @@ def BackProp(thetaAll, xArr, yArr):
 	gStep += 1
 	if gStep % 50 == 0:
 		print 'Global Step: ', gStep
+	if gStep % 200 == 0:
+		print 'Saving Global Step : ', gStep
+		saveTheta(thetaAll)
 
 	#print 'BackProp iter. Theta[0] = ', thetaAll[0]
 	#start = time.time()
@@ -223,52 +225,6 @@ def randData(xvals, yvals):
 
 
 
-def normImg(datx):
-	# Get the size of the picture matrices
-	s = int(np.sqrt(g('f1')))
-	# Create an array of numbers [1,2,3,4,...] to use for average position computation
-	index = np.zeros((s))
-	for i in range(s):
-		index[i] = i + 1
-	# Calculate the rotated matrix for all data points. First, initialize it
-	rotmat = np.zeros((g('n'), g('f1')))
-
-	for i in range(g('n')):
-		# Convert it back to a matrix
-		mat = np.reshape(datx[i], (s,s))
-		hcenter = np.zeros((s))
-		# We need the horizontal centers for each row
-		for j in range(s):
-			# Handle the zero case seperately, due to divide by zero. The value here doesn't matter, since the weight will kill it
-			if sum(mat[j]) == 0:
-				hcenter[j] = -1
-			# Calculate and store the center of each column
-			else:
-				hcenter[j] = sum(mat[j]*index)/ (sum(mat[j])+0.0)
-		# We don't want to include the zero cases, so form a weights matrix to record them
-		weights = np.zeros((s))
-		for j in range(s):
-			if hcenter[j] < 0:
-				weights[j] = 0
-			else:
-				weights[j] = 1
-		print hcenter
-		# Calculate the line of best fit for all of the horizontal centers
-		c = P.polyfit(index,hcenter,1,full=False, w=weights)
-		# Here's some tools to visualize the process
-		print c[0], c[1], atan(c[1])*180.0/pi
-#		bestfit = c[0] + c[1]*index
-#		plt.plot(hcenter,'green', bestfit, 'red')
-#		plt.show()
-		# Rotate, unravel, and record the matrix
-	
-		rotmat[i] = np.ravel(rotate(mat, -1*atan(c[1])*180.0/pi, reshape=False)).reshape(1, g('f1'))
-	
-	
-	return rotmat
-
-
-
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
@@ -299,58 +255,44 @@ theta2 = randTheta(10, g('f2')+1)
 # Reshape and splice theta1, theta2
 thetaAll = Lin(theta1, theta2)
 
-datX = normImg(datx)
+
 
 #Show a random set of numbers in the dataset. Go up and include plt
-pic0 = np.reshape(datx[10], (28,28))
-pic1 = np.reshape(datx[11], (28,28))
-pic2 = np.reshape(datx[12], (28,28))
-pic3 = np.reshape(datx[13], (28,28))
-pic4 = np.reshape(datx[14], (28,28))
-pic5 = np.reshape(datx[15], (28,28))
-pic6 = np.reshape(datx[16], (28,28))
-pic7 = np.reshape(datx[17], (28,28))
-pic8 = np.reshape(datx[18], (28,28))
-pic9 = np.reshape(datx[19], (28,28))
-
-pic0f = np.reshape(datX[10], (28,28))
-pic1f = np.reshape(datX[11], (28,28))
-pic2f = np.reshape(datX[12], (28,28))
-pic3f = np.reshape(datX[13], (28,28))
-pic4f = np.reshape(datX[14], (28,28))
-pic5f = np.reshape(datX[15], (28,28))
-pic6f = np.reshape(datX[16], (28,28))
-pic7f = np.reshape(datX[17], (28,28))
-pic8f = np.reshape(datX[18], (28,28))
-pic9f = np.reshape(datX[19], (28,28))
-# Stitch these all together into one picture
-picAll1 = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
-picAll2 = np.concatenate((pic0f, pic1f, pic2f, pic3f, pic4f, pic5f, pic6f, pic7f, pic8f, pic9f), axis = 1)
-picAll = np.vstack((picAll1, picAll2))
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.show()
+#pic0 = np.reshape(datx[0], (28,28))
+#pic1 = np.reshape(datx[1], (28,28))
+#pic2 = np.reshape(datx[2], (28,28))
+#pic3 = np.reshape(datx[3], (28,28))
+#pic4 = np.reshape(datx[4], (28,28))
+#pic5 = np.reshape(datx[5], (28,28))
+#pic6 = np.reshape(datx[6], (28,28))
+#pic7 = np.reshape(datx[7], (28,28))
+#pic8 = np.reshape(datx[8], (28,28))
+#pic9 = np.reshape(datx[9], (28,28))
+## Stitch these all together into one picture
+#picAll = np.concatenate((pic0, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9), axis = 1)
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.show()
 
 
 
+# MINIMIZING THETAS
+# Check the cost of the initial theta matrices
+print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
 
-## MINIMIZING THETAS
-## Check the cost of the initial theta matrices
-#print 'Initial Theta JCost: ', RegJCost(thetaAll, xArr, yArr)  # Outputting 10.537, not 0.38377 for their theta matrices
+# Check the gradient function. ~1.0405573537e-05 for randomized thetas
+# print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
 
-## Check the gradient function. ~1.0405573537e-05 for randomized thetas
-## print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4
+res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-3, jac=BackProp, args=(xArr, yArr))
+bestThetas = res.x
 
-## Calculate the best theta values for a given j and store them. Usually tol=10e-4
-#res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10e-3, jac=BackProp, args=(xArr, yArr))
-#bestThetas = res.x
+print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
 
-#print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
+saveTheta(bestThetas)
 
-#np.savetxt('thetaArrs/theta50kMNIST-3.out', bestThetas, delimiter=',')
-
-## Stop the timestamp and print out the total time
-#totend = time.time()
-#print'neuTrainerMNIST.py took ', totend - totStart, 'seconds to run'
+# Stop the timestamp and print out the total time
+totend = time.time()
+print'neuTrainerMNIST.py took ', totend - totStart, 'seconds to run'
 
 
 

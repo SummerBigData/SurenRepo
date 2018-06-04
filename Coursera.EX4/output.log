@@ -1,14 +1,14 @@
-(30000, 28, 28) (30000,)
-(30000, 784)
+(300, 28, 28) (300,)
+(300, 784)
 Initial Theta JCost:  Saving Global Step :  0
-6.814093663589606
+7.072281927006952
 Global Step:  50
-GGlobal Step:  100GGlobal Step:  150GGlobal Step:  200
+Global Step:  100
+Global Step:  150
+Global Step:  200
 Saving Global Step :  200
 Global Step:  250
 Global Step:  300
 Global Step:  350
-.8505681793184716
-neuTrainerMNIST.py took  6917.50960898 seconds to run
- JCost 0.9846765016295683
-neuTrainerMNIST.py took  10656.9639878 seconds to run
+Final Theta JCost 2.0555613607457013
+neuTrainerMNIST.py took  97.4923000336 seconds to run

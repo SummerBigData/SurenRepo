@@ -1,31 +1,83 @@
-You have chosen: Namespace(eps=0.12, f1=784, f2=36, lamb=0.01, n=30000, normImg=True, tolexp=-4)
-Will be saved in:  thetaArrs/theta30000MNIST-4Lamb0.01.out
-Initial Theta JCost:  7.474448300152663
-neuTrainerMNIST.py:68: RuntimeWarning: overflow encountered iGlobal Step:  200
+You have chosen: Namespace(eps=0.12, f1=784, f2=36, lamb=10.0, n=30000, normImg=True, tolexp=-4)
+Will be saved in:  thetaArrs/theta30000MNIST-4Lamb10.0NorTrue.out
+Initial Theta JCost:  6.925743161695995
+Global Step:  5Global Step:  100
+Global Step:  150
+Global Step:  200
 Saving Global Step :  200
-Traceback (most recent call last):
-  File "neuTrainerMNIST.py", line 370, in <module>
-    res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10**g.tolexp, jac=BackProp, args=(xArr, yArr))
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/_minimize.py", line 417, in minimize
-    return _minimize_cg(fun, x0, args, jac, callback, **options)
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/optimize.py", line 1156, in _minimize_cg
-    old_old_fval, c2=0.4)
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/optimize.py", line 685, in _line_search_wolfe12
-    **kwargs)
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/linesearch.py", line 96, in line_search_wolfe1
-    c1=c1, c2=c2, amax=amax, amin=amin, xtol=xtol)
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/linesearch.py", line 168, in scalar_search_wolfe1
-    derphi1 = derphi(stp)
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/linesearch.py", line 85, in derphi
-    gval[0] = fprime(xk + s*pk, *newargs)
-  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/optimize.py", line 281, in function_wrapper
-    return function(*(wrapper_args + args))
-  File "neuTrainerMNIST.py", line 127, in BackProp
-    saveTheta(thetaAll)
-  File "neuTrainerMNIST.py", line 50, in saveTheta
-    np.savetxt(saveStr, theta, delimiter=',')
-  File "/users/PAS1383/osu10171/.local/lib/python2.7/site-packages/numpy/lib/npyio.py", line 1307, in savetxt
-    open(fname, 'wt').close()
-IOError: [Errno 2] No such file or directory: 'thetaArrs/theta30000MNIST-4Lamb10.0NorTrue.out'
-()
-IOError: [Errno 2] No such file or directory: 'thetaArrs/theta30000MNIST-4Lamb0.01.out'
+Global Step:  250
+Global Step:  300
+Global Step:  350
+Global Step:  400
+Saving Global Step :  400
+Global Step:  450
+Global Step:  500
+GlGlobal Step:  55GlGlobal Step:  600
+Saving Global Step :  60GlGlobal Step:  650
+Global Step:  700
+al Step:  750
+Global Step:  800
+Saving Global Step :  800
+Global Step:  850
+Global Step:  900
+Global Step:  950
+Global Step:  1000
+Saving Global Step :  1000
+Global Step:  1050
+Global Step:  1100
+Global Step:  1150
+Global Step:  1200
+Saving Global Step :  1200
+Global Step:  1250
+Global Step:  1300
+Global Step:  1350
+Global Step:  1400
+Saving Global Step :  1400
+Global Step:  1450
+Global Step:  1500
+Global Step:  1550
+Global Step:  1600
+Saving Global Step :  1600
+Global Step:  1650
+Global Step:  1700
+Global Step:  1750
+Global Step:  1800
+Saving Global Step :  1800
+Global Step:  1850
+Global Step:  1900
+Global Step:  1950
+Global Step:  2000
+Saving Global Step :  2000
+Global Step:  2050
+Global Step:  2100
+Global Step:  2150
+Global Step:  2200
+Saving Global Step :  2200
+Global Step:  2250
+Global Step:  2300
+Global Step:  2350
+Global Step:  2400
+Saving Global Step :  2400
+Global Step:  2450
+Global Step:  2500
+Global Step:  2550
+Global Step:  2600
+Saving Global Step :  2600
+Global Step:  2650
+Global Step:  2700
+Global Step:  2750
+Global Step:  2800
+Saving Global Step :  2800
+Global Step:  2850
+Global Step:  2900
+Global Step:  2950
+Global Step:  3000
+Saving Global Step :  3000
+Global Step:  3050
+Global Step:  3100
+Global Step:  3150
+Global Step:  3200
+Saving Global Step :  3200
+Global Step:  3250
+Global Step:  3300
+Global Step:  3350

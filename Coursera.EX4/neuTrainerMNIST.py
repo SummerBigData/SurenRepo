@@ -35,7 +35,7 @@ parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, e
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
 parser.add_argument("normImg", help="Choose whether or not to straighten the images", type=bool)
 g = parser.parse_args()
-saveStr = 'thetaArrs/theta' + str(g.n)+ 'MNIST'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
+saveStr = 'thetaArrs/theta' + str(g.n)+ 'MNIST'+str(g.tolexp)+'Lamb'+str(g.lamb)+'Nor'+str(g.normImg)+'.out'
 gStep = 0
 
 print 'You have chosen:', g

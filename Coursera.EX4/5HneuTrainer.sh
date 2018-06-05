@@ -1,5 +1,5 @@
 #PBS -N CalcThetasMNIST5k
-#PBS -l walltime=200:00
+#PBS -l walltime=320:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe

@@ -33,13 +33,16 @@ parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
 parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
-parser.add_argument("normImg", help="Choose whether or not to straighten the images", type=bool)
+parser.add_argument("normimg", help="Choose whether or not to straighten the images", type=str)
 g = parser.parse_args()
-saveStr = 'thetaArrs/theta' + str(g.n)+ 'MNIST'+str(g.tolexp)+'Lamb'+str(g.lamb)+'Nor'+str(g.normImg)+'.out'
+saveStr = 'thetaArrs/theta' + str(g.n)+ 'MNIST'+str(g.tolexp)+'Lamb'+str(g.lamb)+'Nor'+g.normimg+'.out'
 gStep = 0
 
 print 'You have chosen:', g
 print 'Will be saved in: ', saveStr
+print ' '
+
+
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
@@ -292,7 +295,7 @@ daty = read_idx('data/train-labels-idx1-ubyte.gz', g.n)
 datx = np.ravel(datx).reshape((g.n, g.f1))
 
 # Straighten the images if desired:
-if normImg == True:
+if g.normimg == 'true':
 	datx = normImg(datx)
 
 ##Show a random set of numbers in the dataset. Go up and include plt

@@ -1,7 +1,8 @@
-You have chosen: Namespace(eps=0.12, f1=784, f2=36, lamb=10.0, n=30000, normImg=True, tolexp=-4)
-Will be saved in:  thetaArrs/theta30000MNIST-4Lamb10.0NorTrue.out
-Initial Theta JCost:  6.925743161695995
-Global Step:  5Global Step:  100
+You have chosen: Namespace(eps=0.12, f1=784, f2=36, lamb=0.01, n=30000, normimg='false', tolexp=-4)
+Will be saved in:  thetaArrs/theta30000MNIST-4Lamb0.01Norfalse.out
+ 
+Initial Theta JCost:  6.61716861909490Global Step:  50
+Global Step:  100
 Global Step:  150
 Global Step:  200
 Saving Global Step :  200
@@ -12,21 +13,24 @@ Global Step:  400
 Saving Global Step :  400
 Global Step:  450
 Global Step:  500
-GlGlobal Step:  55GlGlobal Step:  600
-Saving Global Step :  60GlGlobal Step:  650
+Global Step:  550
+Global Step:  600
+Saving Global Step :  600
+Global Step:  650
 Global Step:  700
-al Step:  750
+Global Step:  750
+Global Step:  800
+Saving Global Step :  800
+Global Step:  850
+GlGlobal Step:  900
+p:  700
+Global Step:  750
 Global Step:  800
 Saving Global Step :  800
 Global Step:  850
 Global Step:  900
 Global Step:  950
-Global Step:  1000
-Saving Global Step :  1000
-Global Step:  1050
-Global Step:  1100
-Global Step:  1150
-Global Step:  1200
+Step:  1200
 Saving Global Step :  1200
 Global Step:  1250
 Global Step:  1300
@@ -81,3 +85,56 @@ Saving Global Step :  3200
 Global Step:  3250
 Global Step:  3300
 Global Step:  3350
+Global Step:  3400
+Saving Global Step :  3400
+Global Step:  3450
+Global Step:  3500
+Global Step:  3550
+Global Step:  3600
+Saving Global Step :  3600
+Global Step:  3650
+Global Step:  3700
+Global Step:  3750
+Global Step:  3800
+Saving Global Step :  3800
+Global Step:  3850
+Global Step:  3900
+Global Step:  3950
+Global Step:  4000
+Saving Global Step :  4000
+Global Step:  4050
+Global Step:  4100
+Global Step:  4150
+Global Step:  4200
+Saving Global Step :  4200
+Global Step:  4250
+Global Step:  4300
+Global Step:  4350
+Global Step:  4400
+Saving Global Step :  4400
+Global Step:  4450
+Global Step:  4500
+Global Step:  4550
+Global Step:  4600
+Saving Global Step :  4600
+Global Step:  4650
+Global Step:  4700
+Global Step:  4750
+Global Step:  4800
+Saving Global Step :  4800
+Global Step:  4850
+Global Step:  4900
+Global Step:  4950
+Global Step:  5000
+Saving Global Step :  5000
+Global Step:  5050
+Global Step:  5100
+Global Step:  5150
+Global Step:  5200
+Saving Global Step :  5200
+Global Step:  5250
+Global Step:  5300
+Global Step:  5350
+Global Step:  5400
+Saving Global Step :  5400
+Global Step:  5450

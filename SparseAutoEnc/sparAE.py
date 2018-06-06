@@ -12,8 +12,7 @@ import time
 import argparse
 import matplotlib.pyplot as plt
 #from scipy.optimize import check_grad
-from random import randint
-
+#from random import randint
 import randpicGen
 
 
@@ -38,9 +37,9 @@ gStep = 0
 g.eps = 0.12
 g.f1 = 64
 g.f2 = 25
-g.rho = 0.05
+g.rho = 0.01
 
-saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'fone'+str(g.f1)+'ftwo'+str(g.f2)+'.out'
+saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'fone'+str(g.f1)+'ftwo'+str(g.f2)+'rand'+g.randData+'.out'
 
 
 print 'You have chosen:', g
@@ -52,7 +51,7 @@ print ' '
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
 
-# Save the the
+# Save the WAll values
 def saveW(vec):
 	np.savetxt(saveStr, vec, delimiter=',')
 
@@ -63,9 +62,9 @@ def randMat(x, y):
 	return theta*2*g.eps - g.eps	# Make it range [-eps, eps]
 
 
-# Linearize: Take 2 matrices, unroll them, and stitch them together into a vector
-def Lin2(a, b):
-	return np.concatenate((np.ravel(a), np.ravel(b)))
+## Linearize: Take 2 matrices, unroll them, and stitch them together into a vector
+#def Lin2(a, b):
+#	return np.concatenate((np.ravel(a), np.ravel(b)))
 # Linearize: Take 4 matrices, unroll them, and stitch them together into a vector
 def Lin4(a, b, c, d):
 	return np.concatenate((np.ravel(a), np.ravel(b), np.ravel(c), np.ravel(d)))
@@ -106,10 +105,66 @@ def RegJCost(WAll, a1):
 	phat = (1.0 / g.m)*np.sum(a2, axis=0) # 25 len vector
 	# Calculate J(W, b)
 	J = (0.5/g.m)*np.sum((a3 - a1)**2)
-	J = J + 0.5 * g.lamb * (np.sum(W1**2)+np.sum(W2**2))
+	J = J + (0.5/g.m)*g.lamb * (np.sum(W1**2)+np.sum(W2**2))
 	J = J + g.beta * np.sum(   g.rho*np.log(g.rho / phat) + (1-g.rho)*np.log((1-g.rho)/(1-phat))  )
-
 	return J
+
+# Calculate the gradient of cost function for all values of W1, W2, b1, and b2
+def BackProp(WAll, a1):
+	# To keep track of how many times this code is called
+	global gStep
+	gStep += 1
+	if gStep % 50 == 0:
+		print 'Global Step: ', gStep, 'with JCost: ',  RegJCost(WAll, a1)
+	if gStep % 200 == 0:
+		print 'Saving Global Step : ', gStep
+		saveW(WAll)
+	# Seperate and reshape the W and b values
+	W1, W2, b1, b2 = unLinWAll(WAll)
+	# Forward Propagate
+	a2, a3 = ForwardProp(WAll, a1)	# a2 (g.m x 25), a3 (g.m x 64)
+	# Creating (Capital) Delta matrices
+	DeltaW1 = np.zeros(W1.shape)			# (g.f2, g.f1)
+	DeltaW2 = np.zeros(W2.shape)			# (g.f1, g.f2)
+	Deltab1 = np.zeros(b1.shape)			# (g.f2, 1)
+	Deltab2 = np.zeros(b2.shape)			# (g.f1, 1)
+	# Calculate (Lowercase) deltas for each element in the dataset and add it's contributions to the Deltas
+
+	delta3 = np.multiply( -1*(a1 - a3), a3*(1-a3) )
+	# Calculate Sparsity contribution to delta2
+	phat = (1.0 / g.m)*np.sum(a2, axis=0)
+	sparsity = g.beta * ( -g.rho/phat + (1-g.rho)/(1-phat)	)
+	delta2 = np.multiply( np.matmul(delta3, W2) + sparsity.reshape(1, g.f2), a2*(1-a2) )
+
+	DW1 = np.dot(delta2.T, a1) 	# (25, 64)
+	DW2 = np.dot(delta3.T, a2)     	# (64, 25)
+	Db1 = np.mean(delta2, axis = 0) # (25,) vector
+	Db2 = np.mean(delta3, axis = 0) # (64,) vector
+
+#	for t in range(g.m):
+#		delta3 = -1*np.multiply( (a1[t] - a3[t]), a3[t]*(1-a3[t]) )			# 64 vec
+#		# Calculate Sparsity contribution to delta2
+#		phat = (1.0 / g.m)*np.sum(a2, axis=0)						# 25 vec
+#		sparsity = g.beta * ( -g.rho/phat + (1-g.rho)/(1-phat)	)			# 25 vec
+#		delta2 = np.multiply( np.matmul(W2.T, delta3) + sparsity, a2[t]*(1-a2[t]) )	# 25 vec
+
+#		DeltaW1 = DeltaW1 + np.outer(delta2, a1[t])		# (25 x 64)
+#		DeltaW2 = DeltaW2 + np.outer(delta3, a2[t])		# (64 x 25)	
+#		Deltab1 = Deltab1 + delta2.reshape((g.f2, 1))		# (25 x 1)
+#		Deltab2 = Deltab2 + delta3.reshape((g.f1, 1))		# (64 x 1)
+	
+#	DerW1 = (1.0/g.m)*DeltaW1 + g.lamb*W1
+#	DerW2 = (1.0/g.m)*DeltaW2 + g.lamb*W2
+#	Derb1 = (1.0/g.m)*Deltab1
+#	Derb2 = (1.0/g.m)*Deltab2
+	return Lin4( (1.0/g.m)*(DW1 + g.lamb*W1) , (1.0/g.m)*(DW2 + g.lamb*W2) , Db1 , Db2 )
+
+def Norm(mat):
+	Min = np.amin(mat)
+	Max = np.amax(mat)
+	nMin = 0
+	nMax = 1
+	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
 
 
 
@@ -123,7 +178,7 @@ def RegJCost(WAll, a1):
 totStart = time.time()
 
 # Get data. Grab the saved data
-picDat = np.genfromtxt('data/rand10kSAVED.out', dtype=float)
+picDat = np.genfromtxt('data/rand10kSAVE.out', dtype=float)
 
 # If user wants fresh data, run randpicGen.py and rewrite picDat with this data
 if g.randData == 'true':
@@ -131,46 +186,33 @@ if g.randData == 'true':
 	picDat = np.genfromtxt('data/rand10k.out', dtype=float)
 
 # Roll up data into matrix. Restrict it to [0,1]. Trim array to user defined size
-dat = np.asarray(picDat.reshape(10000,64))/ 2.0 +0.5
+dat = np.asarray(picDat.reshape(10000,64))
 dat = dat[0:g.m, :]
+# Normalize each image
+for i in range(g.m):
+	dat[i] = Norm(dat[i])
 
 # Prepare the W matrices and b vectors and linearize them
 W1 = randMat(g.f2, g.f1)
 W2 = randMat(g.f1, g.f2)
 b1 = randMat(g.f2, 1)
 b2 = randMat(g.f1, 1)
-WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 13289
-
+WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 
 # CALCULATING IDEAL W MATRICES
 # Check the cost of the initial W matrices
 print 'Initial W JCost: ', RegJCost(WAll, dat) 
 
-## Check the gradient function. ~1.0405573537e-05 for randomized thetas
-## print check_grad(RegJCost, BackProp, thetaAll, xArr, yArr)
+# Check the gradient. Go up and uncomment the import check_grad to use. ~1.84242805087e-05 for 100 for randomized Ws and bs
+#print check_grad(RegJCost, BackProp, WAll, dat)
 
-## Calculate the best theta values for a given j and store them. Usually tol=10e-4
-#res = minimize(fun=RegJCost, x0= thetaAll, method='CG', tol=10**g.tolexp, jac=BackProp, args=(xArr, yArr))
-#bestThetas = res.x
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4
+res = minimize(fun=RegJCost, x0= WAll, method='CG', tol=10**g.tolexp, jac=BackProp, args=(dat))
+bestWAll = res.x
 
-#print 'Final Theta JCost', RegJCost(bestThetas, xArr, yArr)
+print 'Final W JCost', RegJCost(bestWAll, dat)
 
-#saveTheta(bestThetas)
-
-## Stop the timestamp and print out the total time
-#totend = time.time()
-#print'neuTrainerMNIST.py took ', totend - totStart, 'seconds to run'
-
-
-
-
-
-
-
-
-
-
-
+saveW(bestWAll)
 
 # Stop the timestamp and print out the total time
 totend = time.time()

@@ -1,0 +1,12 @@
+
+(beta=3.0, f1=64, f2=25, lamb=10.0, m=10000, randData='false', tolexp=-4)
+0.266201625754
+
+(beta=3.0, f1=64, f2=25, lamb=1.0, m=10000, randData='false', tolexp=-4)
+0.178004642528
+
+(beta=3.0, f1=64, f2=25, lamb=0.1, m=10000, randData='false', tolexp=-4)
+0.136336113276
+
+(beta=3.0, f1=64, f2=25, lamb=0.01, m=10000, randData='false', tolexp=-4)
+0.114492248974

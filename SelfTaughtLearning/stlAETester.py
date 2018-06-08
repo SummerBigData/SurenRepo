@@ -33,9 +33,10 @@ g = parser.parse_args()
 gStep = 0
 g.eps = 0.12
 g.f1 = 784
-g.f2 = 200
+g.f2 = 20
 g.rho = 0.01
 g.beta = 3
+saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 
 print 'You have chosen:', g
 print ' '
@@ -113,40 +114,30 @@ for i in range(g.m):
 print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)', np.mean(prob)
 
 
-
-
-
-
-
-
-
 # SHOW IMAGES
-hspaceAll = np.asarray([ [0 for i in range(53)] for j in range(5)])
+
+s = int(g.f1**(0.5))
+hspaceAll = np.asarray([ [0 for i in range((s-10)*3+s*2)] for j in range(s-10)])
 picAll = hspaceAll
 
 for i in range(10):
 	# Store the pictures
-	picA1 = np.reshape(np.ravel(a1[i*100]), (8,8))
-	picA2 = np.reshape(np.ravel(a2[i*100]), (5,5))
-	picA3 = np.reshape(np.ravel(a3[i*100]), (8,8))
-#	print np.linalg.norm(a1[i*100])
-#	print np.linalg.norm(a3[i*100])
+	picA1 = np.reshape(np.ravel(a1[i]), (s,s))
+	#picA2 = np.reshape(np.ravel(a2[i]), (5,5))
+	picA3 = np.reshape(np.ravel(a3[i]), (s,s))
+
 	# DISPLAY PICTURES
 	# To display a2 in revprop, a1, and a2 in forward prop, we design some spaces
-	hspace = np.asarray([ [0 for i in range(8)] for j in range(8)])
-	vspace1 = np.asarray([ [0 for i in range(5)] for j in range(1)])
-	vspace2 = np.asarray([ [0 for i in range(5)] for j in range(2)])
+	hspace = np.asarray([ [0 for i in range(s-10)] for j in range(s)])
 
-	# We stitch the vertical spaces onto the pictures
-	picA2All = np.concatenate((vspace1, picA2, vspace2), axis = 0)
 	# We stitch the horizontal pictures together
-	picAlli = np.concatenate((hspace, picA1, hspace, picA2All, hspace, picA3, hspace), axis = 1)
+	picAlli = np.concatenate((hspace, picA1, hspace, picA3, hspace), axis = 1)
 	# Finally, add this to the picAll
 	picAll = np.vstack((picAll, picAlli, hspaceAll))
 
 # Display the pictures
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/a123'+'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'rand'+g.randData+'.png',transparent=False, format='png')
+plt.savefig('results/a123m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
 
 
@@ -157,21 +148,21 @@ W1Len = np.sum(W1**2)**(-0.5)
 X = W1 / W1Len			# (25 x 64)
 X = Norm(X)
 
-picX = np.zeros((25,8,8))
-for i in range(25):
-	picX[i] = np.reshape(np.ravel(X[i]), (8,8))
+picX = np.zeros((g.f2,s,s))
+for i in range(g.f2):
+	picX[i] = np.reshape(np.ravel(X[i]), (s,s))
 
-hblack = np.asarray([ [1 for i in range(52)] for j in range(2)])
-vblack = np.asarray([ [1 for i in range(2)] for j in range(8)])
+hblack = np.asarray([ [1 for i in range(s*4+2*5)] for j in range(2)])
+vblack = np.asarray([ [1 for i in range(2)] for j in range(s)])
 
 picAll = hblack
 for i in range(5):
-	pici = np.concatenate((vblack, picX[5*i+0], vblack, picX[5*i+1], vblack, picX[5*i+2], vblack, picX[5*i+3], vblack, picX[5*i+4], vblack), axis = 1)
+	pici = np.concatenate((vblack, picX[4*i+0], vblack, picX[4*i+1], vblack, picX[4*i+2], vblack, picX[4*i+3], vblack), axis = 1)
 	picAll = np.vstack((picAll, pici, hblack))
 
 # Display the pictures
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/aHL'+'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'rand'+g.randData+'.png',transparent=False, format='png')
+plt.savefig('results/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
 
 

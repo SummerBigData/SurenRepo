@@ -19,7 +19,7 @@ import dataPrep
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("m", help="Number of Datapoints, usually 30596", type=int)
+parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
@@ -33,7 +33,7 @@ g = parser.parse_args()
 gStep = 0
 g.eps = 0.12
 g.f1 = 784
-g.f2 = 20
+g.f2 = 200
 g.rho = 0.01
 g.beta = 3
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
@@ -89,7 +89,7 @@ def Norm(mat):
 # DATA PROCESSING
 
 # Get data. Call the data by acccessing the function in dataPrep
-dat, y = dataPrep.PrepData('04')
+dat, y = dataPrep.PrepData('59')
 a1 = dat[:g.m, :]
 y = y[:g.m]
 
@@ -152,12 +152,13 @@ picX = np.zeros((g.f2,s,s))
 for i in range(g.f2):
 	picX[i] = np.reshape(np.ravel(X[i]), (s,s))
 
-hblack = np.asarray([ [1 for i in range(s*4+2*5)] for j in range(2)])
+hblack = np.asarray([ [1 for i in range(s*10+2*11)] for j in range(2)])
 vblack = np.asarray([ [1 for i in range(2)] for j in range(s)])
 
 picAll = hblack
-for i in range(5):
-	pici = np.concatenate((vblack, picX[4*i+0], vblack, picX[4*i+1], vblack, picX[4*i+2], vblack, picX[4*i+3], vblack), axis = 1)
+for i in range(20):
+	pici = np.concatenate((vblack, picX[10*i+0], vblack, picX[10*i+1], vblack, picX[10*i+2], vblack, picX[10*i+3], vblack, picX[10*i+4]), axis = 1)
+	pici = np.concatenate((pici, vblack, picX[10*i+5], vblack, picX[10*i+6], vblack, picX[10*i+7], vblack, picX[10*i+8], vblack, picX[10*i+9], vblack), axis = 1)
 	picAll = np.vstack((picAll, pici, hblack))
 
 # Display the pictures

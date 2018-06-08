@@ -22,7 +22,7 @@ import dataPrep
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("m", help="Number of Datapoints, usually 30596", type=int)
+parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
@@ -159,7 +159,7 @@ def Norm(mat):
 totStart = time.time()
 
 # Get data. Call the data by acccessing the function in dataPrep
-dat, y = dataPrep.PrepData('04')
+dat, y = dataPrep.PrepData('59')
 dat = dat[:g.m, :]
 y = y[:g.m]
 #g.m = len(y)
@@ -179,8 +179,8 @@ print 'Initial W JCost: ', RegJCost(WAll, dat)
 ## Check the gradient. Go up and uncomment the import check_grad to use. ~1.84242805087e-05 for 100 for randomized Ws and bs
 #print check_grad(RegJCost, BackProp, WAll, dat)
 
-# Calculate the best theta values for a given j and store them. Usually tol=10e-4
-res = minimize(fun=RegJCost, x0= WAll, method='CG', tol=10**g.tolexp, jac=BackProp, args=(dat))
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
+res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(dat), options = {'disp':True})
 bestWAll = res.x
 
 print 'Final W JCost', RegJCost(bestWAll, dat)

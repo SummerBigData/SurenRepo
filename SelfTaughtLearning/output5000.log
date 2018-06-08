@@ -1,0 +1,14 @@
+You have chosen: Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=5000, rho=0.1, tolexp=-4)
+Will be saved in: WArrs/m5000Tol-4Lamb0.3beta3.out
+ 
+Initial W JCost:  315.7130785576221
+Traceback (most recent call last):
+  File "stlAE.py", line 183, in <module>
+    res = minimize(fun=RegJCost, x0= WAll, method='CG', tol=10**g.tolexp, jac=BackProp, args=(dat))
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/_minimize.py", line 417, in minimize
+    return _minimize_cg(fun, x0, args, jac, callback, **options)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/optimize.py", line 1139, in _minimize_cg
+    gfk = myfprime(x0)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/scipy/optimize/optimize.py", line 281, in function_wrapper
+    return function(*(wrapper_args + args))
+ValueError: operands could not be broadcast together with shapes (1,314584) (5000,784) 

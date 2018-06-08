@@ -1,0 +1,6 @@
+You have chosen: Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.1, m=29404, rho=0.1, tolexp=-4)
+Will be saved in: WArrs/m29404Tol-4Lamb0.1beta3.out
+ 
+<type 'numpy.ndarray'> (314584,)
+<type 'numpy.ndarray'> (29404, 784)
+Initial W JCost:  335.5852542364749

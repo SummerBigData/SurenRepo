@@ -39,6 +39,7 @@ g.f1 = 784
 g.f2 = 200
 g.rho = 0.1
 g.beta = 3
+g.lamb /= 1000.0
 
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 

@@ -172,6 +172,10 @@ b1 = randMat(g.f2, 1)
 b2 = randMat(g.f1, 1)
 WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 
+print type(WAll), WAll.shape
+print type(dat), dat.shape
+
+
 # CALCULATING IDEAL W MATRICES
 # Check the cost of the initial W matrices
 print 'Initial W JCost: ', RegJCost(WAll, dat) 

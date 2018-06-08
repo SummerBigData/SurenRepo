@@ -1,5 +1,5 @@
-#PBS -N CalcGradManyDatsizes
-#PBS -l walltime=06:00:00
+#PBS -N RunstlAE_Diff_Lambdas
+#PBS -l walltime=02:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u stlAE.py $PBS_ARRAYID 0.3 -4 >& output$PBS_ARRAYID.log
+python -u stlAE.py 29404 $PBS_ARRAYID -4 >& output$PBS_ARRAYID.log

@@ -1,0 +1,20 @@
+TESTING DIFFERENT DATASIZES
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=1000, rho=0.01, tolexp=-4)
+0.0459584933064
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=5000, rho=0.01, tolexp=-4)
+0.0320569389948
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=10000, rho=0.01, tolexp=-4)
+0.0277728816634
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=15000, rho=0.01, tolexp=-4)
+0.0269526294345
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=20000, rho=0.01, tolexp=-4)
+0.0312254131105
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=29404, rho=0.01, tolexp=-4)
+0.0306299718384
+

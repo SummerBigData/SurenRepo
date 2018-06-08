@@ -1,0 +1,17 @@
+You have chosen: Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=20000, rho=0.1, tolexp=-4)
+Will be saved in: WArrs/m20000Tol-4Lamb0.3beta3.out
+ 
+Initial W JCost:  325.260711525732
+Global Step:  50 with JCost:  13.51556239273875
+Global Step:  100 with JCost:  8.837583880715714
+Global Step:  150 with JCost:  7.112960515171425
+Global Step:  200 with JCost:  6.280837841831893
+Saving Global Step :  200
+Global Step:  250 with JCost:  5.769884416949246
+Global Step:  300 with JCost:  5.471014042755483
+Global Step:  350 with JCost:  5.287638475399533
+Global Step:  400 with JCost:  5.135493453342072
+Saving Global Step :  400
+Final W JCost 5.077771336181094
+ 
+sparAE.py took  3541.89818716 seconds to run

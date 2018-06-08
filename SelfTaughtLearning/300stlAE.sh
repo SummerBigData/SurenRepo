@@ -1,5 +1,5 @@
 #PBS -N CalcGradManyDatsizes
-#PBS -l walltime=300:00
+#PBS -l walltime=06:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe

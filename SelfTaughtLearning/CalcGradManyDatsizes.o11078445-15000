@@ -1,0 +1,16 @@
+/users/PAS1383/osu10171/SurenRepo/SelfTaughtLearning
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=01:16:20
+walltime=01:16:25
+mem=1.018 GB
+vmem=1.644 GB
+-----------------------
+Resource units charged (estimate):
+0.509 RUs
+-----------------------

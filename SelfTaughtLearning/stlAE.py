@@ -180,7 +180,7 @@ print 'Initial W JCost: ', RegJCost(WAll, dat)
 #print check_grad(RegJCost, BackProp, WAll, dat)
 
 # Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
-res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(dat)) # options = {'disp':True}
+res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(np.asarray([dat])) ) # options = {'disp':True}
 bestWAll = res.x
 
 print 'Final W JCost', RegJCost(bestWAll, dat)

@@ -1,0 +1,5 @@
+You have chosen: Namespace(beta=3, eps=0.12, f1=784, f2=20, lamb=0.3, m=100, rho=0.1, tolexp=-4)
+Will be saved in: WArrs/m100Tol-4Lamb0.3beta3.out
+ 
+Initial W JCost:  112.00155232938019
+0.00016551741424076044

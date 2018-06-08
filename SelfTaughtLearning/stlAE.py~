@@ -37,7 +37,7 @@ gStep = 0
 g.eps = 0.12
 g.f1 = 784
 g.f2 = 20
-g.rho = 0.1
+g.rho = 0.01
 g.beta = 3
 
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'

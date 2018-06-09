@@ -1,5 +1,5 @@
-#PBS -N CalcThetasMNIST5k
-#PBS -l walltime=500:00
+#PBS -N runMNISTlambdas
+#PBS -l walltime=06:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u neuTrainerMNIST.py 50000 784 36 1 0.12 -4 false >& output.log
+python -u neuTrainerMNISTfast.py 60000 36 $PBS_ARRAYID -4 false >& output$PBS_ARRAYID.log

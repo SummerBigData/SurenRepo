@@ -39,7 +39,7 @@ saveStr = 'thetaArrs/theta' + str(g.n)+ 'MNIST'+str(g.tolexp)+'Lamb'+str(g.lamb)
 gStep = 0
 g.f1 = 784
 g.eps = 0.12
-g.lamb /= 1000.0
+g.lamb /= 1000
 print 'You have chosen:', g
 print 'Will be saved in: ', saveStr
 print ' '

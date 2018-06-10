@@ -25,10 +25,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
-parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
-#parser.add_argument("beta", help="Beta, sparsity knob", type=float)
+parser.add_argument("lamb", help="Thousands of lambda, the overfitting knob", type=float)
+parser.add_argument("beta", help="Tens of beta, sparsity knob", type=float)
 #parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
+parser.add_argument("oak", help="Is this code being run on oakley or on a higher python version?", type=str)
 
 g = parser.parse_args()
 
@@ -37,9 +38,10 @@ gStep = 0
 g.eps = 0.12
 g.f1 = 784
 g.f2 = 200
-g.rho = 0.1
-g.beta = 3
+g.rho = 0.05
+#g.beta = 3
 g.lamb /= 1000.0
+g.beta /= 10.0
 
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 
@@ -173,8 +175,6 @@ b1 = randMat(g.f2, 1)
 b2 = randMat(g.f1, 1)
 WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 
-print type(WAll), WAll.shape
-print type(dat), dat.shape
 
 
 # CALCULATING IDEAL W MATRICES
@@ -185,7 +185,13 @@ print 'Initial W JCost: ', RegJCost(WAll, dat)
 #print check_grad(RegJCost, BackProp, WAll, dat)
 
 # Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
-res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(np.asarray([dat])) ) # options = {'disp':True}
+# Since python 2.7.8 wants dat to be wrapped in another array, we use this
+if g.oak == 'true':
+	arg = np.asarray([dat])
+elif g.oak == 'false':
+	arg = dat
+
+res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg) ) # options = {'disp':True}
 bestWAll = res.x
 
 print 'Final W JCost', RegJCost(bestWAll, dat)

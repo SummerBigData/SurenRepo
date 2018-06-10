@@ -1,20 +1,34 @@
 TESTING DIFFERENT DATASIZES
 
-Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=1000, rho=0.01, tolexp=-4)
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=1000, rho=0.1, tolexp=-4)
 0.0459584933064
 
-Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=5000, rho=0.01, tolexp=-4)
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=5000, rho=0.1, tolexp=-4)
 0.0320569389948
 
-Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=10000, rho=0.01, tolexp=-4)
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=10000, rho=0.1, tolexp=-4)
 0.0277728816634
 
-Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=15000, rho=0.01, tolexp=-4)
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=15000, rho=0.1, tolexp=-4)
 0.0269526294345
 
-Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=20000, rho=0.01, tolexp=-4)
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=20000, rho=0.1, tolexp=-4)
 0.0312254131105
 
-Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=29404, rho=0.01, tolexp=-4)
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=29404, rho=0.1, tolexp=-4)
 0.0306299718384
 
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.001, m=29404, rho=0.1, tolexp=-4)
+0.031630376024188084
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.01, m=29404, rho=0.1, tolexp=-4)
+0.031117119362524984
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.1, m=29404, rho=0.1, tolexp=-4)
+0.028241688788624923
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=1.0, m=29404, rho=0.1, tolexp=-4)
+0.029725455555663357
+
+Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.1, tolexp=-4)
+0.03863306088662871

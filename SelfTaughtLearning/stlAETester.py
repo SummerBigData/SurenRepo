@@ -23,7 +23,7 @@ parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
-#parser.add_argument("beta", help="Beta, sparsity knob", type=float)
+parser.add_argument("beta", help="Beta, sparsity knob", type=float)
 #parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
 
@@ -34,8 +34,8 @@ gStep = 0
 g.eps = 0.12
 g.f1 = 784
 g.f2 = 200
-g.rho = 0.01
-g.beta = 3
+g.rho = 0.05
+#g.beta = 3
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 
 print 'You have chosen:', g

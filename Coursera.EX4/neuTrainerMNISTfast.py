@@ -35,11 +35,12 @@ parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
 parser.add_argument("normimg", help="Choose whether or not to straighten the images", type=str)
 g = parser.parse_args()
+g.lamb /= 1000.0
 saveStr = 'thetaArrs/theta' + str(g.n)+ 'MNIST'+str(g.tolexp)+'Lamb'+str(g.lamb)+'Nor'+g.normimg+'.out'
 gStep = 0
 g.f1 = 784
 g.eps = 0.12
-g.lamb /= 1000.0
+
 print 'You have chosen:', g
 print 'Will be saved in: ', saveStr
 print ' '

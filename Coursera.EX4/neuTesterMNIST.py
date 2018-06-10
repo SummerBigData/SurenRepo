@@ -190,15 +190,15 @@ datx, daty = randData(datx, daty)
 xArr = np.hstack(( np.asarray([[1] for i in range(g('n'))]) , datx))	# g('n') x g('f1')	
 
 # Obtain the best theta values from the text file
-bestThetas = np.genfromtxt('thetaArrs/theta5000MNIST-4Lamb1.0Norfalse.out', dtype=float)
+bestThetas = np.genfromtxt('thetaArrs/theta100MNIST-4Lamb0.001Norfalse.out', dtype=float)
 
 #bestThetas = np.genfromtxt('thetaArrs/theta5000MNIST-3.out', dtype=float)
 
-print bestThetas.shape
+print(bestThetas.shape)
 
 # Seperate and reform the theta matrices
 bestTheta1, bestTheta2 = UnLin(bestThetas, g('f2'), g('f1')+1, 10, g('f2')+1)
-print bestTheta1.shape, bestTheta2.shape
+print(bestTheta1.shape, bestTheta2.shape)
 
 
 # FORWARD PROPAGATE AND CALCULATE BEST GUESSES
@@ -214,10 +214,10 @@ for j in range(g('n')):
 
 # Print some sample sections where the guesses should transition, from 0-1, 1-2, 2-3, 8-9
 # If testing on truncated data, this might not work without modifications
-print "Here are some sections of the guessBest vector"
+print("Here are some sections of the guessBest vector")
 f = g('n')/10
-print guessBest[f-10:f+10], guessBest[2*f-10:2*f+10], guessBest[3*f-10:3*f+10], guessBest[9*f-10:9*f+10]
-print ' '
+print(guessBest[f-10:f+10], guessBest[2*f-10:2*f+10], guessBest[3*f-10:3*f+10], guessBest[9*f-10:9*f+10])
+print(' ')
 
 
 # CALCULATE PERCENT CORRECT
@@ -234,15 +234,15 @@ for i in range(g('n')):
 		numPercent[ daty[i] ] += 1.0
 
 print 'Number of data points identified correctly per number:'
-print(np.array2string(numPercent, separator=','))
-print ' '
-print 'Number of total data points identified correctly:', sum(numPercent)
+print np.array2string(numPercent, separator=',')
+print ' ' 
+print 'Number of total data points identified correctly:', sum(numPercent) 
 numPercent = numPercent / numNumbers
-print ' '
-print 'Percent correct per number:'
-print(np.array2string(numPercent, separator=','))
-print ' '
-print 'Total percent correct:', np.mean(numPercent)
+print ' ' 
+print 'Percent correct per number:' 
+print np.array2string(numPercent, separator=',')
+print' '
+print'Total percent correct:', np.mean(numPercent)
 
 
 

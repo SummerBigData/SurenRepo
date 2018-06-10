@@ -1,0 +1,17 @@
+/users/PAS1383/osu10171/SurenRepo/SelfTaughtLearning
+=>> PBS: job killed: walltime 7231 exceeded limit 7200
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=02:00:26
+walltime=02:00:41
+mem=1.602 GB
+vmem=2.232 GB
+-----------------------
+Resource units charged (estimate):
+0.804 RUs
+-----------------------

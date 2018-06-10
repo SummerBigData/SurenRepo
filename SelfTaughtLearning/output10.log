@@ -4,3 +4,14 @@ Will be saved in: WArrs/m29404Tol-4Lamb0.01beta3.out
 <type 'numpy.ndarray'> (314584,)
 <type 'numpy.ndarray'> (29404, 784)
 Initial W JCost:  323.70962760023104
+Global Step:  50 with JCost:  14.06973636865496
+Global Step:  100 with JCost:  8.782877852276732
+Global Step:  150 with JCost:  7.032889890012204
+Global Step:  200 with JCost:  6.058312525810922
+Saving Global Step :  200
+Global Step:  250 with JCost:  5.55665048494852
+Global Step:  300 with JCost:  5.219977765841379
+Global Step:  350 with JCost:  4.996464024843253
+Global Step:  400 with JCost:  4.861107923519368
+Saving Global Step :  400
+Global Step:  450 with JCost:  4.718481675325389

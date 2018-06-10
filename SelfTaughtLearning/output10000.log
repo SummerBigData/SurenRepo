@@ -4,3 +4,17 @@ Will be saved in: WArrs/m29404Tol-4Lamb10.0beta3.out
 <type 'numpy.ndarray'> (314584,)
 <type 'numpy.ndarray'> (29404, 784)
 Initial W JCost:  321.37074786800605
+Global Step:  50 with JCost:  14.159696427077575
+Global Step:  100 with JCost:  8.303799882729598
+Global Step:  150 with JCost:  6.626018460702938
+Global Step:  200 with JCost:  5.939013138860905
+Saving Global Step :  200
+Global Step:  250 with JCost:  5.597613884213834
+Global Step:  300 with JCost:  5.388594400722138
+Global Step:  350 with JCost:  5.227940726914524
+Global Step:  400 with JCost:  5.084042958022212
+Saving Global Step :  400
+Global Step:  450 with JCost:  4.971376855803225
+Final W JCost 4.89077118149832
+ 
+sparAE.py took  6048.58859301 seconds to run

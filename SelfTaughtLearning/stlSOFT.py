@@ -12,7 +12,7 @@ import scipy.io
 import time
 import argparse
 import matplotlib.pyplot as plt
-from scipy.optimize import check_grad
+#from scipy.optimize import check_grad
 #from random import randint
 import dataPrep
 
@@ -29,7 +29,7 @@ parser.add_argument("lamb", help="Millilambda, the overfitting knob", type=float
 #parser.add_argument("beta", help="Tens of beta, sparsity knob", type=float)
 #parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
-parser.add_argument("oak", help="Is this code being run on oakley or on a higher python version?", type=str)
+#parser.add_argument("oak", help="Is this code being run on oakley or on a higher python version?", type=str)
 
 g = parser.parse_args()
 
@@ -44,7 +44,7 @@ g.f3 = 10
 g.lamb /= 1000.0
 
 
-saveStr = 'WArrsSoft/Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
+saveStr = 'WArrs/FullLamb10Btest/L10B0.5/Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
 
 
 print 'You have chosen:', g
@@ -67,9 +67,9 @@ def randMat(x, y):
 	return theta*2*g.eps - g.eps	# Make it range [-eps, eps]
 
 
-# Linearize: Take 4 matrices, unroll them, and stitch them together into a vector
-def LinWAll(a, b, c, d):
-	return np.concatenate((np.ravel(a), np.ravel(b), np.ravel(c), np.ravel(d)))
+## Linearize: Take 4 matrices, unroll them, and stitch them together into a vector
+#def LinWAll(a, b, c, d):
+#	return np.concatenate((np.ravel(a), np.ravel(b), np.ravel(c), np.ravel(d)))
 # Linearize: Take 2 matrices, unroll them, and stitch them together into a vector
 def LinW(a, b):
 	return np.concatenate((np.ravel(a), np.ravel(b)))
@@ -91,14 +91,6 @@ def unLinW2(vec):
 	W2 = np.asarray([vec[0		: g.f3*g.f2]])
 	b2 = np.asarray([vec[g.f3*g.f2	:]])
 	return W2.reshape(g.f3, g.f2) , b2.reshape(g.f3, 1)
-
-## Unlinearize SOFT data: Take a vector, break it into two vectors, and roll it back up
-#def unLinWAll(vec):	
-#	W1 = np.asarray([vec[0					: g.f2*g.f1]])
-#	W2 = np.asarray([vec[g.f2*g.f1 				: g.f2*g.f1 + g.f3*g.f2]])
-#	b1 = np.asarray([vec[g.f2*g.f1 + g.f3*g.f2		: g.f2*g.f1 + g.f3*g.f2 + g.f2]])
-#	b2 = np.asarray([vec[g.f2*g.f1 + g.f3*g.f2 + g.f2 	: g.f2*g.f1 + g.f3*g.f2 + g.f2 + g.f3]])
-#	return W1.reshape(g.f2, g.f1) , W2.reshape(g.f3, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f3, 1)
 
 
 # Calculate the Hypothesis (for layer l to l+1)
@@ -129,47 +121,29 @@ def RegJCost(WA2, WA1, a1, ymat):
 	return (-1.0 / len(y))*np.sum( np.multiply(np.log(a3), ymat)  ) + g.lamb*0.5*np.sum(W2**2)
 
 
-# Calculate the gradient of cost function for all values of W1, W2, b1, and b2
-#def BackProp(WA2, WA1, a1, ymat):
-#	# To keep track of how many times this code is called
-#	global gStep
-#	gStep += 1
-#	if gStep % 50 == 0:
-#		print 'Global Step: ', gStep, 'with JCost: ',  RegJCost(WAll, a1)
-#	if gStep % 200 == 0:
-#		print 'Saving Global Step : ', gStep
-#		saveW(WAll)
-
-#	# Forward Propagate
-#	a2, a3 = ForwardProp(WA1, WA2, a1)	# a2 (g.m x 200), a3 (g.m x 10)
-#	# Seperate and reshape the W and b values
-#	W2, b2 = unLinW2(WA2)
-#	# Creating (Capital) Delta matrices
-#	DeltaW2 = (-1.0 / len(y))*np.matmul((ymat - a3).T, a2) 		# (g.f3, g.f2)
-#	Deltab2 = np.mean(DeltaW2, axis = 1)				# (g.f3 array)		
-#	return LinW(DeltaW2 + g.lamb*W2, Deltab2 )
-
 def BackProp(WA2, WA1, a1, ymat):
 	# To keep track of how many times this code is called
 	global gStep
 	gStep += 1
 	if gStep % 50 == 0:
-		print 'Global Step: ', gStep, 'with JCost: ',  RegJCost(WAll, a1)
+		print 'Global Step: ', gStep, 'with JCost: ',  RegJCost(WA2, WA1, a1, ymat)
 	if gStep % 200 == 0:
 		print 'Saving Global Step : ', gStep
-		saveW(WAll)
+		saveW(WA2)
 
 	# Forward Propagate
 	a2, a3 = ForwardProp(WA1, WA2, a1)	# a2 (g.m x 200), a3 (g.m x 10)
 	# Seperate and reshape the W and b values
 	W2, b2 = unLinW2(WA2)
+	
+	# Now, to get backprop to work, I had to remake the theta matrices we had previously. Sandwich b2 onto W2
 	WAll2 = np.hstack((b2, W2))
-
+	# Attach a column of 1's onto a2
 	left = np.array([[1] for i in range(len(col(ymat, 0))) ])
 	a2ones = np.hstack((left, a2))
-	# Creating (Capital) Delta matrices
+	# Calculate the derivative for both W2 and b2 at the same time
 	DeltaWAll2 = (-1.0 / len(y))*np.matmul((ymat - a3).T, a2ones) + g.lamb*WAll2		# (g.f3, g.f2)
-	print DeltaWAll2.shape
+	# Seperate these back into W2 and b2 and linearize it
 	return LinW(DeltaWAll2[:,1:], DeltaWAll2[:,:1])
 
 
@@ -206,14 +180,14 @@ totStart = time.time()
 # Get data. Call the data by acccessing the function in dataPrep
 dat, y = dataPrep.PrepData('04')
 # Total Data size 30596. Using first half: length 15298
-dat = dat[:len(y)/2 - 15200, :]
-y = y[:len(y)/2-15200]
+dat = dat[:len(y)/2, :]
+y = y[:len(y)/2]
 #dat = Norm(dat)
 #print np.amax(dat), np.amin(dat)
 
 
 # Prepare the W matrices and b vectors and linearize them. Use the autoencoder W1 and b1, but NOT W2, b2
-bestWAll = np.genfromtxt('WArrs/FullLamb10Btest/m29404Tol-4Lamb10.0beta0.5.out', dtype=float)
+bestWAll = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/m29404Tol-4Lamb10.0beta0.5.out', dtype=float)
 W1, W2AE, b1, b2AE = unLinWAllAE(bestWAll)	# W1: 200 x 784, b1: 200 x 1
 W2 = randMat(g.f3, g.f2)			# 10 x 200
 b2 = randMat(g.f3, 1)				# 10 x 1
@@ -227,28 +201,28 @@ ymat = GenYMat(y)
 
 # CALCULATING IDEAL W MATRICES
 # Check the cost of the initial W matrices
-print 'Initial W JCost: ', RegJCost(WA2, WA1, dat, ymat) , BackProp(WA2, WA1, dat, ymat) 
-# Check the gradient. Go up and uncomment the import check_grad to use. ~1.84242805087e-05 for 100 for randomized Ws and bs
-print check_grad(RegJCost, BackProp, WA2, WA1, dat, ymat)
+print 'Initial W JCost: ', RegJCost(WA2, WA1, dat, ymat) 
+# Check the gradient. Go up and uncomment the import check_grad to use. ~2.378977939526638e-05 for m=98 for randomized Ws and bs
+#print check_grad(RegJCost, BackProp, WA2, WA1, dat, ymat)
 
-## Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
 ## Since python 2.7.8 wants dat to be wrapped in another array, we use this
 #if g.oak == 'true':
 #	arg = np.asarray([dat])
 #elif g.oak == 'false':
 #	arg = dat
 
-#res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg) ) # options = {'disp':True}
-#bestWAll = res.x
+res = minimize(fun=RegJCost, x0= WA2, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(WA1, dat, ymat) ) # options = {'disp':True}
+bestWA2 = res.x
 
-#print 'Final W JCost', RegJCost(bestWAll, dat)
+print 'Final W JCost', RegJCost(bestWA2, WA1, dat, ymat) 
 
-#saveW(bestWAll)
+saveW(bestWA2)
 
-## Stop the timestamp and print out the total time
-#totend = time.time()
-#print ' '
-#print'sparAE.py took ', totend - totStart, 'seconds to run'
+# Stop the timestamp and print out the total time
+totend = time.time()
+print ' '
+print'sparAE.py took ', totend - totStart, 'seconds to run'
 
 
 

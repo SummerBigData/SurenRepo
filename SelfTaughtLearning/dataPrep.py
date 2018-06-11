@@ -73,6 +73,7 @@ def PrepData(string):
 	dat59 = ordDat[last4Ind+1: ]
 
 	# Reorder the data
+	np.random.seed(7)	# Some random seed
 	np.random.shuffle(dat04)
 	np.random.shuffle(dat59)
 

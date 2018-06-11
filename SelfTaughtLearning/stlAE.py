@@ -2,7 +2,7 @@
 # Written on: 	June 7, 2018
 # Purpose: 	To write a Self-Taught Learning Algorithim using MNIST dataset
 # Source:	Following directions from: http://deeplearning.stanford.edu/wiki/index.php/Exercise:Self-Taught_Learning
-# Goal:		Read data and 
+# Goal:		Read 5-9 data and train an autoencoder
 
 
 import numpy as np

@@ -18,6 +18,8 @@ Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=20000, rho=0.1, tolexp=-
 Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.3, m=29404, rho=0.1, tolexp=-4)
 0.0306299718384
 
+TESTING DIFFERENT LAMBDAS
+
 Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=0.001, m=29404, rho=0.1, tolexp=-4)
 0.031630376024188084
 
@@ -32,3 +34,25 @@ Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=1.0, m=29404, rho=0.1, tolexp=-
 
 Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.1, tolexp=-4)
 0.03863306088662871
+
+TESTING DIFFERENT BETAS
+
+Namespace(beta=0.1, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)
+0.03439100373821377
+
+Namespace(beta=0.5, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)
+0.04313300879276296
+
+Namespace(beta=1.0, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)
+0.04601647266053035
+
+Namespace(beta=3.0, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)
+0.05007455536685868
+
+Namespace(beta=5.0, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)
+0.050178424598742666
+
+Namespace(beta=10.0, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)
+0.05220280971392683
+
+

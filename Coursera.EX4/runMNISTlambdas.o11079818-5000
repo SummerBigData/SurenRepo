@@ -1,0 +1,17 @@
+/users/PAS1383/osu10171/SurenRepo/Coursera.EX4
+=>> PBS: job killed: walltime 36008 exceeded limit 36000
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=10:00:00
+walltime=10:00:14
+mem=0.902 GB
+vmem=1.432 GB
+-----------------------
+Resource units charged (estimate):
+4.001 RUs
+-----------------------

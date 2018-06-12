@@ -57,9 +57,15 @@ def PrepData(string):
 
 	# Stick the data and labels together for now
 	dat = np.hstack((daty.reshape(60000, 1), datx))
+	
+	# If the user wants the whole dataset, we can send it back now, after shuffling
+	if string == '09':
+		np.random.seed(5)	# Some random seed
+		np.random.shuffle(dat)
+		return dat[:,1:]/255.0, col(dat, 0)
+
 
 	# Organize the data with respect to the labels
-
 	ind = np.argsort( dat[:,0] ).astype(int)
 	ordDat = np.zeros(dat.shape)
 	for i in range(len(ind)):
@@ -82,7 +88,7 @@ def PrepData(string):
 	elif string == '59':
 		return dat59[:,1:]/255.0, col(dat59, 0)
 	else:
-		print 'Error, input is not "04" or "59"'
+		print 'Error, input is not "04" or "59" or "09"'
 #	# Unravel and seperate data
 #	x04 = np.ravel(dat04[1:])
 #	x59 = np.ravel()

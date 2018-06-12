@@ -109,7 +109,7 @@ bestWAE = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/m29404Tol-4Lamb10.0beta0.
 W1, W2AE, b1, b2AE = unLinWAllAE(bestWAE)	# W1: 200 x 784, b1: 200 x 1
 WA1 = LinW(W1, b1)	# 1D vector, probably length 157000
 
-WA2 = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/Tol-4Lamb1e-08.out', dtype=float)
+WA2 = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/Tol-4Lamb0.0.out', dtype=float)
 
 ## Generate the y matrix. # 15298 x 10
 #ymat = GenYMat(y)

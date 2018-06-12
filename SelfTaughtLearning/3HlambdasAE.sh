@@ -1,5 +1,5 @@
 #PBS -N RunstlAE_Diff_Lambdas
-#PBS -l walltime=04:00:00
+#PBS -l walltime=09:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u stlAE.py 29404 10000 $PBS_ARRAYID -4 true >& output$PBS_ARRAYID.log
+python -u stlAE.py 60000 $PBS_ARRAYID 50 -4 true >& output$PBS_ARRAYID.log

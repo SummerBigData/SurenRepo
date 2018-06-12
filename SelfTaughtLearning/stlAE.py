@@ -41,9 +41,9 @@ g.f2 = 200
 g.rho = 0.05
 #g.beta = 3
 g.lamb /= 1000.0
-g.beta /= 10.0
+g.beta /= 100.0
 
-saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
+saveStr = 'WArrs/60k/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 
 
 print 'You have chosen:', g
@@ -162,7 +162,7 @@ def Norm(mat):
 totStart = time.time()
 
 # Get data. Call the data by acccessing the function in dataPrep
-dat, y = dataPrep.PrepData('59')
+dat, y = dataPrep.PrepData('09')
 dat = dat[:g.m, :]
 y = y[:g.m]
 #g.m = len(y)

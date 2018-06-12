@@ -36,7 +36,7 @@ g.f1 = 784
 g.f2 = 200
 g.rho = 0.05
 #g.beta = 3
-saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
+saveStr = 'WArrs/FullLamb10Btest/L10B0.5/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 
 print 'You have chosen:', g
 print ' '
@@ -106,39 +106,39 @@ for i in range(g.m):
 	a3[i] = Norm(a3[i])
 
 
-# PROBABILITIES
-prob = np.zeros((g.m, g.f1))
-for i in range(g.m):
-	prob[i] = np.abs(a1[i]-a3[i])
+## PROBABILITIES
+#prob = np.zeros((g.m, g.f1))
+#for i in range(g.m):
+#	prob[i] = np.abs(a1[i]-a3[i])
 
-print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)', np.mean(prob)
+#print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)', np.mean(prob)
+#print ' '
 
-
-# SHOW IMAGES
+## SHOW IMAGES
 
 s = int(g.f1**(0.5))
-hspaceAll = np.asarray([ [0 for i in range((s-10)*3+s*2)] for j in range(s-10)])
-picAll = hspaceAll
+#hspaceAll = np.asarray([ [0 for i in range((s-10)*3+s*2)] for j in range(s-10)])
+#picAll = hspaceAll
 
-for i in range(10):
-	# Store the pictures
-	picA1 = np.reshape(np.ravel(a1[i]), (s,s))
-	#picA2 = np.reshape(np.ravel(a2[i]), (5,5))
-	picA3 = np.reshape(np.ravel(a3[i]), (s,s))
+#for i in range(10):
+#	# Store the pictures
+#	picA1 = np.reshape(np.ravel(a1[i]), (s,s))
+#	#picA2 = np.reshape(np.ravel(a2[i]), (5,5))
+#	picA3 = np.reshape(np.ravel(a3[i]), (s,s))
 
-	# DISPLAY PICTURES
-	# To display a2 in revprop, a1, and a2 in forward prop, we design some spaces
-	hspace = np.asarray([ [0 for i in range(s-10)] for j in range(s)])
+#	# DISPLAY PICTURES
+#	# To display a2 in revprop, a1, and a2 in forward prop, we design some spaces
+#	hspace = np.asarray([ [0 for i in range(s-10)] for j in range(s)])
 
-	# We stitch the horizontal pictures together
-	picAlli = np.concatenate((hspace, picA1, hspace, picA3, hspace), axis = 1)
-	# Finally, add this to the picAll
-	picAll = np.vstack((picAll, picAlli, hspaceAll))
+#	# We stitch the horizontal pictures together
+#	picAlli = np.concatenate((hspace, picA1, hspace, picA3, hspace), axis = 1)
+#	# Finally, add this to the picAll
+#	picAll = np.vstack((picAll, picAlli, hspaceAll))
 
-# Display the pictures
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/a123m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
-plt.show()
+## Display the pictures
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.savefig('results/a123m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+#plt.show()
 
 
 
@@ -152,27 +152,57 @@ picX = np.zeros((g.f2,s,s))
 for i in range(g.f2):
 	picX[i] = np.reshape(np.ravel(X[i]), (s,s))
 
-hblack = np.asarray([ [1 for i in range(s*10+2*11)] for j in range(2)])
-vblack = np.asarray([ [1 for i in range(2)] for j in range(s)])
+#hblack = np.asarray([ [1 for i in range(s*10+2*11)] for j in range(2)])
+#vblack = np.asarray([ [1 for i in range(2)] for j in range(s)])
 
-picAll = hblack
-for i in range(20):
-	pici = np.concatenate((vblack, picX[10*i+0], vblack, picX[10*i+1], vblack, picX[10*i+2], vblack, picX[10*i+3], vblack, picX[10*i+4]), axis = 1)
-	pici = np.concatenate((pici, vblack, picX[10*i+5], vblack, picX[10*i+6], vblack, picX[10*i+7], vblack, picX[10*i+8], vblack, picX[10*i+9], vblack), axis = 1)
-	picAll = np.vstack((picAll, pici, hblack))
+#picAll = hblack
+#for i in range(20):
+#	pici = np.concatenate((vblack, picX[10*i+0], vblack, picX[10*i+1], vblack, picX[10*i+2], vblack, picX[10*i+3], vblack, picX[10*i+4]), axis = 1)
+#	pici = np.concatenate((pici, vblack, picX[10*i+5], vblack, picX[10*i+6], vblack, picX[10*i+7], vblack, picX[10*i+8], vblack, picX[10*i+9], vblack), axis = 1)
+#	picAll = np.vstack((picAll, pici, hblack))
 
+## Display the pictures
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.savefig('results/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+#plt.show()
+
+
+# Pic Facts
+hlNumb = 15 	# Show how many of the hidden layers
+numbNumb = 20	# Show how many numbers
+
+
+vblack = np.ones((5, (hlNumb+3)*s+(hlNumb+4)*5 ))		#(hlNumb+1)*s+(hlNumb+2)*5
+print vblack.shape
+hblack = np.ones((s,5))
+picAll = vblack
+
+for i in range(numbNumb):
+	# Reorder the elements in a2. First, create an array of the indicies
+	a2isortInd = np.argsort(a2[i])
+	# Now, sort the 0th picture according to the indicies, and also reorder the array to largest-->smallest
+	a2isort = a2[i][a2isortInd][::-1]
+	picXisort = picX[a2isortInd][::-1]
+	
+	# We want to do a weighted average of these activations
+	weightpicXi = np.zeros(picXisort.shape)
+	for j in range(len(a2isort)):
+		weightpicXi[j] = picXisort[j]*a2isort[j]
+	weight = np.sum(a2isort)
+	avgi = np.sum(weightpicXi, axis=0)/weight
+	print avgi.shape, np.amin(avgi), np.amax(avgi)
+
+	picAlli = np.hstack((hblack, a1[i].reshape(s,s), hblack ))
+	for j in range(hlNumb):
+		picAlli = np.hstack((picAlli, picXisort[j], hblack))
+	
+	picAlli = np.hstack((picAlli, avgi, hblack, Norm(avgi), hblack))
+
+	picAll = np.vstack((picAll, picAlli, vblack))
 # Display the pictures
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+#plt.savefig('results/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
-
-
-
-
-
-
-
-
 
 
 

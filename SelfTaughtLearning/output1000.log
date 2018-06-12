@@ -1,0 +1,6 @@
+You have chosen: Namespace(beta=0.5, eps=0.12, f1=784, f2=200, lamb=1.0, m=60000, oak='true', rho=0.05, tolexp=-4)
+Will be saved in: WArrs/60k/m60000Tol-4Lamb1.0beta0.5.out
+ 
+Initial W JCost:  147.62389936169444
+Global Step:  50 with JCost:  9.332664539295157
+Global Step:  100 with JCost:  6.275713271503845

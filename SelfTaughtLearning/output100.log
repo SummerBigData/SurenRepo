@@ -3,3 +3,18 @@ Will be saved in: WArrs/60k/m60000Tol-4Lamb10.0beta1.0.out
  
 Initial W JCost:  200.02112787236922
 Global Step:  50 with JCost:  11.901943694925244
+Global Step:  100 with JCost:  8.025220798486101
+Global Step:  150 with JCost:  6.7620639918609715
+Global Step:  200 with JCost:  6.164031239350544
+Saving Global Step :  200
+Global Step:  250 with JCost:  5.830780776672708
+Global Step:  300 with JCost:  5.617363409957304
+Global Step:  350 with JCost:  5.4726069771241095
+Global Step:  400 with JCost:  5.378201927137241
+Saving Global Step :  400
+Global Step:  450 with JCost:  5.300301139551474
+Global Step:  500 with JCost:  5.240302447604254
+Global Step:  550 with JCost:  5.181624527918432
+Final W JCost 5.139711830936613
+ 
+sparAE.py took  17955.0275109 seconds to run

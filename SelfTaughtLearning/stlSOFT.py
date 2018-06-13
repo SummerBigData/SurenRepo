@@ -22,7 +22,7 @@ import dataPrep
 
 
 parser = argparse.ArgumentParser()
-#parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
+parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Millilambda, the overfitting knob", type=float)
@@ -44,7 +44,7 @@ g.f3 = 10
 g.lamb /= 1000.0
 
 
-saveStr = 'WArrs/FullLamb10Btest/L10B0.5/Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
+saveStr = 'WArrs/60k/L10B0.5/SoftM'+str(g.m)+'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
 
 
 print 'You have chosen:', g
@@ -178,16 +178,16 @@ def col(matrix, i):
 totStart = time.time()
 
 # Get data. Call the data by acccessing the function in dataPrep
-dat, y = dataPrep.PrepData('04')
+dat, y = dataPrep.PrepData('09')
 # Total Data size 30596. Using first half: length 15298
-dat = dat[:len(y)/2, :]
-y = y[:len(y)/2]
+dat = dat[:g.m, :]	# len(y)/2 For 04, 59 testing
+y = y[:g.m]
 #dat = Norm(dat)
 #print np.amax(dat), np.amin(dat)
 
 
 # Prepare the W matrices and b vectors and linearize them. Use the autoencoder W1 and b1, but NOT W2, b2
-bestWAll = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/m29404Tol-4Lamb10.0beta0.5.out', dtype=float)
+bestWAll = np.genfromtxt('WArrs/60k/L10B0.5/m60000Tol-4Lamb10.0beta0.5.out', dtype=float)
 W1, W2AE, b1, b2AE = unLinWAllAE(bestWAll)	# W1: 200 x 784, b1: 200 x 1
 W2 = randMat(g.f3, g.f2)			# 10 x 200
 b2 = randMat(g.f3, 1)				# 10 x 1

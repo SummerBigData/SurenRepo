@@ -12,7 +12,9 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 #import scipy.io
 import dataPrep
-
+# For reading MNIST testing data directly
+import struct as st
+import gzip
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
 
@@ -23,6 +25,17 @@ f3 = 10
 
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
+
+
+# Read the MNIST dataset
+def read_idx(filename, n=None):
+	with gzip.open(filename) as f:
+		zero, dtype, dims = st.unpack('>HBB', f.read(4))
+		shape = tuple(st.unpack('>I', f.read(4))[0] for d in range(dims))
+		arr = np.fromstring(f.read(), dtype=np.uint8).reshape(shape)
+		if not n is None:
+			arr = arr[:n]
+		return arr
 
 
 # Save the WAll values
@@ -96,20 +109,29 @@ def col(matrix, i):
 
 # DATA PROCESSING
 
-# Get data. Call the data by acccessing the function in dataPrep
-dat, y = dataPrep.PrepData('04')
-# Total Data size 30596. Using second half: length 15298
-a1 = dat[len(y)/2:, :]
-y = y[len(y)/2:]
+## Get data. Call the data by acccessing the function in dataPrep
+#dat, y = dataPrep.PrepData('04')
+## Total Data size 30596. Using second half: length 15298
+#a1 = dat[len(y)/2:, :]
+#y = y[len(y)/2:]
+
+# Obtain the data values and convert them from arrays to lists
+datx = read_idx('data/t10k-images-idx3-ubyte.gz', 10000)
+daty = read_idx('data/t10k-labels-idx1-ubyte.gz', 10000)
+datx = np.ravel(datx).reshape((10000, f1))
+
+a1 = datx[:, :]/255.0
+y = daty[:]
+
 #dat = Norm(dat)
 #print np.amax(dat), np.amin(dat)
 
 # Prepare the W matrices and b vectors and linearize them. Use the autoencoder W1 and b1, but NOT W2, b2
-bestWAE = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/m29404Tol-4Lamb10.0beta0.5.out', dtype=float)
+bestWAE = np.genfromtxt('WArrs/60k/L10B0.5/m60000Tol-4Lamb10.0beta0.5.out', dtype=float)
 W1, W2AE, b1, b2AE = unLinWAllAE(bestWAE)	# W1: 200 x 784, b1: 200 x 1
 WA1 = LinW(W1, b1)	# 1D vector, probably length 157000
 
-WA2 = np.genfromtxt('WArrs/FullLamb10Btest/L10B0.5/Tol-4Lamb0.0.out', dtype=float)
+WA2 = np.genfromtxt('WArrs/60k/L10B0.5/SoftM60000Tol-4Lamb1e-09.out', dtype=float)
 
 ## Generate the y matrix. # 15298 x 10
 #ymat = GenYMat(y)
@@ -130,8 +152,8 @@ for j in range(len(y)):
 
 # Now we want to see what percent of each number the code got right
 # Since the data isn't distributed evenly, we also record the frequency of each number in the dataset
-numPercent = np.array([0.0 for i in range(5)])
-numNumbers = np.array([0 for i in range(5)])
+numPercent = np.zeros((10))
+numNumbers = np.zeros((10))
 
 # Increment numPercent[i] for each number i it gets right.
 # Also increment the numNumbers array for whichever datapoint it was
@@ -150,64 +172,87 @@ print 'Percent correct per number:'
 print np.array2string(numPercent, separator=',')
 print' '
 print'Total percent correct:', np.mean(numPercent)
+print' '
 
 
 
 
 
+# CALCULATE THE IDEAL NUMBERS, AGAIN
+W1, b1 = unLinW1(WA1)
+W2, b2 = unLinW2(WA2)
 
-## SHOW IMAGES
-#hspaceAll = np.asarray([ [0 for i in range(116)] for j in range(10)])
-#picAll = hspaceAll
+W1Len = np.sum(W1**2)**(-0.5)
+X1 = W1 / W1Len			
+#X1 = Norm(X1)
 
-#for i in range(10):
-#	# Store the pictures
-#	picA1 = np.reshape(np.ravel(a1[i]), (28,28))
-#	picA2 = np.reshape(np.ravel(a2[i]), (20,10))
-#	picA3 = np.reshape(np.ravel(a3[i]), (28,28))
-##	print np.linalg.norm(a1[i*100])
-##	print np.linalg.norm(a3[i*100])
-#	# DISPLAY PICTURES
-#	# To display a2 in revprop, a1, and a2 in forward prop, we design some spaces
-#	hspace = np.zeros((28,10))
-#	vspace = np.zeros((4, 20))
+W2Len = np.sum(W2**2)**(-0.5)
+X2 = W2 / W2Len			
+#X2 = Norm(X2)
 
-#	# We stitch the vertical spaces onto the pictures
-#	picA2All = np.concatenate((vspace, picA2, vspace), axis = 0)
-#	# We stitch the horizontal pictures together
-#	picAlli = np.concatenate((hspace, picA1, hspace, picA2All, hspace, picA3, hspace), axis = 1)
-#	# Finally, add this to the picAll
-#	picAll = np.vstack((picAll, picAlli, hspaceAll))
+print X1.shape, np.amin(X1), np.amax(X1)
+print X2.shape, np.amin(X2), np.amax(X2)
+print a2.shape, np.amin(a2), np.amax(a2)
 
+numer = np.zeros((10,200,784))
+weight = np.zeros((10))
+ideal = np.zeros((10,28,28))
+for i in range(10):
+	numer[i] = np.multiply(X2[i].reshape(200,1), X1)	# 200 x 784
+	weight[i] = np.sum(X2[i])
+	ideal[i] = np.sum(numer[i], axis=0).reshape((28,28))/weight[i]
+	ideal[i] = Norm(ideal[i])
+
+#print ideal0.shape, np.amin(ideal0), np.amax(ideal0)
+hbar = np.ones((5, 10*28+11*5))
+vbar = np.ones((28, 5))
+picAll = vbar
+for i in range(10):
+	picAll  = np.hstack(( picAll, ideal[i], vbar))
+
+picAll = np.vstack(( hbar, picAll, hbar))
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.savefig('results/Activ' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+plt.show()
+
+
+
+
+
+## Pic Facts
+#hlNumb = 15 	# Show how many of the hidden layers
+#numbNumb = 20	# Show how many numbers
+
+
+#vblack = np.ones((5, (hlNumb+3)*s+(hlNumb+4)*5 ))	
+#hblack = np.ones((s,5))
+#picAll = vblack
+
+#for i in range(numbNumb):
+#	# Reorder the elements in a2. First, create an array of the indicies
+#	a2isortInd = np.argsort(a2[i])
+#	# Now, sort the 0th picture according to the indicies, and also reorder the array to largest-->smallest
+#	a2isort = a2[i][a2isortInd][::-1]
+#	picXisort = picX[a2isortInd][::-1]
+#	
+#	# We want to do a weighted average of activations using a2 as weights
+#	weightpicXi = np.zeros(picXisort.shape)
+#	for j in range(len(a2isort)):
+#		weightpicXi[j] = picXisort[j]*a2isort[j]
+#	weight = np.sum(a2isort)
+#	avgi = np.sum(weightpicXi, axis=0)/weight
+##	print avgi.shape, np.amin(avgi), np.amax(avgi)
+
+#	
+#	picAlli = np.hstack((hblack, a1[i].reshape(s,s), hblack ))
+#	for j in range(hlNumb):
+#		picAlli = np.hstack((picAlli, picXisort[j], hblack))
+#	
+#	picAlli = np.hstack((picAlli, avgi, hblack, Norm(avgi), hblack))
+
+#	picAll = np.vstack((picAll, picAlli, vblack))
 ## Display the pictures
 #imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-#plt.savefig('results/SoftRes/a123'+'L10B0.5Lamb0.0.png',transparent=False, format='png')
+#plt.savefig('results/Activ' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 #plt.show()
-
-
-
-## We also want a picture of the activations for each node in the hidden layer
-#W1, b1 = unLinW1(W)
-#W1Len = np.sum(W1**2)**(-0.5)
-#X = W1 / W1Len			# (25 x 64)
-#X = Norm(X)
-
-#picX = np.zeros((25,8,8))
-#for i in range(25):
-#	picX[i] = np.reshape(np.ravel(X[i]), (8,8))
-
-#hblack = np.asarray([ [1 for i in range(52)] for j in range(2)])
-#vblack = np.asarray([ [1 for i in range(2)] for j in range(8)])
-
-#picAll = hblack
-#for i in range(5):
-#	pici = np.concatenate((vblack, picX[5*i+0], vblack, picX[5*i+1], vblack, picX[5*i+2], vblack, picX[5*i+3], vblack, picX[5*i+4], vblack), axis = 1)
-#	picAll = np.vstack((picAll, pici, hblack))
-
-## Display the pictures
-#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-#plt.savefig('results/aHL'+'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'rand'+g.randData+'.png',transparent=False, format='png')
-#plt.show()
-
-
 

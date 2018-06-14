@@ -35,6 +35,13 @@ Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=1.0, m=29404, rho=0.1, tolexp=-
 Namespace(beta=3, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.1, tolexp=-4)
 0.03863306088662871
 
+Namespace(beta=0.5, eps=0.12, f1=784, f2=200, lamb=50.0, m=10000, rho=0.05, tolexp=-4)
+0.05504824552437853
+
+Namespace(beta=0.5, eps=0.12, f1=784, f2=200, lamb=100.0, m=10000, rho=0.05, tolexp=-4)
+0.06637918537539342
+
+
 TESTING DIFFERENT BETAS
 
 Namespace(beta=0.1, eps=0.12, f1=784, f2=200, lamb=10.0, m=29404, rho=0.05, tolexp=-4)

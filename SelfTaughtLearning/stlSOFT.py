@@ -44,7 +44,7 @@ g.f3 = 10
 g.lamb /= 1000.0
 
 
-saveStr = 'WArrs/60k/L10B0.5/SoftM'+str(g.m)+'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
+saveStr = 'WArrs/60k/L100B0.5/SoftM'+str(g.m)+'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'.out'
 
 
 print 'You have chosen:', g
@@ -187,7 +187,7 @@ y = y[:g.m]
 
 
 # Prepare the W matrices and b vectors and linearize them. Use the autoencoder W1 and b1, but NOT W2, b2
-bestWAll = np.genfromtxt('WArrs/60k/L10B0.5/m60000Tol-4Lamb10.0beta0.5.out', dtype=float)
+bestWAll = np.genfromtxt('WArrs/60k/L100B0.5/m60000Tol-4Lamb100.0beta0.5.out', dtype=float)
 W1, W2AE, b1, b2AE = unLinWAllAE(bestWAll)	# W1: 200 x 784, b1: 200 x 1
 W2 = randMat(g.f3, g.f2)			# 10 x 200
 b2 = randMat(g.f3, 1)				# 10 x 1

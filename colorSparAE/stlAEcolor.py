@@ -12,7 +12,7 @@ import scipy.io
 import time
 import argparse
 import matplotlib.pyplot as plt
-from scipy.optimize import check_grad
+#from scipy.optimize import check_grad
 #from random import randint
 import dataPrepColor
 
@@ -169,7 +169,8 @@ totStart = time.time()
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
 dat = dat[:g.m, :, :]
-dat = dat.reshape(g.m, 64*3)
+whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
+a1 = whitenedDat.reshape(g.m, 64*3)
 
 #g.m = len(y)
 #dat = Norm(dat)
@@ -185,29 +186,29 @@ WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 
 # CALCULATING IDEAL W MATRICES
 # Check the cost of the initial W matrices
-print 'Initial W JCost: ', RegJCost(WAll, dat) 
+print 'Initial W JCost: ', RegJCost(WAll, a1) 
 
 # Check the gradient. Go up and uncomment the import check_grad to use. ~1.84242805087e-05 for 100 for randomized Ws and bs
-print check_grad(RegJCost, BackProp, WAll, dat)
+#print check_grad(RegJCost, BackProp, WAll, a1)
 
-## Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
-## Since python 2.7.8 wants dat to be wrapped in another array, we use this
-#if g.oak == 'true':
-#	arg = np.asarray([dat])
-#elif g.oak == 'false':
-#	arg = dat
+# Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
+# Since python 2.7.8 wants dat to be wrapped in another array, we use this
+if g.oak == 'true':
+	arg = np.asarray([dat])
+elif g.oak == 'false':
+	arg = dat
 
-#res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg) ) # options = {'disp':True}
-#bestWAll = res.x
+res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg) ) # options = {'disp':True}
+bestWAll = res.x
 
-#print 'Final W JCost', RegJCost(bestWAll, dat)
+print 'Final W JCost', RegJCost(bestWAll, dat)
 
-#saveW(bestWAll)
+saveW(bestWAll)
 
-## Stop the timestamp and print out the total time
-#totend = time.time()
-#print ' '
-#print'sparAE.py took ', totend - totStart, 'seconds to run'
+# Stop the timestamp and print out the total time
+totend = time.time()
+print ' '
+print'sparAE.py took ', totend - totStart, 'seconds to run'
 
 
 

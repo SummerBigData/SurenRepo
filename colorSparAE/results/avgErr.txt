@@ -1,0 +1,14 @@
+AutoEncoder Average Error:
+
+Namespace(beta=0.5, eps=0.12, f1=192, f2=400, lamb=10.0, m=100000, rho=0.05, tolexp=-4)
+0.18055579310113087
+
+Namespace(beta=0.5, eps=0.12, f1=192, f2=400, lamb=20.0, m=100000, rho=0.05, tolexp=-4)
+0.1864103249230347
+
+Namespace(beta=0.5, eps=0.12, f1=192, f2=400, lamb=50.0, m=100000, rho=0.05, tolexp=-4)
+0.19322091421234144
+
+Namespace(beta=0.5, eps=0.12, f1=192, f2=400, lamb=100.0, m=100000, rho=0.05, tolexp=-4)
+0.20546898820736964
+

@@ -49,10 +49,11 @@ print ' '
 
 # Calculate the Hypothesis for a1 -> a2
 def hypoA12(W, b, dat):
-	oldhypo = np.matmul(W, dat.T) + b
-	oldhypo = np.array(oldhypo, dtype=np.float128)	# Helps prevent overflow errors
-	newhypo = 1.0/(1.0+np.exp(-oldhypo))	
-	return np.array(newhypo.T, dtype=np.float64)
+	#oldhypo = np.matmul(W, dat.T) + b
+	#oldhypo = np.array(oldhypo, dtype=np.float128)	# Helps prevent overflow errors
+	newhypo = 1.0/(1.0+np.exp(-np.matmul(W, dat.T) - b))
+	#newhypo = 1.0/(1.0+np.exp(-oldhypo))	
+	return newhypo.T  #np.array(newhypo.T, dtype=np.float64)
 
 # Calculate the Hypothesis for a2 -> a3
 def hypoA23(W, b, dat):

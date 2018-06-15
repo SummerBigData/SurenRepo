@@ -103,8 +103,9 @@ def Norm(mat):
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
 dat = dat[-10000:, :, :]
-a1 = dat.reshape(10000, 64*3)
-
+whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
+a1 = whitenedDat.reshape(10000, 64*3)
+a1 = Norm(a1)
 # Obtain the best theta values from the text file
 bestWAll = np.genfromtxt(saveStr, dtype=float)
 
@@ -123,7 +124,7 @@ prob = np.zeros((g.m, g.f1))
 for i in range(g.m):
 	prob[i] = np.abs(a1[i]-a3[i])
 
-print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)', np.mean(prob, axis=0)
+print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)', np.mean(prob)
 
 
 # SHOW IMAGES
@@ -159,7 +160,8 @@ plt.show()
 # We also want a picture of the activations for each node in the hidden layer
 W1, W2, b1, b2 = unLinWAll(bestWAll)
 W1Len = np.sum(W1**2)**(-0.5)
-X = W1 / W1Len			
+X = W1 / W1Len	
+X = np.matmul(X, ZCAmat)		
 X = Norm(X)
 
 picX = np.zeros((g.f2,s,s, 3))

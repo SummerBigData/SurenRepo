@@ -16,16 +16,18 @@ pixlen = 64
 collen = 3
 eps = 0.1
 
+saveStr = 'data/m'+str(datlen/1000.0)+'kZCA.out'
+
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
+# Save the WAll values
+def save(vec):
+	np.savetxt(saveStr, vec, delimiter=',')
 
 def PlotImg(mat):
 	import matplotlib.pyplot as plt
 	imgplot = plt.imshow(mat, cmap="binary", interpolation='none') 
 	plt.show()
-
-def savePics(vec):
-	np.savetxt(saveStr, vec, delimiter=',')
 
 def col(matrix, i):
 	return np.asarray([row[i] for row in matrix])
@@ -78,9 +80,10 @@ def zcaWhite(inputs):	# To see how long the code runs for, we start a timestamp
 
 
 
-#dat = GenDat()
+dat = GenDat()
 
-#ZCA, ZCAmat = zca_whitening(dat) # 100k x 192 and 192 x 192
+ZCA, ZCAmat = zcaWhite(dat) # 100k x 192 and 192 x 192
+save(np.ravel(ZCAmat))
 #ZCA = Norm(ZCA)
 #print np.amax(dat)
 #vline = np.ones((8, 1, 3))

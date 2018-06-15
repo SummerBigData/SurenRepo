@@ -12,7 +12,7 @@ import scipy.io
 import time
 import argparse
 import matplotlib.pyplot as plt
-#from scipy.optimize import check_grad
+from scipy.optimize import check_grad
 #from random import randint
 import dataPrepColor
 
@@ -76,7 +76,7 @@ def unLinWAll(vec):
 	W2 = np.asarray([vec[g.f2*g.f1 		: g.f2*g.f1*2]])
 	b1 = np.asarray([vec[g.f2*g.f1*2 	: g.f2*g.f1*2 + g.f2]])
 	b2 = np.asarray([vec[ g.f2*g.f1*2 + g.f2 : g.f2*g.f1*2 + g.f2 + g.f1]])
-	return W1.reshape(g.f2, g.f1) , W2.reshape(g.f1, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f1, 1)
+	return W1.reshape(g.f2, g.f1) , W2.reshape(g.f1, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f1, 1
 
 
 # Calculate the Hypothesis for a1 -> a2
@@ -171,6 +171,7 @@ dat = dataPrepColor.GenDat()	# 100k x 64 x 3
 dat = dat[:g.m, :, :]
 whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
 a1 = whitenedDat.reshape(g.m, 64*3)
+a1 = Norm(a1)
 
 #g.m = len(y)
 #dat = Norm(dat)
@@ -189,26 +190,26 @@ WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 print 'Initial W JCost: ', RegJCost(WAll, a1) 
 
 # Check the gradient. Go up and uncomment the import check_grad to use. ~1.84242805087e-05 for 100 for randomized Ws and bs
-#print check_grad(RegJCost, BackProp, WAll, a1)
+print check_grad(RegJCost, BackProp, WAll, a1)
 
-# Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
-# Since python 2.7.8 wants dat to be wrapped in another array, we use this
-if g.oak == 'true':
-	arg = np.asarray([dat])
-elif g.oak == 'false':
-	arg = dat
+## Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'
+## Since python 2.7.8 wants dat to be wrapped in another array, we use this
+#if g.oak == 'true':
+#	arg = np.asarray([a1])
+#elif g.oak == 'false':
+#	arg = a1
 
-res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg) ) # options = {'disp':True}
-bestWAll = res.x
+#res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg) ) # options = {'disp':True}
+#bestWAll = res.x
 
-print 'Final W JCost', RegJCost(bestWAll, dat)
+#print 'Final W JCost', RegJCost(bestWAll, a1)
 
-saveW(bestWAll)
+#saveW(bestWAll)
 
-# Stop the timestamp and print out the total time
-totend = time.time()
-print ' '
-print'sparAE.py took ', totend - totStart, 'seconds to run'
+## Stop the timestamp and print out the total time
+#totend = time.time()
+#print ' '
+#print'sparAE.py took ', totend - totStart, 'seconds to run'
 
 
 

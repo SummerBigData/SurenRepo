@@ -100,12 +100,21 @@ def Norm(mat):
 
 # DATA PROCESSING
 
+
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
-dat = dat[-10000:, :, :]
+dat = dat[:g.m, :, :]
 whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
-a1 = whitenedDat.reshape(10000, 64*3)
-a1 = Norm(a1)
+
+# Another way, pull the matrix from the saved data
+#ZCAmat = np.genfromtxt('data/m100.0kZCA.out', dtype=float).reshape(192,192)
+
+# Reshape and normalize the data
+a1 = Norm(whitenedDat.reshape(g.m, g.f1))
+#print np.amax(dat), np.amin(dat)
+
+
+
 # Obtain the best theta values from the text file
 bestWAll = np.genfromtxt(saveStr, dtype=float)
 

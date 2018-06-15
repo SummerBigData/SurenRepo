@@ -80,10 +80,12 @@ def zcaWhite(inputs):	# To see how long the code runs for, we start a timestamp
 
 
 
-dat = GenDat()
+#dat = GenDat()
 
-ZCA, ZCAmat = zcaWhite(dat) # 100k x 192 and 192 x 192
-save(np.ravel(ZCAmat))
+#ZCA, ZCAmat = zcaWhite(dat) # 100k x 192 and 192 x 192
+#save(np.ravel(ZCAmat))
+
+
 #ZCA = Norm(ZCA)
 #print np.amax(dat)
 #vline = np.ones((8, 1, 3))

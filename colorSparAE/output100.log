@@ -1,0 +1,14 @@
+You have chosen: Namespace(beta=0.5, eps=0.12, f1=192, f2=400, lamb=0.1, m=100000, oak='false', rho=0.05, tolexp=-4)
+Will be saved in: WArrs/m100000Tol-4Lamb0.1beta0.5.out
+ 
+Running dataPrepColor.py, GenDat
+dataPrepColor.py's GenDat took  0.966169118881 seconds to run
+ 
+Running dataPrepColor.py, ZCAwhite
+dataPrepColor.py's ZCAwhite took  1.23264908791 seconds to run
+ 
+Initial W JCost:  172.32315148547343
+Global Step:  50 with JCost:  0.15825894488785502
+Final W JCost 0.13287020523575116
+ 
+sparAE.py took  1271.36619496 seconds to run

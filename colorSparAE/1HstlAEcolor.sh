@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u stlAEcolor.py 100000 $PBS_ARRAYID 5 -4 false >& output$PBS_ARRAYID.log
+python -u stlAEcolor.py 100000 1 3 -4 >& output1_3.log

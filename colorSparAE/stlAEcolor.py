@@ -29,7 +29,7 @@ parser.add_argument("lamb", help="Milli-lambda, the overfitting knob", type=floa
 parser.add_argument("beta", help="deci-beta, sparsity knob", type=float)
 #parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
 parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
-parser.add_argument("oak", help="Is this code being run on oakley or on a higher python version?", type=str)
+#parser.add_argument("oak", help="Is this code being run on oakley or on a higher python version?", type=str)
 
 g = parser.parse_args()
 
@@ -38,10 +38,10 @@ gStep = 0
 g.eps = 0.12
 g.f1 = 192
 g.f2 = 400
-g.rho = 0.05
+g.rho = 0.035
 #g.beta = 3
-g.lamb /= 1000.0
-g.beta /= 10.0
+g.lamb /= 1.0
+#g.beta /= 10.0
 
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
 
@@ -175,7 +175,10 @@ whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
 #ZCAmat = np.genfromtxt('data/m100.0kZCA.out', dtype=float).reshape(192,192)
 
 # Reshape and normalize the data
-a1 = Norm(whitenedDat.reshape(g.m, g.f1))
+a1 = whitenedDat.reshape(g.m, g.f1)
+for i in range(g.m):
+	a1[i] = Norm(a1[i])
+
 #print np.amax(dat), np.amin(dat)
 
 

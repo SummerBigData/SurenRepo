@@ -19,7 +19,7 @@ import dataPrepColor
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
+parser.add_argument("m", help="Number of Datapoints, usually 100000", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
@@ -31,12 +31,15 @@ g = parser.parse_args()
 
 #g.m = 0 # Will be adjusted later
 gStep = 0
+
 g.eps = 0.12
 g.f1 = 192
 g.f2 = 400
-g.rho = 0.05
+g.rho = 0.035
 #g.beta = 3
 saveStr = 'WArrs/m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
+
+g.m = 100000
 
 print 'You have chosen:', g
 print ' '
@@ -111,7 +114,9 @@ whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
 #ZCAmat = np.genfromtxt('data/m100.0kZCA.out', dtype=float).reshape(192,192)
 
 # Reshape and normalize the data
-a1 = Norm(whitenedDat.reshape(g.m, g.f1))
+a1 = whitenedDat.reshape(g.m, g.f1)
+for i in range(g.m):
+	a1[i] = Norm(a1[i])
 #print np.amax(dat), np.amin(dat)
 
 
@@ -126,8 +131,12 @@ a2, a3 = ForwardProp(bestWAll, a1)
 
 for i in range(g.m):
 	a2[i] = Norm(a2[i])
-	a3[i] = Norm(a3[i])
+	#a3[i] = Norm(a3[i])
 
+# Check that all three
+print np.amin(dat), np.amax(dat)
+print np.amin(a1[2]), np.amax(a1[2])
+print np.amin(a3), np.amax(a3)
 
 # PROBABILITIES
 prob = np.zeros((g.m, g.f1))
@@ -145,18 +154,18 @@ s = int((g.f1/3)**(0.5))
 v = 8	# How many pictures in a coumn
 linsp = 2
 
-vspace = np.zeros((linsp, linsp*3+s*2, 3))
+vspace = np.zeros((linsp, linsp*4+s*3, 3))
 hspace = np.zeros((s, linsp, 3))
 picAll = vspace
 
 for i in range(10):
 	# Store the pictures
-	picA1 = np.reshape(np.ravel(a1[i]), (s,s, 3))
-	#picA2 = np.reshape(np.ravel(a2[i]), (sa2,sa2,3))
+	picA1 = np.reshape(dat[i], (s,s,3))
+	picA2 = np.reshape(np.ravel(a1[i]), (s,s, 3))
 	picA3 = np.reshape(np.ravel(a3[i]), (s,s, 3))
 	
 	# We stitch the horizontal pictures together
-	picAlli = np.concatenate((hspace, picA1, hspace, picA3, hspace), axis = 1)
+	picAlli = np.concatenate((hspace, picA1, hspace, picA2, hspace, picA3, hspace), axis = 1)
 	# Finally, add this to the picAll
 	picAll = np.vstack((picAll, picAlli, vspace))
 
@@ -172,7 +181,8 @@ W1, W2, b1, b2 = unLinWAll(bestWAll)
 W1Len = np.sum(W1**2)**(-0.5)
 X = W1 / W1Len	
 X = np.matmul(X, ZCAmat)		
-X = Norm(X)
+for i in range(g.f2):
+	X[i] = Norm(X[i])
 
 picX = np.zeros((g.f2,s,s, 3))
 for i in range(g.f2):

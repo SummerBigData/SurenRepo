@@ -168,16 +168,16 @@ totStart = time.time()
 
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
-dat = dat[:g.m, :, :]
-whitenedDat, ZCAmat, dat = dataPrepColor.SamzcaWhite(dat)
+dat = dat[:g.m, :]
+a1, ZCAmat, dat = dataPrepColor.SamzcaWhite(dat)
 
 # Another way, pull the matrix from the saved data
 #ZCAmat = np.genfromtxt('data/m100.0kZCA.out', dtype=float).reshape(192,192)
 
 # Reshape and normalize the data
-a1 = whitenedDat.reshape(g.m, g.f1)
-for i in range(g.m):
-	a1[i] = Norm(a1[i])
+#a1 = whitenedDat.reshape(g.m, g.f1)
+#for i in range(g.m):
+#	a1[i] = Norm(a1[i])
 
 #print np.amax(dat), np.amin(dat)
 

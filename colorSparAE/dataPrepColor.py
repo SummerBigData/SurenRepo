@@ -6,7 +6,6 @@
 
 import numpy as np
 import time
-
 import scipy.io
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
@@ -48,7 +47,7 @@ def GenDat():
 
 	# Get the data. It is 192 x 100k, so we transpose into 100k x 192
 	data = scipy.io.loadmat('data/stlSampledPatches.mat')['patches'].T
-	data = data.reshape((datlen, pixlen, collen))
+	#data = data.reshape((datlen, pixlen, collen))
 
 	# Stop the timestamp and print out the total time
 	totend = time.time()
@@ -79,11 +78,11 @@ def zcaWhite(inputs):	# To see how long the code runs for, we start a timestamp
 	return np.dot(inputs, ZCAMatrix), ZCAMatrix	# Return the whitened image and the matrix
 
 def SamzcaWhite(X):
-	# Reshape the data into 100k x 192
-	datl = X.shape[0]
-	pixl = X.shape[1]
-	coll = X.shape[2]
-	X = X.reshape((datl, pixl*coll))
+#	# Reshape the data into 100k x 192
+#	datl = X.shape[0]
+#	pixl = X.shape[1]
+#	coll = X.shape[2]
+#	X = X.reshape((datl, pixl*coll))
 
 	mu = np.mean(X, axis=0).reshape(1, X.shape[1])
 	X -= np.tile(mu, (X.shape[0], 1))

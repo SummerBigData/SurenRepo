@@ -144,7 +144,7 @@ def display_encoding(W, samp_size=400):
 
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
-dat = dat[:g.m, :, :]
+dat = dat[:g.m, :]
 whitenedDat, ZCAmat, dat = dataPrepColor.SamzcaWhite(dat)
 
 # Another way, pull the matrix from the saved data
@@ -153,7 +153,7 @@ whitenedDat, ZCAmat, dat = dataPrepColor.SamzcaWhite(dat)
 # Reshape and normalize the data
 a1 = whitenedDat.reshape(g.m, g.f1)
 #for i in range(g.m):
-#	a1[i] = Norm(a1[i])
+	#a1[i] = Norm(a1[i])
 #print np.amax(dat), np.amin(dat)
 
 
@@ -220,8 +220,11 @@ W1Len = np.sum(W1**2, axis=1)**(-0.5)
 X = W1Len.reshape(g.f2, 1) * W1	
 X = np.matmul(X, ZCAmat)	
 	
-for i in range(g.f2):
-	X[i] = Norm(X[i])
+X = (X+1.0)/2.0
+
+
+#for i in range(g.f2):
+#	X[i] = Norm(X[i])
 
 picX = np.zeros((g.f2,s,s, 3))
 for i in range(g.f2):
@@ -235,8 +238,8 @@ v = 20	# How many pictures in a coumn
 linsp = 2
 
 # Note, all at 1 == white. All at 0 == black. 
-hblack = np.zeros((linsp, s*h+linsp*(v+1), 3))
-vblack = np.zeros((s, linsp, 3))
+hblack = np.zeros((linsp, s*h+linsp*(v+1), 3))*np.amax(picX)
+vblack = np.zeros((s, linsp, 3))*np.amax(picX)
 
 picAll = hblack
 for i in range(v):

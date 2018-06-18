@@ -1,4 +1,4 @@
-#PBS -N RunstlAEcolor_testing
+#PBS -N RunstlAEcolor_testingL5B5
 #PBS -l walltime=01:30:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u stlAEcolor.py 100000 1 3 -4 >& output1_3.log
+python -u stlAEcolor.py 100000 5 5 -4 >& output5_5.log

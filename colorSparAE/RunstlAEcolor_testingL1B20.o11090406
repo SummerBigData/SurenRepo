@@ -1,0 +1,17 @@
+/users/PAS1383/osu10171/SurenRepo/colorSparAE
+=>> PBS: job killed: walltime 5401 exceeded limit 5400
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=01:29:51
+walltime=01:30:01
+mem=2.206 GB
+vmem=2.847 GB
+-----------------------
+Resource units charged (estimate):
+0.600 RUs
+-----------------------

@@ -1,0 +1,8 @@
+You have chosen: Namespace(beta=5.0, eps=0.12, f1=192, f2=400, lamb=0.003, m=100000, rho=0.035, tolexp=-4)
+Will be saved in: WArrs/m100000Tol-4Lamb0.003beta5.0.out
+ 
+Running dataPrepColor.py, GenDat
+dataPrepColor.py's GenDat took  7.26407885551 seconds to run
+ 
+Initial W JCost:  1196.388950861563
+Global Step:  50 with JCost:  3.802643570848457

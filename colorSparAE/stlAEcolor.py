@@ -37,7 +37,7 @@ g = parser.parse_args()
 gStep = 0
 g.eps = 0.12
 g.f1 = 192
-g.f2 = 400
+g.f2 = 400 #400
 g.rho = 0.035
 #g.beta = 3
 g.lamb /= 1.0
@@ -110,7 +110,7 @@ def RegJCost(WAll, a1):
 	phat = (1.0 / g.m)*np.sum(a2, axis=0) # 25 len vector
 	# Calculate J(W, b)
 	J = (0.5/g.m)*np.sum((a3 - a1)**2)
-	J = J + (0.5/g.m)*g.lamb * (np.sum(W1**2)+np.sum(W2**2))
+	J = J + 0.5*g.lamb * (np.sum(W1**2)+np.sum(W2**2))
 	J = J + g.beta * np.sum(   g.rho*np.log(g.rho / phat) + (1-g.rho)*np.log((1-g.rho)/(1-phat))  )
 	return J
 
@@ -147,7 +147,7 @@ def BackProp(WAll, a1):
 	Db1 = np.mean(delta2, axis = 0) # (25,) vector
 	Db2 = np.mean(delta3, axis = 0) # (64,) vector
 
-	return Lin4( (1.0/g.m)*(DW1 + g.lamb*W1) , (1.0/g.m)*(DW2 + g.lamb*W2) , Db1 , Db2 )
+	return Lin4( (1.0/g.m)*DW1 + g.lamb*W1 , (1.0/g.m)*DW2 + g.lamb*W2 , Db1 , Db2 )
 
 def Norm(mat):
 	Min = np.amin(mat)
@@ -169,7 +169,7 @@ totStart = time.time()
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
 dat = dat[:g.m, :, :]
-whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
+whitenedDat, ZCAmat, dat = dataPrepColor.SamzcaWhite(dat)
 
 # Another way, pull the matrix from the saved data
 #ZCAmat = np.genfromtxt('data/m100.0kZCA.out', dtype=float).reshape(192,192)
@@ -196,7 +196,7 @@ WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 # Check the cost of the initial W matrices
 print 'Initial W JCost: ', RegJCost(WAll, a1) 
 
-# Check the gradient. Go up and uncomment the import check_grad to use. ~1.84242805087e-05 for 100 for randomized Ws and bs
+# Check the gradient. Go up and uncomment the import check_grad to use. ~6.38411247537693e-05 for 100 for randomized Ws and bs w/ g.f2=20
 #print check_grad(RegJCost, BackProp, WAll, a1)
 
 # Calculate the best theta values for a given j and store them. Usually tol=10e-4. usually 'CG'

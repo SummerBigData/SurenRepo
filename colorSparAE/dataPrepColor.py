@@ -78,22 +78,55 @@ def zcaWhite(inputs):	# To see how long the code runs for, we start a timestamp
 
 	return np.dot(inputs, ZCAMatrix), ZCAMatrix	# Return the whitened image and the matrix
 
+def SamzcaWhite(X):
+	# Reshape the data into 100k x 192
+	datl = X.shape[0]
+	pixl = X.shape[1]
+	coll = X.shape[2]
+	X = X.reshape((datl, pixl*coll))
+
+	mu = np.mean(X, axis=0).reshape(1, X.shape[1])
+	X -= np.tile(mu, (X.shape[0], 1))
+	Sigma = np.dot(X.T, X)/X.shape[0]
+	U, S, _ = np.linalg.svd(Sigma)
+	S = S.reshape(len(S), 1)
+	epsilon = 0.1
+	l_mat = np.diag(1.0/np.sqrt(S.flatten() + epsilon))
+	ZCA_mat = U.dot(l_mat).dot(U.T)
+	return X.dot(ZCA_mat), ZCA_mat, X
 
 
 #dat = GenDat()
 
+## Reshape and normalize the data
+##for i in range(dat.shape[0]):
+##	dat[i] = Norm(dat[i])
+
+#print np.amin(dat), np.amax(dat)
+#print np.amin(dat[1]), np.amax(dat[1])
+
 #ZCA, ZCAmat = zcaWhite(dat) # 100k x 192 and 192 x 192
-#save(np.ravel(ZCAmat))
+##save(np.ravel(ZCAmat))
 
+#ZCAsam, ZCAmatsam = SamzcaWhite(dat)
 
+## Reshape and normalize the data
+#for i in range(dat.shape[0]):
+#	ZCA[i] = Norm(ZCA[i])
+#	ZCAsam[i] = Norm(ZCAsam[i])
+
+#print np.amin(dat[1]), np.amax(dat[1])
+#print np.amin(ZCA[1]), np.amax(ZCA[1])
+#print np.amin(ZCAsam[1]), np.amax(ZCAsam[1])
 #ZCA = Norm(ZCA)
-#print np.amax(dat)
+
+
 #vline = np.ones((8, 1, 3))
-#hline = np.ones((1, 8*2+3, 3))
+#hline = np.ones((1, 8*3+4, 3))
 #picAll = hline
 
-#for i in range(5):
-#	pici = np.hstack((vline, dat[i].reshape(8,8,3), vline, ZCA[i].reshape(8,8,3), vline))
+#for i in range(10):
+#	pici = np.hstack((vline, dat[i].reshape(8,8,3), vline, ZCA[i].reshape(8,8,3), vline,ZCAsam[i].reshape(8,8,3), vline))
 #	picAll = np.vstack((picAll, pici, hline))
 
 #PlotImg(picAll)

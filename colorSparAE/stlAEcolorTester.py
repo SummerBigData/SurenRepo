@@ -108,15 +108,15 @@ def Norm(mat):
 # Get data. Call the data by acccessing the function in dataPrepColor
 dat = dataPrepColor.GenDat()	# 100k x 64 x 3
 dat = dat[:g.m, :, :]
-whitenedDat, ZCAmat = dataPrepColor.zcaWhite(dat)
+whitenedDat, ZCAmat, dat = dataPrepColor.SamzcaWhite(dat)
 
 # Another way, pull the matrix from the saved data
 #ZCAmat = np.genfromtxt('data/m100.0kZCA.out', dtype=float).reshape(192,192)
 
 # Reshape and normalize the data
 a1 = whitenedDat.reshape(g.m, g.f1)
-for i in range(g.m):
-	a1[i] = Norm(a1[i])
+#for i in range(g.m):
+#	a1[i] = Norm(a1[i])
 #print np.amax(dat), np.amin(dat)
 
 
@@ -129,9 +129,9 @@ bestWAll = np.genfromtxt(saveStr, dtype=float)
 # Feed the best W and b vals into forward propagation
 a2, a3 = ForwardProp(bestWAll, a1)
 
-for i in range(g.m):
-	a2[i] = Norm(a2[i])
-	#a3[i] = Norm(a3[i])
+#for i in range(g.m):
+#	a2[i] = Norm(a2[i])
+#	a3[i] = Norm(a3[i])
 
 # Check that all three
 print np.amin(dat), np.amax(dat)
@@ -151,36 +151,38 @@ print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)
 s = int((g.f1/3)**(0.5))
 
 # Pic Facts
-v = 8	# How many pictures in a coumn
+v = 8	# How many pictures in a column
+h = 2	# How many pictures in a row
 linsp = 2
 
-vspace = np.zeros((linsp, linsp*4+s*3, 3))
+vspace = np.zeros((linsp, linsp*(h+1)+s*h, 3))
 hspace = np.zeros((s, linsp, 3))
 picAll = vspace
 
 for i in range(10):
 	# Store the pictures
-	picA1 = np.reshape(dat[i], (s,s,3))
+	#picA1 = np.reshape(dat[i], (s,s,3))
 	picA2 = np.reshape(np.ravel(a1[i]), (s,s, 3))
 	picA3 = np.reshape(np.ravel(a3[i]), (s,s, 3))
 	
 	# We stitch the horizontal pictures together
-	picAlli = np.concatenate((hspace, picA1, hspace, picA2, hspace, picA3, hspace), axis = 1)
+	picAlli = np.concatenate((hspace, picA2, hspace, picA3, hspace), axis = 1)
 	# Finally, add this to the picAll
 	picAll = np.vstack((picAll, picAlli, vspace))
 
 # Display the pictures
 imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/a123m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+plt.savefig('res2/a123m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
 
 
 
 # We also want a picture of the activations for each node in the hidden layer
 W1, W2, b1, b2 = unLinWAll(bestWAll)
-W1Len = np.sum(W1**2)**(-0.5)
-X = W1 / W1Len	
-X = np.matmul(X, ZCAmat)		
+W1Len = np.sum(W1**2, axis=1)**(-0.5)
+X = W1Len.reshape(g.f2, 1) * W1	
+X = np.matmul(X, ZCAmat)	
+	
 for i in range(g.f2):
 	X[i] = Norm(X[i])
 
@@ -207,8 +209,8 @@ for i in range(v):
 	picAll = np.vstack((picAll, pici, hblack))
 
 # Display the pictures
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.savefig('results/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+imgplot = plt.imshow(picAll, cmap="binary") #interpolation='nearest') 
+plt.savefig('res2/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
 
 

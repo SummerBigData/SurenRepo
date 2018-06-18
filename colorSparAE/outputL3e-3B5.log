@@ -2,14 +2,12 @@ You have chosen: Namespace(beta=5.0, eps=0.12, f1=192, f2=400, lamb=0.003, m=100
 Will be saved in: WArrs/m100000Tol-4Lamb0.003beta5.0.out
  
 Running dataPrepColor.py, GenDat
-dataPrepColor.py's GenDat took  3.10240292549 seconds to run
+dataPrepColor.py's GenDat took  1.02890610695 seconds to run
  
-Initial W JCost:  1212.1026029970544
-Global Step:  50 with JCost:  3.7963732537504327
-Global Step:  100 with JCost:  3.3151446713388855
-Global Step:  150 with JCost:  2.9694743752469672
-Global Step:  200 with JCost:  2.8764624113115653
-Saving Global Step :  200
-Final W JCost 2.874121589756349
+Initial W JCost:  1136.6634057741849
+Global Step:  50 with JCost:  4.300268718966671
+Global Step:  100 with JCost:  4.052361934462862
+Global Step:  150 with JCost:  3.9354967995252412
+Final W JCost 3.9109811804181733
  
-sparAE.py took  5081.22878599 seconds to run
+sparAE.py took  3623.1636889 seconds to run

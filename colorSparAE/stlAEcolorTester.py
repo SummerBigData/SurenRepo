@@ -98,6 +98,43 @@ def Norm(mat):
 	nMax = 1
 	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
 
+
+
+def display_encoding(W, samp_size=400):
+    W = (W + 1.0) / 2.0
+    dim = int(np.sqrt(W.shape[1]/3.0))
+    print W.shape, dim
+
+    grid_dim = int(np.sqrt(samp_size))
+    padding = 2
+    w, h = grid_dim*dim + padding*(grid_dim+1), grid_dim*dim + padding*(grid_dim+1)
+    row, col = -1, -1
+    grid = np.zeros((h, w, 3))
+    #grid -= 1
+
+    for x in W:
+        col += 1
+        if col % grid_dim == 0:
+            col = 0
+            row += 1
+
+        x_left = dim*col + (col+1)*padding
+        x_right = dim*(col+1) + (col+1)*padding
+        y_top = dim*row + (row+1)*padding
+        y_bottom = dim*(row+1) + (row+1)*padding
+
+        s = dim**2
+        img = np.zeros((dim, dim, 3))
+        img[:,:,0] = x[:s].reshape(dim, dim)
+        img[:,:,1] = x[s:2*s].reshape(dim, dim)
+        img[:,:,2] = x[2*s:].reshape(dim, dim)
+
+        grid[y_top:y_bottom, x_left:x_right] = img
+
+    plt.imshow(grid, interpolation='nearest')
+    plt.show()
+
+
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
@@ -188,8 +225,9 @@ for i in range(g.f2):
 
 picX = np.zeros((g.f2,s,s, 3))
 for i in range(g.f2):
-	picX[i] = np.reshape(np.ravel(X[i]), (s,s, 3))
-
+	picX[i:i+1,:,:,0:1] = np.reshape(np.ravel(X[i][:64]), (1,s,s,1))
+	picX[i:i+1,:,:,1:2] = np.reshape(np.ravel(X[i][64:128]), (1,s,s,1))
+	picX[i:i+1,:,:,2:3] = np.reshape(np.ravel(X[i][128:]), (1,s,s,1))
 
 # Pic Facts
 h = 20 	# How many pictures in a row
@@ -209,14 +247,15 @@ for i in range(v):
 	picAll = np.vstack((picAll, pici, hblack))
 
 # Display the pictures
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='nearest') 
+
+imgplot = plt.imshow(picAll, interpolation='nearest') 
 plt.savefig('res2/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
 
 
 
 
-
+display_encoding(X, 400)
 
 
 

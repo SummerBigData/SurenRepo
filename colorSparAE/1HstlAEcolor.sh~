@@ -1,5 +1,5 @@
 #PBS -N RunstlAEcolor_testingL3e-3B5
-#PBS -l walltime=01:30:00
+#PBS -l walltime=02:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe

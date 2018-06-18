@@ -1,0 +1,16 @@
+/users/PAS1383/osu10171/SurenRepo/colorSparAE
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=01:01:47
+walltime=01:02:58
+mem=2.195 GB
+vmem=2.843 GB
+-----------------------
+Resource units charged (estimate):
+0.419 RUs
+-----------------------

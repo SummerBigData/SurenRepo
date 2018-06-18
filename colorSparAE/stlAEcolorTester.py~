@@ -209,7 +209,7 @@ for i in range(v):
 	picAll = np.vstack((picAll, pici, hblack))
 
 # Display the pictures
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='nearest') 
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='bilinear') 
 plt.savefig('res2/aHLm' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
 plt.show()
 

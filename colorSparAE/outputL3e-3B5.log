@@ -6,3 +6,10 @@ dataPrepColor.py's GenDat took  7.26407885551 seconds to run
  
 Initial W JCost:  1196.388950861563
 Global Step:  50 with JCost:  3.802643570848457
+Global Step:  100 with JCost:  3.2995648885289626
+Global Step:  150 with JCost:  2.960591660076854
+Global Step:  200 with JCost:  2.8702955081531583
+Saving Global Step :  200
+Final W JCost 2.8700751979625516
+ 
+sparAE.py took  3712.40720797 seconds to run

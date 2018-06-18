@@ -34,7 +34,7 @@ g.f1 = 192
 g.f2 = 400
 g.m = 100000
 
-saveStr = 'data/m1000Tol-4Lamb0.003beta5.0.out'
+saveStr = 'data/m100000Tol-4Lamb0.003beta5.0.out'
 
 print 'You have chosen:', g
 print ' '
@@ -50,14 +50,16 @@ def conv(img, mat):
 def sig(x):
 	return 1.0 / (1.0 + np.exp(-x))
 
-def Convolve(imgs, W, b, ZCAmat, mpatch):
-	
+def Convolve(imgs, WT, b, mpatch):
 	convImg = np.zeros(( ))
+
 	for i in range(imgs.shape[0]):			# For each image
-		for j in range(W.shape[0]):		# For each feature
+		for j in range(WT.shape[0]):		# For each feature
 			for k in range(imgs.shape[3]):	# For each color
-				WT = W[j].dot(ZCAmat)
-				convImg = sig( WT.dot(imgs[i,:,:,k]) - WT.dot(mpatch) + b) 
+				print WT[i,:,:,k].shape
+				#(64, 64) (8, 8, 3) (400, 1)
+				convImg = sig( conv(imgs[i,:,:,k], WT[i,:,:,k]) 
+						- WT[i,:,:,k].dot(mpatch[:,:,k]) + b[j]) 
 	return convImg
 
 # Unlinearize: Take a vector, break it into two vectors, and roll it back up
@@ -93,7 +95,16 @@ mSqpatch[:,:,2] = mpatch[128:].reshape(8, 8)
 bestWAll = np.genfromtxt(saveStr, dtype=float)
 W1, b1 = unLinWAll(bestWAll)	#(400, 192) (400, 1)
 
-print Convolve(imgs, W1, b1, ZCAmat, mSqpatch).shape
+# Reorganize the W.T as a 400 x 8 x 8 x 3
+WT2d = W1.dot(ZCAmat)	# (400, 192)
+WT = np.zeros((WT2d.shape[0], 8, 8, 3))
+for i in range(WT2d.shape[0]):
+	WT[i,:,:,0] = WT2d[i,:64].reshape(8, 8)
+	WT[i,:,:,1] = WT2d[i,64:128].reshape(8, 8)
+	WT[i,:,:,2] = WT2d[i,128:].reshape(8, 8)
+
+
+print Convolve(imgs, WT, b1, mSqpatch).shape
 
 
 

@@ -1,247 +1,199 @@
 # Written by: 	Suren Gourapura
-# Written on: 	June 18, 2018
+# Written on: 	June 19, 2018
 # Purpose: 	To write a Convolutional Neural Network
 # Source:	Following directions from: http://deeplearning.stanford.edu/wiki/index.php/Exercise:Convolution_and_Pooling
-# Goal:		Use a trained autoencoder and identify objects in images
+# Goal:		Use convolved and pooled features to train a Neural Network on images
 
 
 import numpy as np
-#from math import log
 from scipy.optimize import minimize
 import scipy.io
 import time
 import argparse
 #import matplotlib.pyplot as plt
 from scipy.optimize import check_grad
-#from random import randint
 import dataPrep
-from scipy.signal import convolve2d
-from random import randint
+
+
+
+#---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("m", help="Number of images, usually 2k", type=int)
+parser.add_argument("CPrate", help="Rate at which we convolve and pool, usually 100", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
-#parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
+parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 #parser.add_argument("beta", help="Beta, sparsity knob", type=float)
 #parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
 #parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
-
 g = parser.parse_args()
+g.step = 0
+g.f1 = 3600
+g.f2 = 36
+g.f3 = 4
+g.tolexp = -4
+g.eps = 0.12
 
-
-g.f1 = 192
-g.f2 = 400
-
-saveStr = 'data/m100000Tol-4Lamb0.003beta5.0.out'
-
+datStr = 'convolvedData/m' + str(g.m) + 'CPRate' + str(g.CPrate) + '.out'
+saveStr = 'WArrs/m' + str(g.m) + 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
 print ' '
 
 
 
-
-# The Convolve2d function flips the matrix before computing, so preliminarily flip it first
-# Also, fill some of the parameters to make it easy to use in Convolve()
-def conv(img, mat):
-	matRevTP = np.flipud(np.fliplr(mat))
-	return convolve2d(img, matRevTP, mode='valid', boundary='fill', fillvalue=0)
+#----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
 
-def ConvPrep(W, ZCAmat, b, mpatch):
-	# Reorganize the W.T as a 400 x 8 x 8 x 3
-	WT2d = W.dot(ZCAmat)	# (400, 192)
-	WT = np.zeros((WT2d.shape[0], 8, 8, 3))
-	for i in range(WT2d.shape[0]):
-		WT[i,:,:,0] = WT2d[i,:64].reshape(8, 8)
-		WT[i,:,:,1] = WT2d[i,64:128].reshape(8, 8)
-		WT[i,:,:,2] = WT2d[i,128:].reshape(8, 8)
-	# Another way
-	#WT = WT2d.reshape(WT2d.shape[0], 8, 8, 3)
-	# Calculate the added component bmean (b - WT.xbar term) 400 x 1
-	bmean = b - WT2d.dot(mpatch.T)
-	return WT, bmean
+# Save the WAll values
+def saveW(vec):
+	np.savetxt(saveStr, vec, delimiter=',')
 
 
-def sig(x):
-	return 1.0 / (1.0 + np.exp(-x))
+# Generate random W matrices with a range [-eps, eps]
+def randMat(x, y):
+	theta = np.random.rand(x,y) 	# Makes a (x) x (y) random matrix of [0,1]
+	return theta*2*g.eps - g.eps	# Make it range [-eps, eps]
 
-def Convolve(imgs, WT, bmean):
-	# 400 x 2k x 57 x 57
-	convImgs = np.zeros((WT.shape[0], imgs.shape[0], imgs.shape[1]-8+1, imgs.shape[2]-8+1))
 
-	for i in range(imgs.shape[0]):			# For each image
-		for f in range(WT.shape[0]):		# For each feature
-			
-			convPatch = np.zeros((imgs.shape[1]-8+1,imgs.shape[2]-8+1))	# 57 x 57
-
-			for c in range(imgs.shape[3]):		# For each color
-				convPatch += conv(imgs[i,:,:,c], WT[f,:,:,c])	#(64, 64) (8, 8) -> 57 x 57
-
-			#convPatch /= 3.0 			# We want average of colors, not sum
-			convPatch += bmean[f,0]			# Add the b - WT.xbar term
-			convImgs[f,i,:,:]= sig(convPatch);	# passing the mean 57 x 57 patch from all channels	
-	return convImgs
-
-#def SquarePatch(patch): # Expecting (1, 192) or 192 vec
-#	patchrav = np.ravel(patch)
-#	patchSq = np.zeros((8,8,3))
-#	patchSq[:,:,0] = patchrav[:64].reshape(8, 8)
-#	patchSq[:,:,1] = patchrav[64:128].reshape(8, 8)
-#	patchSq[:,:,2] = patchrav[128:].reshape(8, 8)
-#	return patchSq
-
-# Calculate the Hypothesis for a1 -> a2
-def hypoA12(W, b, dat):
-	newhypo = sig(np.matmul(W, dat.T) +b)
-	return newhypo.T  
-
-def CheckConv(imgs, convImgs, W, b, ZCAmat, mpatch):
-	dimrow = imgs.shape[1]-8+1	# 57
-	dimcol = imgs.shape[2]-8+1	# 57
-	
-	for i in range(50): #1000
-		# randint(a,b) chooses random int x so that a <= x <= b
-		featnum = randint(0, W.shape[0]-1)
-		imgnum 	= randint(0, 7)			# Only test on the first 8
-		imrow	= randint(0, dimrow-1)
-		imcol	= randint(0, dimcol-1)
-		# Select random 8x8x3 patches to test with
-		testImg = imgs[imgnum, imrow:imrow+8, imcol:imcol+8, :]
-		# Need to flatten the image, specifically in groups of color
-		testImg = np.concatenate((testImg[:,:,0].flatten(),testImg[:,:,1].flatten(),testImg[:,:,2].flatten() ))
-		# Subtract the mean, whiten, and forward propagate
-		testImg -= np.ravel(mpatch)
-		testImg = testImg.reshape(1,192).dot(ZCAmat)
-		testFeat = hypoA12(W, b, testImg)	# 1 x 400
-				# (400, 2k, 57, 57)
-		if abs(convImgs[featnum,imgnum,imrow,imcol] - testFeat[0,featnum]) > 1e-9:
-			print 'problem here at', i, imgnum
-			print convImgs[featnum,imgnum,imrow,imcol] - testFeat[0,featnum]
-	return 'ok'
-
-# Sam's code
-def test_convolution(X, X_conv, W, b, Z, mu):
-	# For sam's code
-	from scipy.special import expit
-    # Test the convolve function by picking 1000 random patches from the input data,
-    # preprocessing it using Z and mu, and feeding it through the SAE (using W and b)
-    #
-    # If the result is close to the convolved patch, we're good
-
-	patch_dim = int(np.sqrt(W.shape[1]/3.0)) # 8
-	conv_dim = X.shape[1] - patch_dim + 1 # 57
-
-	for i in range(100):
-		feat_no = np.random.randint(0, W.shape[0])
-		img_no = np.random.randint(0, X.shape[0])
-		img_row = np.random.randint(0, conv_dim)
-		img_col = np.random.randint(0, conv_dim)
-
-		patch_x = (img_col, img_col+patch_dim)
-		patch_y = (img_row, img_row+patch_dim)
-
-		# Obtain a 8x8x3 patch and flatten it to length 192
-		patch = X[img_no, patch_y[0]:patch_y[1], patch_x[0]:patch_x[1], :]
-
-		patch = np.concatenate((patch[:,:,0].flatten(), patch[:,:,1].flatten(), patch[:,:,2].flatten())).reshape(-1, 1)
-		#patch = patch.reshape(-1, 1)
-
-		# Preprocess the patch
-		patch -= mu.reshape(192,1)
-		patch = Z.dot(patch) 
-
-		# Feed the patch through the autoencoder weights
-		# now sae_patch.shape = (400 192) . (192 1) = (400 1)
-		sae_feat = expit(W.dot(patch) + b)
-
-		# Compare it to the convolved patch
-		conv_feat = X_conv[:,img_no,img_row,img_col]
-		#print conv_feat.reshape(20, 20)
-		err = abs(sae_feat[feat_no, 0] - conv_feat[feat_no])
-		'''
-		import matplotlib.pyplot as plt
-		img = np.zeros((20, 42))
-		img[:,:20] = sae_feat.reshape(20, 20)
-		img[:,22:] = conv_feat.reshape(20, 20)
-		plt.imshow(img, cmap='gray')
-		plt.show()
-		'''
-		if err > 1e-9:
-			print err
-	return 'ok'
-
-# Sam's code
-def convolve(X, W, b, Z, mu):
-    # For sam's code
-    from scipy.special import expit
-    WT, bm = ConvPrep(W, Z, b, mu)
-    WT = W.dot(Z)
-    dim = int(np.sqrt(W.shape[1]/3.0)) # 8
-    out_size = X.shape[1] - dim + 1 # 57
-    num_chan = X.shape[3] # 3
-    num_img = X.shape[0] # m - 8 for testing, 2000 for training
-    res = np.zeros(( W.shape[0],num_img, out_size, out_size)) # mx400x57x57
-
-    for k, x in enumerate(X):
-        for j, w in enumerate(WT):
-            conv_img = np.zeros((out_size, out_size), dtype=np.float64)
-            for i in range(num_chan):
-                xchan, wchan = x[:,:,i], w[i*dim**2 : (i+1)*dim**2].reshape(dim, dim)
-                wchan = np.flipud(np.fliplr(wchan))
-                conv_img += convolve2d(xchan, wchan, mode='valid')
-            conv_img += bm[j]
-            res[j,k,:,:] = expit(conv_img)
-
-    #print 'Convolution finished in %d seconds' % int(time() - start)
-    return res
-
+# Linearize: Take 4 matrices, unroll them, and stitch them together into a vector
+def Lin4(a, b, c, d):
+	return np.concatenate((np.ravel(a), np.ravel(b), np.ravel(c), np.ravel(d)))
 
 # Unlinearize: Take a vector, break it into two vectors, and roll it back up
 def unLinWAll(vec):	
-	W1 = np.asarray([vec[0			: g.f2*g.f1]])
-	#W2 = np.asarray([vec[g.f2*g.f1 		: g.f2*g.f1*2]])
-	b1 = np.asarray([vec[g.f2*g.f1*2 	: g.f2*g.f1*2 + g.f2]])
-	#b2 = np.asarray([vec[ g.f2*g.f1*2 + g.f2 : g.f2*g.f1*2 + g.f2 + g.f1]])
-	#return W1.reshape(g.f2, g.f1) , W2.reshape(g.f1, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f1, 1)
-	return W1.reshape(g.f2, g.f1), b1.reshape(g.f2, 1)
+	W1 = np.asarray([vec[0				: g.f2*g.f1]])
+	W2 = np.asarray([vec[g.f2*g.f1 			: g.f2*g.f1 + g.f3*g.f2]])
+	b1 = np.asarray([vec[g.f2*g.f1+g.f3*g.f2	: g.f2*g.f1+g.f3*g.f2 + g.f2]])
+	b2 = np.asarray([vec[g.f2*g.f1+g.f3*g.f2 + g.f2 : ]])
+	return W1.reshape(g.f2, g.f1) , W2.reshape(g.f3, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f3, 1)
+
+
+# Calculate the Hypothesis
+def hypothesis(W, b, dat):
+	oldhypo = np.matmul(W, dat.T) + b
+	oldhypo = np.array(oldhypo, dtype=np.float128)	# Helps prevent overflow errors
+	newhypo = 1.0/(1.0+np.exp(-oldhypo))	
+	return np.array(newhypo.T, dtype=np.float64)
+
+# Calculate the Hypothesis (layer 3) using just layer 1.
+def ForwardProp(WAll, a1):
+	W1, W2, b1, b2 = unLinWAll(WAll)
+	# Calculate a2 (g.m x 25)
+	a2 = hypothesis(W1, b1, a1)
+	# Calculate and return the output from a2 and W2 (g.m x 64)
+	a3 = hypothesis(W2, b2, a2)
+	return a2, a3
+
+# Calculate the regularized Cost J(theta)
+def RegJCost(WAll, a1, y):
+	# Forward Propagate
+	a2, a3 = ForwardProp(WAll, a1)
+	# Seperate and reshape the Theta values
+	W1, W2, b1, b2 = unLinWAll(WAll)
+	# Calculate J(W, b)
+
+	J = (0.5/g.m)*np.sum( -1*np.multiply(y, np.log(a3)) - np.multiply(1-y, np.log(1 - a3)) )
+	J += (0.5 * g.lamb)*( np.sum(W1**2) + np.sum(W2**2) )
+	return J
+
+
+# Calculate the gradient of cost function for all values of W1, W2, b1, and b2
+def BackProp(WAll, a1, y):
+	# To keep track of how many times this code is called
+	g.step += 1
+	if g.step % 50 == 0:
+		print 'Global Step: ', g.step, 'with JCost: ',  RegJCost(WAll, a1)
+	if g.step % 200 == 0:
+		print 'Saving Global Step : ', g.step
+		saveW(WAll)
+	# Seperate and reshape the W and b values
+	W1, W2, b1, b2 = unLinWAll(WAll)
+	# Forward Propagate
+	a2, a3 = ForwardProp(WAll, a1)	# a2 (g.m x g.f2), a3 (g.m x g.f3)
+
+	# Creating (Capital) Delta matrices
+	DeltaW1 = np.zeros(W1.shape)			# (g.f2, g.f1)
+	DeltaW2 = np.zeros(W2.shape)			# (g.f3, g.f2)
+	Deltab1 = np.zeros(b1.shape)			# (g.f2, 1)
+	Deltab2 = np.zeros(b2.shape)			# (g.f3, 1)
+
+	# Calculate (Lowercase) deltas for each element in the dataset and add it's contributions to the Deltas
+	delta3 = np.multiply( -1*(y - a3), a3*(1-a3) )
+	delta2 = np.multiply( np.matmul(delta3, W2), a2*(1-a2) )
+
+	DW1 = np.dot(delta2.T, a1) 	# (g.f2, g.f1)
+	DW2 = np.dot(delta3.T, a2)     	# (g.f3, g.f2)
+	Db1 = np.mean(delta2, axis = 0) # (g.f2,) vector
+	Db2 = np.mean(delta3, axis = 0) # (g.f3) vector
+
+	return Lin4( (1.0/g.m)*DW1 + g.lamb*W1 , (1.0/g.m)*DW2 + g.lamb*W2 , Db1 , Db2 )
+
+
+# I am trying to keep the features with their 3 x 3 matrix here, 
+# so the first image's first 9 values (a1[0,:8]) is the linearized 3x3 matrix for the first feature
+def dat2D(cpdat):
+	a1 = np.zeros((cpdat.shape[1], 400*3*3))
+	for i in range(cpdat.shape[1]):
+		# Create a temporary matrix holding linearized data for each image and feature
+		temp = np.zeros((cpdat.shape[0], 9))
+		for j in range(cpdat.shape[0]):
+			temp[j,:] = np.ravel(cpdat[j,i,:,:])
+		a1[i] = np.ravel(temp)
+	return a1
+
+
+#----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
+
+
+
+# To see how long the code runs for, we start a timestamp
+totStart = time.time()
 
 
 
 
 # DATA PROCESSING
+# Get the convolved and pooled images
+cpdat = np.genfromtxt(datStr, dtype=float)
+cpdat = cpdat.reshape((400, g.m, 3, 3))
+# We need this in 2D form. g.m x 3600  (3 x 3 x 400 = 3600)
+a1 = dat2D(cpdat)
 
-# Get data. Call the data by acccessing the function in dataPrepColor
-patches = dataPrep.GenDat()	# 100k x 64 x 3
-imgs = dataPrep.GenSubTrain()	# 2k x 64 x 64 x 3
-imgs = imgs[:g.m,:,:,:]
+# Get the y labels. Labeled in set [1, 4]
+y = scipy.io.loadmat('data/stlTrainSubset.mat')['trainLabels']#.reshape(1,2000)
+#y = y[:,:g.m]
+y = y[:g.m,:]
 
-# Whiten data
-wpatches, ZCAmat, patches, mpatch = dataPrep.SamzcaWhite(patches)
-#(100k, 192) (192, 192) (100k, 192) (1, 192)
-
-# Get the W and b arrays
-bestWAll = np.genfromtxt(saveStr, dtype=float)
-W1, b1 = unLinWAll(bestWAll)	#(400, 192) (400, 1)
-
-
-
-# CONVOLVE
-# Prepare for Convolution by calculating WT and bmean (b - WT.xbar term)
-WT, bmean = ConvPrep(W1, ZCAmat, b1, mpatch)
-# (400, 8, 8, 3) (400, 1)
-
-convImgsMe = Convolve(imgs, WT, bmean)
-# (400, 2k, 57, 57)
-convImgsSam = convolve(imgs, W1, b1, ZCAmat, mpatch)
-
-print CheckConv(imgs, convImgsSam, W1, b1, ZCAmat, mpatch), "Me checking sam"
-print CheckConv(imgs, convImgsMe, W1, b1, ZCAmat, mpatch), "Me checking me"
+# INITIALIZING W MATRICES
+# Prepare the W matrices and b vectors and linearize them
+W1 = randMat(g.f2, g.f1)
+W2 = randMat(g.f3, g.f2)
+b1 = randMat(g.f2, 1)
+b2 = randMat(g.f3, 1)
+WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 
 
-print test_convolution(imgs, convImgsSam, W1, b1, ZCAmat, mpatch), 'Sam checking Sam'
-print test_convolution(imgs, convImgsMe, W1, b1, ZCAmat, mpatch), 'Sam checking Me'
+# CALCULATING IDEAL W MATRICES
+# Check the cost of the initial W matrices
+print 'Initial W JCost: ', RegJCost(WAll, a1, y) ,BackProp(WAll, a1, y)
 
+# Check the gradient. Go up and uncomment the import check_grad to use. ~6.38411247537693e-05 for 100 for randomized Ws and bs w/ g.f2=20
+print check_grad(RegJCost, BackProp, WAll, a1, y)
+
+
+#arg = a1
+#res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg,) ) # options = {'disp':True}
+#bestWAll = res.x
+
+#print 'Final W JCost', RegJCost(bestWAll, a1)
+
+#saveW(bestWAll)
+
+## Stop the timestamp and print out the total time
+#totend = time.time()
+#print ' '
+#print'sparAE.py took ', totend - totStart, 'seconds to run'
 
 

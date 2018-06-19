@@ -57,7 +57,8 @@ def ConvPrep(W, ZCAmat, b, mpatch):
 		WT[i,:,:,0] = WT2d[i,:64].reshape(8, 8)
 		WT[i,:,:,1] = WT2d[i,64:128].reshape(8, 8)
 		WT[i,:,:,2] = WT2d[i,128:].reshape(8, 8)
-
+	# Another way
+	#WT = WT2d.reshape(WT2d.shape[0], 8, 8, 3)
 	# Calculate the added component bmean (b - WT.xbar term) 400 x 1
 	bmean = b - WT2d.dot(mpatch.T)
 	return WT, bmean
@@ -78,10 +79,9 @@ def Convolve(imgs, WT, bmean):
 			for c in range(imgs.shape[3]):		# For each color
 				convPatch += conv(imgs[i,:,:,c], WT[f,:,:,c])	#(64, 64) (8, 8) -> 57 x 57
 
-			convPatch /= 3.0 			# We want average of colors, not sum
-			convPatch += np.ravel(bmean)[f]		# Add the b - WT.xbar term
-			
-			convImgs[f,i,:,:]= sig(convPatch); # passing the mean 57 x 57 patch from all channels	
+			#convPatch /= 3.0 			# We want average of colors, not sum
+			convPatch += bmean[f,0]			# Add the b - WT.xbar term
+			convImgs[f,i,:,:]= sig(convPatch);	# passing the mean 57 x 57 patch from all channels	
 	return convImgs
 
 #def SquarePatch(patch): # Expecting (1, 192) or 192 vec
@@ -101,28 +101,27 @@ def CheckConv(imgs, convImgs, W, b, ZCAmat, mpatch):
 	dimrow = imgs.shape[1]-8+1	# 57
 	dimcol = imgs.shape[2]-8+1	# 57
 	
-
-	for i in range(10): #1000
+	for i in range(50): #1000
 		# randint(a,b) chooses random int x so that a <= x <= b
 		featnum = randint(0, W.shape[0]-1)
 		imgnum 	= randint(0, 7)			# Only test on the first 8
 		imrow	= randint(0, dimrow-1)
 		imcol	= randint(0, dimcol-1)
 		# Select random 8x8x3 patches to test with
-		testImg = np.ravel( imgs[imgnum, imrow:imrow+8, imcol:imcol+8, :] )
+		testImg = imgs[imgnum, imrow:imrow+8, imcol:imcol+8, :]
+		# Need to flatten the image, specifically in groups of color
+		testImg = np.concatenate((testImg[:,:,0].flatten(),testImg[:,:,1].flatten(),testImg[:,:,2].flatten() ))
+		# Subtract the mean, whiten, and forward propagate
 		testImg -= np.ravel(mpatch)
 		testImg = testImg.reshape(1,192).dot(ZCAmat)
 		testFeat = hypoA12(W, b, testImg)	# 1 x 400
-		
 				# (400, 2k, 57, 57)
 		if abs(convImgs[featnum,imgnum,imrow,imcol] - testFeat[0,featnum]) > 1e-9:
 			print 'problem here at', i, imgnum
 			print convImgs[featnum,imgnum,imrow,imcol] - testFeat[0,featnum]
-			print ' '
-
 	return 'ok'
 
-
+# Sam's code
 def test_convolution(X, X_conv, W, b, Z, mu):
 	# For sam's code
 	from scipy.special import expit
@@ -144,7 +143,8 @@ def test_convolution(X, X_conv, W, b, Z, mu):
 		patch_y = (img_row, img_row+patch_dim)
 
 		# Obtain a 8x8x3 patch and flatten it to length 192
-		patch = X[img_no, patch_y[0]:patch_y[1], patch_x[0]:patch_x[1]]
+		patch = X[img_no, patch_y[0]:patch_y[1], patch_x[0]:patch_x[1], :]
+
 		patch = np.concatenate((patch[:,:,0].flatten(), patch[:,:,1].flatten(), patch[:,:,2].flatten())).reshape(-1, 1)
 		#patch = patch.reshape(-1, 1)
 
@@ -160,18 +160,42 @@ def test_convolution(X, X_conv, W, b, Z, mu):
 		conv_feat = X_conv[:,img_no,img_row,img_col]
 		#print conv_feat.reshape(20, 20)
 		err = abs(sae_feat[feat_no, 0] - conv_feat[feat_no])
-		"""
+		'''
 		import matplotlib.pyplot as plt
 		img = np.zeros((20, 42))
 		img[:,:20] = sae_feat.reshape(20, 20)
 		img[:,22:] = conv_feat.reshape(20, 20)
 		plt.imshow(img, cmap='gray')
 		plt.show()
-		"""
-		if i == 5:
-			exit()
-		print err
+		'''
+		if err > 1e-9:
+			print err
+	return 'ok'
 
+# Sam's code
+def convolve(X, W, b, Z, mu):
+    # For sam's code
+    from scipy.special import expit
+    WT, bm = ConvPrep(W, Z, b, mu)
+    WT = W.dot(Z)
+    dim = int(np.sqrt(W.shape[1]/3.0)) # 8
+    out_size = X.shape[1] - dim + 1 # 57
+    num_chan = X.shape[3] # 3
+    num_img = X.shape[0] # m - 8 for testing, 2000 for training
+    res = np.zeros(( W.shape[0],num_img, out_size, out_size)) # mx400x57x57
+
+    for k, x in enumerate(X):
+        for j, w in enumerate(WT):
+            conv_img = np.zeros((out_size, out_size), dtype=np.float64)
+            for i in range(num_chan):
+                xchan, wchan = x[:,:,i], w[i*dim**2 : (i+1)*dim**2].reshape(dim, dim)
+                wchan = np.flipud(np.fliplr(wchan))
+                conv_img += convolve2d(xchan, wchan, mode='valid')
+            conv_img += bm[j]
+            res[j,k,:,:] = expit(conv_img)
+
+    #print 'Convolution finished in %d seconds' % int(time() - start)
+    return res
 
 
 # Unlinearize: Take a vector, break it into two vectors, and roll it back up
@@ -208,12 +232,16 @@ W1, b1 = unLinWAll(bestWAll)	#(400, 192) (400, 1)
 WT, bmean = ConvPrep(W1, ZCAmat, b1, mpatch)
 # (400, 8, 8, 3) (400, 1)
 
-convImgs = Convolve(imgs, WT, bmean)
+convImgsMe = Convolve(imgs, WT, bmean)
 # (400, 2k, 57, 57)
+convImgsSam = convolve(imgs, W1, b1, ZCAmat, mpatch)
 
-print CheckConv(imgs, convImgs, W1, b1, ZCAmat, mpatch)
-print test_convolution(imgs, convImgs, W1, b1, ZCAmat, mpatch)
+print CheckConv(imgs, convImgsSam, W1, b1, ZCAmat, mpatch), "Me checking sam"
+print CheckConv(imgs, convImgsMe, W1, b1, ZCAmat, mpatch), "Me checking me"
 
+
+print test_convolution(imgs, convImgsSam, W1, b1, ZCAmat, mpatch), 'Sam checking Sam'
+print test_convolution(imgs, convImgsMe, W1, b1, ZCAmat, mpatch), 'Sam checking Me'
 
 
 

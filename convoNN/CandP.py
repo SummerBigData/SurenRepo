@@ -23,12 +23,16 @@ from scipy.signal import convolve2d
 parser = argparse.ArgumentParser()
 parser.add_argument("m", help="Number of images, usually 2k", type=int)
 parser.add_argument("CPrate", help="Rate at which we convolve and pool, usually 100", type=int)
+parser.add_argument("datType", help="Is this for the 'test' data or 'train' data?", type=str)
 g = parser.parse_args()
 g.f1 = 192
 g.f2 = 400
 
+if g.datType != 'test' and g.datType != 'train':
+	print 'Unspecified datType! Try again'
+
 datStr = 'data/m100000Tol-4Lamb0.003beta5.0.out'
-saveStr = 'convolvedData/m' + str(g.m) + 'CPRate' + str(g.CPrate) + '.out'
+saveStr = 'convolvedData/'+ g.datType + 'm' + str(g.m) + 'CPRate' + str(g.CPrate)
 print 'You have chosen:', g
 print ' '
 
@@ -134,7 +138,20 @@ def unLinWAll(vec):
 
 # Get data. Call the data by acccessing the function in dataPrepColor
 patches = dataPrep.GenDat()	# 100k x 64 x 3
-imgs = dataPrep.GenSubTrain()	# 2k x 64 x 64 x 3
+datsize = 0
+if g.datType == 'train':
+	datsize = 2000
+elif g.datType == 'test':
+	datsize = 3200
+
+# Yes, this is a really clunky way of doing this, but idk how to do it any better
+imgs = np.zeros((datsize, 64, 64, 3))
+if g.datType == 'train':
+	imgs = dataPrep.GenSubTrain()	# 2k x 64 x 64 x 3 
+elif g.datType == 'test':
+	imgs = dataPrep.GenSubTest()	# 3.2k x 64 x 64 x 3 
+
+print imgs.shape
 imgs = imgs[:g.m,:,:,:]
 
 # Whiten data
@@ -161,7 +178,10 @@ for i in range(int( (imgs.shape[0]+0.0)/g.CPrate ) ):
 	# (400, 100, 3, 3)
 	print ' '
 
-np.savetxt(saveStr, np.ravel(poolImgs), delimiter=',')
+poolImgs = np.ravel(poolImgs)
+imglen = len(poolImgs)/4
+for i in range(4):
+	np.savetxt(saveStr+'part'+str(i+1)+'.out', poolImgs[i*imglen : (i+1)*imglen] , delimiter=',')
 
 
 

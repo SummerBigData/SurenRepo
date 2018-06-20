@@ -21,7 +21,7 @@ import dataPrep
 
 parser = argparse.ArgumentParser()
 parser.add_argument("m", help="Number of images, usually 2k", type=int)
-parser.add_argument("CPrate", help="Rate at which we convolve and pool, usually 100", type=int)
+#parser.add_argument("CPrate", help="Rate at which we convolve and pool, usually 100", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
 #parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
@@ -36,7 +36,7 @@ g.f3 = 4
 g.tolexp = -4
 g.eps = 0.12
 
-datStr = 'convolvedData/m' + str(g.m) + 'CPRate' + str(g.CPrate) + '.out'
+datStr = 'convolvedData/trainm' + '2000' + 'CPRate100part'
 saveStr = 'WArrs/m' + str(g.m) + 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
 print ' '
@@ -70,65 +70,76 @@ def unLinWAll(vec):
 	return W1.reshape(g.f2, g.f1) , W2.reshape(g.f3, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f3, 1)
 
 
-# Calculate the Hypothesis
-def hypothesis(W, b, dat):
-	oldhypo = np.matmul(W, dat.T) + b
-	oldhypo = np.array(oldhypo, dtype=np.float128)	# Helps prevent overflow errors
+# Calculate the softmax Hypothesis (for layer 2 to 3)
+def softHypo(W, b, a):
+	Max = np.amax(np.matmul(W, a.T) + b)	# To not blow up the np.exp
+	numer = np.exp( np.matmul(W, a.T) + b - Max )	
+	denom = np.asarray([np.sum(numer, axis=0)])
+	return (numer/denom).T
+# Calculate the logistic Hypothesis (for layer 1 to 2)
+def logHypo(W, b, a):
+	oldhypo = np.matmul(W, a.T) + b
+	#oldhypo = np.array(oldhypo, dtype=np.float128)
 	newhypo = 1.0/(1.0+np.exp(-oldhypo))	
-	return np.array(newhypo.T, dtype=np.float64)
+	return newhypo.T #np.array(newhypo.T, dtype=np.float64)
 
 # Calculate the Hypothesis (layer 3) using just layer 1.
 def ForwardProp(WAll, a1):
 	W1, W2, b1, b2 = unLinWAll(WAll)
 	# Calculate a2 (g.m x 25)
-	a2 = hypothesis(W1, b1, a1)
+	a2 = logHypo(W1, b1, a1)
 	# Calculate and return the output from a2 and W2 (g.m x 64)
-	a3 = hypothesis(W2, b2, a2)
-	return a2, a3
+	a3 = softHypo(W2, b2, a2)
+	return a2, a3, W1, W2, b1, b2
+
 
 # Calculate the regularized Cost J(theta)
-def RegJCost(WAll, a1, y):
+def RegJCost(WAll, a1, ymat):
 	# Forward Propagate
-	a2, a3 = ForwardProp(WAll, a1)
-	# Seperate and reshape the Theta values
-	W1, W2, b1, b2 = unLinWAll(WAll)
-	# Calculate J(W, b)
-
-	J = (0.5/g.m)*np.sum( -1*np.multiply(y, np.log(a3)) - np.multiply(1-y, np.log(1 - a3)) )
-	J += (0.5 * g.lamb)*( np.sum(W1**2) + np.sum(W2**2) )
+	a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)	# a2 (g.m x g.f2), a3 (g.m x g.f3)
+	# Calculate J(W, b). ymat and a3 are the same shape: 15298 x 10
+	J = (-1.0 / g.m)*np.sum( np.multiply(np.log(a3), ymat)  ) 
+	J += g.lamb*0.5*( np.sum(W1**2)+np.sum(W2**2) )
 	return J
 
 
 # Calculate the gradient of cost function for all values of W1, W2, b1, and b2
-def BackProp(WAll, a1, y):
+def BackProp(WAll, a1, ymat):
 	# To keep track of how many times this code is called
 	g.step += 1
 	if g.step % 50 == 0:
-		print 'Global Step: ', g.step, 'with JCost: ',  RegJCost(WAll, a1)
+		print 'Global Step: ', g.step, 'with JCost: ',  RegJCost(WAll, a1, ymat)
 	if g.step % 200 == 0:
 		print 'Saving Global Step : ', g.step
 		saveW(WAll)
-	# Seperate and reshape the W and b values
-	W1, W2, b1, b2 = unLinWAll(WAll)
-	# Forward Propagate
-	a2, a3 = ForwardProp(WAll, a1)	# a2 (g.m x g.f2), a3 (g.m x g.f3)
 
-	# Creating (Capital) Delta matrices
-	DeltaW1 = np.zeros(W1.shape)			# (g.f2, g.f1)
-	DeltaW2 = np.zeros(W2.shape)			# (g.f3, g.f2)
-	Deltab1 = np.zeros(b1.shape)			# (g.f2, 1)
-	Deltab2 = np.zeros(b2.shape)			# (g.f3, 1)
+	# Forward Propagate and extract the W matrices
+	a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)	# a2 (g.m x g.f2), a3 (g.m x g.f3)
 
-	# Calculate (Lowercase) deltas for each element in the dataset and add it's contributions to the Deltas
-	delta3 = np.multiply( -1*(y - a3), a3*(1-a3) )
-	delta2 = np.multiply( np.matmul(delta3, W2), a2*(1-a2) )
+	# Now, to get backprop to work, I had to remake the theta matrices we had previously.
+	# Sandwich b2 onto W2 and b1 onto W1
+	theta2 = np.hstack((b2, W2))
+	theta1 = np.hstack((b1, W1))
+	# Attach a column of 1's onto a2 and a3
+	a2ones = np.hstack(( np.ones((a2.shape[0],1)), a2 ))
+	a1ones = np.hstack(( np.ones((a1.shape[0],1)), a1 ))
+	# Calculate delta 3 and delta 2
+	delta3 = ymat - a3		# 10 x 4
+	gPrime = np.multiply(a2, 1 - a2)			# g.n x 37
+	delta2 = np.multiply(np.matmul(delta3, W2), gPrime)		# g.n x 37
 
-	DW1 = np.dot(delta2.T, a1) 	# (g.f2, g.f1)
-	DW2 = np.dot(delta3.T, a2)     	# (g.f3, g.f2)
-	Db1 = np.mean(delta2, axis = 0) # (g.f2,) vector
-	Db2 = np.mean(delta3, axis = 0) # (g.f3) vector
+#	# Calculate the capital Deltas
+#	Delta2 = np.zeros((g.f3, g.f2+1))			# 4 x 37
+#	Delta1 = np.zeros((g.f2, g.f1+1))			# 36 x 3601
 
-	return Lin4( (1.0/g.m)*DW1 + g.lamb*W1 , (1.0/g.m)*DW2 + g.lamb*W2 , Db1 , Db2 )
+	Delta2 = np.matmul(delta3.T, a2ones)
+	Delta1 = np.matmul(delta2.T, a1ones)
+	# Calculate the derivatives
+	D2 = -Delta2 / (g.m+0.0) + g.lamb * theta2	# 10 x 26
+	D1 = -Delta1 / (g.m+0.0) + g.lamb * theta1	# 36 x 3601
+	
+	# Split it inearize it and send it
+	return Lin4(D1[:, 1:], D2[:, 1:], D1[:, 0], D2[:, 0])
 
 
 # I am trying to keep the features with their 3 x 3 matrix here, 
@@ -144,6 +155,18 @@ def dat2D(cpdat):
 	return a1
 
 
+# Generate the y-matrix. This is called only once, so I use loops
+def GenYMat(yvals):
+	yvals = np.ravel(yvals)
+	yArr = np.zeros((len(yvals), g.f3))
+	for i in range(len(yvals)):
+		for j in range(g.f3):
+			if yvals[i] == j:
+				yArr[i][j] = 1
+	return yArr
+
+
+
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
@@ -153,18 +176,29 @@ totStart = time.time()
 
 
 
-
 # DATA PROCESSING
-# Get the convolved and pooled images
-cpdat = np.genfromtxt(datStr, dtype=float)
-cpdat = cpdat.reshape((400, g.m, 3, 3))
+# Get the convolved and pooled images. 
+print "Grabbing the convolved and pooled data..."
+# These are stored in 4 files, so I stitch them together
+cpdat = np.genfromtxt(datStr+'1.out', dtype=float)
+for i in range(3):
+	cpdat = np.concatenate(( cpdat, np.genfromtxt(datStr+str(i+2)+'.out', dtype=float) ))
+
+cpdat = cpdat.reshape((400, 2000, 3, 3))[:,:g.m,:,:]
 # We need this in 2D form. g.m x 3600  (3 x 3 x 400 = 3600)
-a1 = dat2D(cpdat)
+a1 = np.swapaxes(cpdat, 0, 1)
+a1 = a1.reshape(g.m, 3600)
+print "Got the data"
+print ' '
 
 # Get the y labels. Labeled in set [1, 4]
-y = scipy.io.loadmat('data/stlTrainSubset.mat')['trainLabels']#.reshape(1,2000)
-#y = y[:,:g.m]
-y = y[:g.m,:]
+y = scipy.io.loadmat('data/stlTrainSubset.mat')['trainLabels']
+# Fix the label range to [0,3]
+y = np.ravel(y[:g.m,0])-1
+# Generate the y matrix. # 15298 x 10
+ymat = GenYMat(y)
+
+
 
 # INITIALIZING W MATRICES
 # Prepare the W matrices and b vectors and linearize them
@@ -175,25 +209,25 @@ b2 = randMat(g.f3, 1)
 WAll = Lin4(W1, W2, b1, b2) # 1D vector, probably length 3289
 
 
+
 # CALCULATING IDEAL W MATRICES
 # Check the cost of the initial W matrices
-print 'Initial W JCost: ', RegJCost(WAll, a1, y) ,BackProp(WAll, a1, y)
+print 'Initial W JCost: ', RegJCost(WAll, a1, ymat) #,BackProp(WAll, a1, ymat)
 
 # Check the gradient. Go up and uncomment the import check_grad to use. ~6.38411247537693e-05 for 100 for randomized Ws and bs w/ g.f2=20
-print check_grad(RegJCost, BackProp, WAll, a1, y)
+#print 'Grad Check:', check_grad(RegJCost, BackProp, WAll, a1, ymat)
+
+res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(a1, ymat) ) # options = {'disp':True}
+bestWAll = res.x
+
+print 'Final W JCost', RegJCost(bestWAll, a1, ymat)
+saveW(bestWAll)
 
 
-#arg = a1
-#res = minimize(fun=RegJCost, x0= WAll, method='L-BFGS-B', tol=10**g.tolexp, jac=BackProp, args=(arg,) ) # options = {'disp':True}
-#bestWAll = res.x
 
-#print 'Final W JCost', RegJCost(bestWAll, a1)
-
-#saveW(bestWAll)
-
-## Stop the timestamp and print out the total time
-#totend = time.time()
-#print ' '
-#print'sparAE.py took ', totend - totStart, 'seconds to run'
+# Stop the timestamp and print out the total time
+totend = time.time()
+print ' '
+print'cnn.py took ', totend - totStart, 'seconds to run'
 
 

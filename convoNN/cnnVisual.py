@@ -121,6 +121,53 @@ def PercentCorrect(guesses, daty):
 	return guessBest
 
 
+def ConfuMat(a3, y):
+	# Actual x Predicted
+	a3avg = np.zeros((a3.shape[1], a3.shape[1]))
+	# number in each feature
+	numFeatures = np.zeros((a3.shape[1], 1))
+
+	for i in range(g.m):
+		a3avg[ y[i] ] += a3[i]
+		numFeatures [ y[i], 0 ] += 1
+	
+	a3avg /= numFeatures
+
+	
+	yAxLabels = ["Plane", "Car", "Cat", "Dog"]
+	xAxLabels = ["Plane", "Car", "Cat", "Dog"]
+
+
+	fig, ax = plt.subplots()
+	im = ax.imshow(a3avg, cmap="coolwarm",)
+
+	# We want to show all ticks...
+	ax.set_xticks(np.arange(len(xAxLabels)))
+	ax.set_yticks(np.arange(len(yAxLabels)))
+	# ... and label them with the respective list entries
+	ax.set_xticklabels(xAxLabels)
+	ax.set_yticklabels(yAxLabels)
+	# Add x and y axis labels
+	ax.set_xlabel('Predicted Object')
+	ax.set_ylabel('Actual Object')
+	# Rotate the tick labels and set their alignment.
+	plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+		 rotation_mode="anchor")
+
+	# Loop over data dimensions and create text annotations.
+	for i in range(len(yAxLabels)):
+	    for j in range(len(xAxLabels)):
+		centerNumb = np.around(a3avg[i, j], decimals=4)
+		text = ax.text(j, i, centerNumb, 
+		               ha="center", va="center", color="w")
+
+	ax.set_title("Confusion Matrix for Convolutional Neural Network")
+	fig.tight_layout()
+	plt.savefig('results/ConfusionMatrix.png', format='png')
+	plt.show()
+		
+	
+
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 # DATA PROCESSING
@@ -155,49 +202,55 @@ WAll = np.genfromtxt(WAllStr, dtype=float)
 a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)
 imgs = dataPrep.GenSubTest()	# 3.2k x 64 x 64 x 3 
 
+ConfuMat(a3, y)
+
+
+
 guessBest = PercentCorrect(a3, y)
 
-# Extract the wrong guess positions
-wrongGuess = np.zeros((g.m)).astype(int)
-for i in range(g.m):
-	if guessBest[i] != y[i]:
-		wrongGuess[i] = 1
 
-# Grab relavant data: Which images were wrong, what they were guessed as, and what they actually were
-numWrong = np.sum(wrongGuess)
-imgsWrong = np.zeros((numWrong, 64, 64, 3))
-predGuess = np.zeros((numWrong))
-actGuess = np.zeros((numWrong))
 
-ind = 0
-for i in range(numWrong):
-	if wrongGuess[i] == 1:
-		imgsWrong[ind] = imgs[i]
-		predGuess[ind] = guessBest[i]
-		actGuess[ind] = y[i]
-		ind += 1
-print "Predicted Guess"
-print predGuess[0:25]
-print "Actual Guess"
-print actGuess[0:25]
+## Extract the wrong guess positions
+#wrongGuess = np.zeros((g.m)).astype(int)
+#for i in range(g.m):
+#	if guessBest[i] != y[i]:
+#		wrongGuess[i] = 1
 
-imgplot = plt.imshow(imgsWrong[5], cmap="binary", interpolation='none') 
-plt.show()
+## Grab relavant data: Which images were wrong, what they were guessed as, and what they actually were
+#numWrong = np.sum(wrongGuess)
+#imgsWrong = np.zeros((numWrong, 64, 64, 3))
+#predGuess = np.zeros((numWrong))
+#actGuess = np.zeros((numWrong))
 
-hspace = np.ones((64, 5, 3))
-vspace = np.ones((25, 5*64+5*2, 3))
-picAll = vspace
-for i in range(5):
-	pici = hspace
-	for j in range(5):
-		pici = np.hstack((pici, imgsWrong[i*5+j]))
-	pici = np.hstack((pici, hspace))
-	picAll = np.vstack((picAll, vspace, pici))
+#ind = 0
+#for i in range(numWrong):
+#	if wrongGuess[i] == 1:
+#		imgsWrong[ind] = imgs[i]
+#		predGuess[ind] = guessBest[i]
+#		actGuess[ind] = y[i]
+#		ind += 1
+#print "Predicted Guess"
+#print predGuess[0:25]
+#print "Actual Guess"
+#print actGuess[0:25]
 
-picAll = np.vstack((picAll, vspace))
+#imgplot = plt.imshow(imgsWrong[5], cmap="binary", interpolation='none') 
+#plt.show()
 
-imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
-plt.show()
+#hspace = np.ones((64, 5, 3))
+#vspace = np.ones((25, 5*64+5*2, 3))
+#picAll = vspace
+#for i in range(5):
+#	pici = hspace
+#	for j in range(5):
+#		pici = np.hstack((pici, imgsWrong[i*5+j]))
+#	pici = np.hstack((pici, hspace))
+#	picAll = np.vstack((picAll, vspace, pici))
+
+#picAll = np.vstack((picAll, vspace))
+
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.show()
 
 
 ## SHOW SOME IMAGES

@@ -176,9 +176,13 @@ for i in range(numWrong):
 		predGuess[ind] = guessBest[i]
 		actGuess[ind] = y[i]
 		ind += 1
-
+print "Predicted Guess"
 print predGuess[0:25]
+print "Actual Guess"
 print actGuess[0:25]
+
+imgplot = plt.imshow(imgsWrong[5], cmap="binary", interpolation='none') 
+plt.show()
 
 hspace = np.ones((64, 5, 3))
 vspace = np.ones((25, 5*64+5*2, 3))

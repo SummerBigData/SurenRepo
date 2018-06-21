@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("m", help="Number of images, usually 2k", type=int)
 #parser.add_argument("CPrate", help="Rate at which we convolve and pool, usually 100", type=int)
 #parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
-#parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
+parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 #parser.add_argument("beta", help="Beta, sparsity knob", type=float)
 #parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
@@ -31,13 +31,13 @@ parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 g = parser.parse_args()
 g.step = 0
 g.f1 = 3600
-g.f2 = 36
+#g.f2 = 36
 g.f3 = 4
 g.tolexp = -4
 g.eps = 0.12
 
 datStr = 'convolvedData/trainm' + '2000' + 'CPRate100part'
-saveStr = 'WArrs/m' + str(g.m) + 'lamb' + str(g.lamb) + '.out'
+saveStr = 'WArrs/m' + str(g.m) + 'HL' +str(g.f2)+ 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
 print ' '
 
@@ -53,6 +53,7 @@ def saveW(vec):
 
 # Generate random W matrices with a range [-eps, eps]
 def randMat(x, y):
+	np.random.seed(7)
 	theta = np.random.rand(x,y) 	# Makes a (x) x (y) random matrix of [0,1]
 	return theta*2*g.eps - g.eps	# Make it range [-eps, eps]
 

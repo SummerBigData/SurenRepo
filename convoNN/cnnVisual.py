@@ -20,16 +20,17 @@ import dataPrep
 
 parser = argparse.ArgumentParser()
 parser.add_argument("m", help="Number of images, usually 2k", type=int)
+parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 g = parser.parse_args()
 g.f1 = 3600
-g.f2 = 36
+#g.f2 = 36
 g.f3 = 4
 
 
 datStr = 'convolvedData/testm' + '3200' + 'CPRate100part' 
 #datStr = 'convolvedData/m' + '2000' + 'CPRate100part'
-WAllStr = 'WArrs/m' + str(g.m) + 'lamb' + str(g.lamb) + '.out'
+WAllStr = 'WArrs/m' + str(g.m) + 'HL' +str(g.f2)+ 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
 g.m = 3200
 
@@ -95,12 +96,12 @@ def PercentCorrect(guesses, daty):
 
 	# Now we want to see what percent of each number the code got right
 	# Since the data isn't distributed evenly, we also record the frequency of each number in the dataset
-	numPercent = np.zeros(guesses.shape[1])
-	numNumbers = np.int( np.zeros(guesses.shape[1]) )
+	numPercent = np.zeros((guesses.shape[1]))
+	numNumbers = np.zeros((guesses.shape[1])).astype(int)
 
 	# Increment numPercent[i] for each number i it gets right.
 	# Also increment the numNumbers array for whichever datapoint it was
-	for i in range(g('n')):
+	for i in range(g.m):
 		numNumbers[ daty[i] ] += 1
 		if guessBest[i] == daty[i]:
 			numPercent[ daty[i] ] += 1.0
@@ -108,14 +109,16 @@ def PercentCorrect(guesses, daty):
 	print 'Number of data points identified correctly per number:'
 	print np.array2string(numPercent, separator=',')
 	print ' ' 
-	print 'Number of total data points identified correctly:', sum(numPercent) 
+	numCorrect = sum(numPercent)
+	print 'Number of total data points identified correctly:', numCorrect
 	numPercent = numPercent / numNumbers
 	print ' ' 
 	print 'Percent correct per number:' 
 	print np.array2string(numPercent, separator=',')
 	print' '
-	print'Total percent correct:', np.mean(numPercent)
-
+	print'Total percent correct:', numCorrect / sum(numNumbers)
+	
+	return guessBest
 
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
@@ -150,7 +153,66 @@ WAll = np.genfromtxt(WAllStr, dtype=float)
 
 # FORWARD PROPAGATE AND CALCULATE PERCENTAGES
 a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)
-PercentCorrect(a3, y)
+imgs = dataPrep.GenSubTest()	# 3.2k x 64 x 64 x 3 
+
+guessBest = PercentCorrect(a3, y)
+
+# Extract the wrong guess positions
+wrongGuess = np.zeros((g.m)).astype(int)
+for i in range(g.m):
+	if guessBest[i] != y[i]:
+		wrongGuess[i] = 1
+
+# Grab relavant data: Which images were wrong, what they were guessed as, and what they actually were
+numWrong = np.sum(wrongGuess)
+imgsWrong = np.zeros((numWrong, 64, 64, 3))
+predGuess = np.zeros((numWrong))
+actGuess = np.zeros((numWrong))
+
+ind = 0
+for i in range(numWrong):
+	if wrongGuess[i] == 1:
+		imgsWrong[ind] = imgs[i]
+		predGuess[ind] = guessBest[i]
+		actGuess[ind] = y[i]
+		ind += 1
+
+	
+hspace = np.ones((64, 5, 3))
+vspace = np.ones((25, 5*64+5*2, 3))
+picAll = vspace
+for i in range(5):
+	pici = hspace
+	for j in range(5):
+		pici = np.hstack((pici, imgsWrong[i*5+j]))
+	pici = np.hstack((pici, hspace))
+	picAll = np.vstack((picAll, vspace, pici))
+
+picAll = np.vstack((picAll, vspace))
+
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+plt.show()
+
+
+## SHOW SOME IMAGES
+#print y[0:25] # cat
+
+#hspace = np.zeros((64, 5, 3))
+#vspace = np.zeros((5, 5*64+5*2, 3))
+#picAll = vspace
+#for i in range(5):
+#	pici = hspace
+#	for j in range(5):
+#		pici = np.hstack((pici, imgs[i*5+j]))
+#	pici = np.hstack((pici, hspace))
+#	picAll = np.vstack((picAll, pici))
+
+#picAll = np.vstack((picAll, vspace))
+
+#imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+#plt.show()
+
+
 
 
 

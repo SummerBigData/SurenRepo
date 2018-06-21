@@ -177,7 +177,9 @@ for i in range(numWrong):
 		actGuess[ind] = y[i]
 		ind += 1
 
-	
+print predGuess[0:25]
+print actGuess[0:25]
+
 hspace = np.ones((64, 5, 3))
 vspace = np.ones((25, 5*64+5*2, 3))
 picAll = vspace

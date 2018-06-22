@@ -1,0 +1,244 @@
+# Written by: 	Suren Gourapura
+# Written on: 	June 6, 2018
+# Purpose: 	To write a Sparce Auto-Encoder following directions from: http://deeplearning.stanford.edu/wiki/index.php/Exercise:Sparse_Autoencoder
+# Goal:		Python code to calculate probabilities from W values
+
+# Import the modules
+import numpy as np
+from numpy import genfromtxt
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+#import scipy.io
+import argparse
+import dataPrepdigit
+# For reading MNIST directly
+import struct as st
+import gzip
+
+
+#---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
+
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("m", help="Number of Datapoints, usually 29404", type=int)
+#parser.add_argument("f1", help="Number of Features (pixels) in images", type=int)
+#parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
+parser.add_argument("lamb", help="Lambda, the overfitting knob", type=float)
+parser.add_argument("beta", help="Beta, sparsity knob", type=float)
+#parser.add_argument("eps", help="Bounds for theta matrix randomization, [-eps, eps]", type=float)
+#parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
+
+g = parser.parse_args()
+
+g.step = 0
+g.eps = 0.12
+g.f1 = 225
+g.f2 = 100
+g.rho = 0.05
+g.tolexp = -4
+
+#g.beta = 3
+datStr = 'data/patches15m10kpart'
+saveStr = 'WArrs/AEm' + str(g.m)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.out'
+
+print 'You have chosen:', g
+print ' '
+
+
+
+#----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
+
+# Read the MNIST dataset
+def read_idx(filename, n=None):
+	with gzip.open(filename) as f:
+		zero, dtype, dims = st.unpack('>HBB', f.read(4))
+		shape = tuple(st.unpack('>I', f.read(4))[0] for d in range(dims))
+		arr = np.fromstring(f.read(), dtype=np.uint8).reshape(shape)
+		if not n is None:
+			arr = arr[:n]
+		return arr
+
+def pullpatches():
+	s = int(g.f1**(0.5))
+	dat = np.zeros((10000*s*s))
+	datlen = len(dat)
+	filelen = int(datlen/4.0)
+	for i in range(4):
+		dat[i*filelen: (i+1)*filelen] = np.genfromtxt(datStr + str(i+1) + '.out', dtype=float)
+	dat = dat.reshape((10000, g.f1))
+	return dat
+
+# Calculate the Hypothesis (layer 3) using just layer 1.
+def ForwardProp(WAll, a1):
+	W1, W2, b1, b2 = unLinWAll(WAll)
+	# Calculate a2 (g.m x 25)
+	a2 = hypothesis(W1, b1, a1)
+	# Calculate and return the output from a2 and W2 (g.m x 64)
+	a3 = hypothesis(W2, b2, a2)
+	return a2, a3
+
+# Unlinearize: Take a vector, break it into two vectors, and roll it back up
+def unLinWAll(vec):	
+	W1 = np.asarray([vec[0			: g.f2*g.f1]])
+	W2 = np.asarray([vec[g.f2*g.f1 		: g.f2*g.f1*2]])
+	b1 = np.asarray([vec[g.f2*g.f1*2 	: g.f2*g.f1*2 + g.f2]])
+	b2 = np.asarray([vec[ g.f2*g.f1*2 + g.f2 : g.f2*g.f1*2 + g.f2 + g.f1]])
+	return W1.reshape(g.f2, g.f1) , W2.reshape(g.f1, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f1, 1)
+
+def PlotImg(mat):
+	imgplot = plt.imshow(mat, cmap="binary", interpolation='none') 
+	plt.show()
+
+# Calculate the Hypothesis (for layer l to l+1)
+def hypothesis(W, b, dat):
+	oldhypo = np.matmul(W, dat.T) + b
+	oldhypo = np.array(oldhypo, dtype=np.float128)	# Helps prevent overflow errors
+	newhypo = 1.0/(1.0+np.exp(-oldhypo))	
+	return np.array(newhypo.T, dtype=np.float64)
+
+def Norm(mat):
+	Min = np.amin(mat)
+	Max = np.amax(mat)
+	nMin = 0
+	nMax = 1
+	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
+
+#----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
+
+
+
+# DATA PROCESSING
+
+# Get data. Call the data by acccessing the function in dataPrepdigit
+a1 = pullpatches()/255.0
+
+# Obtain the best theta values from the text file
+bestWAll = np.genfromtxt(saveStr, dtype=float)
+
+
+# FORWARD PROPAGATE AND CALCULATE BEST GUESSES
+# Feed the best W and b vals into forward propagation
+a2, a3 = ForwardProp(bestWAll, a1)
+
+#for i in range(g.m):
+#	a2[i] = Norm(a2[i])
+#	a3[i] = Norm(a3[i])
+
+
+
+
+# PROBABILITIES
+
+prob = np.zeros((g.m, g.f1))
+for i in range(g.m):
+	prob[i] = np.abs(a1[i]-a3[i])
+
+print 'The average seperation between a1 and a3 is (Note: 0-1, where 0 is close)', np.mean(prob)
+print ' '
+
+
+
+# SHOW IMAGES
+
+s = int(g.f1**(0.5))
+hspaceAll = np.ones((s-10, (s-10)*3+s*2))
+picAll = hspaceAll
+
+for i in range(10):
+	# Store the pictures
+	picA1 = np.reshape(np.ravel(a1[i]), (s,s))
+	#picA2 = np.reshape(np.ravel(a2[i]), (5,5))
+	picA3 = np.reshape(np.ravel(a3[i]), (s,s))
+
+	# DISPLAY PICTURES
+	# To display a2 in revprop, a1, and a2 in forward prop, we design some spaces
+	hspace = np.ones(( s, s-10 ))
+	# We stitch the horizontal pictures together
+	picAlli = np.concatenate((hspace, picA1, hspace, picA3, hspace), axis = 1)
+	# Finally, add this to the picAll
+	picAll = np.vstack((picAll, picAlli, hspaceAll))
+
+# Display the pictures
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+plt.savefig('results/a123m' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+plt.show()
+
+
+
+# We also want a picture of the activations for each node in the hidden layer
+W1, W2, b1, b2 = unLinWAll(bestWAll)
+W1Len = np.sum(W1**2)**(0.5)
+X = W1 / W1Len			# (25 x 64)
+X = Norm(X)
+
+picX = np.zeros((g.f2,s,s))
+for i in range(g.f2):
+	picX[i] = np.reshape(np.ravel(X[i]), (s,s))
+
+
+numrowcol = int(g.f2**(0.5))
+# Pic Facts
+rows = numrowcol	# how many columns
+cols = numrowcol	# how many rows
+border = 2
+
+#hblack = np.asarray([ [1 for i in range(s*10+2*11)] for j in range(2)])
+hblack = np.ones(( border, s*rows+border*(rows+1) ))
+#vblack = np.asarray([ [1 for i in range(2)] for j in range(s)])
+vblack = np.ones(( s, border))
+
+picAll = hblack
+for i in range(rows):
+	pici = vblack
+	for j in range(cols):
+		pici = np.hstack(( pici, picX[i*rows + j], vblack))
+
+	picAll = np.vstack((picAll, pici, hblack))
+
+# Display the pictures
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+plt.savefig('results/aHLm' + str(g.m)+ 'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png', format='png')
+plt.show()
+
+
+# Pic Facts
+hlNumb = 15 	# Show how many of the hidden layers
+numbNumb = 20	# Show how many numbers
+
+
+vblack = np.ones((5, (hlNumb+3)*s+(hlNumb+4)*5 ))	
+hblack = np.ones((s,5))
+picAll = vblack
+
+for i in range(numbNumb):
+	# Reorder the elements in a2. First, create an array of the indicies
+	a2isortInd = np.argsort(a2[i])
+	# Now, sort the 0th picture according to the indicies, and also reorder the array to largest-->smallest
+	a2isort = a2[i][a2isortInd][::-1]
+	picXisort = picX[a2isortInd][::-1]
+	
+	# We want to do a weighted average of these activations
+	weightpicXi = np.zeros(picXisort.shape)
+	for j in range(len(a2isort)):
+		weightpicXi[j] = picXisort[j]*a2isort[j]
+	weight = np.sum(a2isort)
+	avgi = np.sum(weightpicXi, axis=0)/weight
+#	print avgi.shape, np.amin(avgi), np.amax(avgi)
+
+	picAlli = np.hstack((hblack, a1[i].reshape(s,s), hblack ))
+	for j in range(hlNumb):
+		picAlli = np.hstack((picAlli, picXisort[j], hblack))
+	
+	picAlli = np.hstack((picAlli, avgi, hblack, Norm(avgi), hblack))
+
+	picAll = np.vstack((picAll, picAlli, vblack))
+# Display the pictures
+imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+plt.savefig('results/Activ' + str(g.m)+ 'Tol'+str(g.tolexp)+'Lamb'+str(g.lamb)+'beta'+str(g.beta)+'.png',transparent=False, format='png')
+plt.show()
+
+
+
+
+

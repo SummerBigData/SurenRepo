@@ -1,119 +1,432 @@
 Running dataPrep.py, GenTrain
-dataPrep.py's GenTrain took  0.435604810715 seconds to run
+dataPrep.py's GenTrain took  0.47022986412 seconds to run
  
 Running dataPrepdigit.py, GenPatches
-dataPrepdigit.py's GenPatches took  18.2595610619 seconds to run
+dataPrepdigit.py's GenPatches took  17.564027071 seconds to run
  
-You have chosen: Namespace(CPrate=1000, datType='training', f1=225, f2=100, m=60000, pooldim=7)
+You have chosen: Namespace(CPrate=1000, datType='training', f1=225, f2=100, m=60000, pooldim=2)
  
 Running dataPrep.py, GenTrain
-dataPrep.py's GenTrain took  0.318332910538 seconds to run
+dataPrep.py's GenTrain took  0.300330162048 seconds to run
  
 (60000, 784)
 Batch #: 1
 Running Convolution
-Convolution took  21.6208369732 seconds to run
+Convolution took  21.0112440586 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.468155860901 seconds to run
+Pooling took  0.194585084915 seconds to run
  
 Batch #: 2
 Running Convolution
-Convolution took  21.7705597878 seconds to run
+Convolution took  20.9262268543 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.494015932083 seconds to run
+Pooling took  0.151069164276 seconds to run
  
 Batch #: 3
 Running Convolution
-Convolution took  21.8309378624 seconds to run
+Convolution took  20.9150910378 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.454626083374 seconds to run
+Pooling took  0.185006856918 seconds to run
  
 Batch #: 4
 Running Convolution
-Convolution took  21.5573868752 seconds to run
+Convolution took  21.1501278877 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.40628695488 seconds to run
+Pooling took  0.167123794556 seconds to run
  
 Batch #: 5
 Running Convolution
-Convolution took  22.0461938381 seconds to run
+Convolution took  20.8943231106 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.462236881256 seconds to run
+Pooling took  0.168277025223 seconds to run
  
 Batch #: 6
 Running Convolution
-Convolution took  21.6681189537 seconds to run
+Convolution took  21.0639410019 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.46833896637 seconds to run
+Pooling took  0.237808942795 seconds to run
  
 Batch #: 7
 Running Convolution
-Convolution took  21.8661460876 seconds to run
+Convolution took  21.0151548386 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.512085914612 seconds to run
+Pooling took  0.276375055313 seconds to run
  
 Batch #: 8
 Running Convolution
-Convolution took  22.0483410358 seconds to run
+Convolution took  21.0972819328 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.42692399025 seconds to run
+Pooling took  0.19831609726 seconds to run
  
 Batch #: 9
 Running Convolution
-Convolution took  22.0617628098 seconds to run
+Convolution took  21.0158760548 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.431658029556 seconds to run
+Pooling took  0.218588113785 seconds to run
  
 Batch #: 10
 Running Convolution
-Convolution took  21.9244441986 seconds to run
+Convolution took  20.9989581108 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.468441009521 seconds to run
+Pooling took  0.25569319725 seconds to run
  
 Batch #: 11
 Running Convolution
-Convolution took  22.3306078911 seconds to run
+Convolution took  20.9782860279 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.418975114822 seconds to run
+Pooling took  0.165139913559 seconds to run
  
 Batch #: 12
 Running Convolution
-Convolution took  21.434720993 seconds to run
+Convolution took  21.2404592037 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.476721048355 seconds to run
+Pooling took  0.233219861984 seconds to run
  
 Batch #: 13
 Running Convolution
-Convolution took  21.9816069603 seconds to run
+Convolution took  21.0093920231 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.420451164246 seconds to run
+Pooling took  0.212160110474 seconds to run
  
 Batch #: 14
 Running Convolution
-Convolution took  21.9838929176 seconds to run
+Convolution took  21.0119771957 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.43522810936 seconds to run
+Pooling took  0.211701869965 seconds to run
  
 Batch #: 15
 Running Convolution
-Convolution took  22.2033331394 seconds to run
+Convolution took  21.0162620544 seconds to run
 (100, 1000, 14, 14)
 Running Pool
-Pooling took  0.460638999939 seconds to run
+Pooling took  0.181464910507 seconds to run
  
 Batch #: 16
 Running Convolution
+Convolution took  20.9983839989 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.301066875458 seconds to run
+ 
+Batch #: 17
+Running Convolution
+Convolution took  21.0806519985 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.167251110077 seconds to run
+ 
+Batch #: 18
+Running Convolution
+Convolution took  21.0215890408 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.249090909958 seconds to run
+ 
+Batch #: 19
+Running Convolution
+Convolution took  21.3518600464 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.24076294899 seconds to run
+ 
+Batch #: 20
+Running Convolution
+Convolution took  21.033962965 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.261762142181 seconds to run
+ 
+Batch #: 21
+Running Convolution
+Convolution took  20.9683589935 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.167413949966 seconds to run
+ 
+Batch #: 22
+Running Convolution
+Convolution took  21.2857480049 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.185531139374 seconds to run
+ 
+Batch #: 23
+Running Convolution
+Convolution took  21.2494239807 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.22878909111 seconds to run
+ 
+Batch #: 24
+Running Convolution
+Convolution took  21.0633459091 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.253523826599 seconds to run
+ 
+Batch #: 25
+Running Convolution
+Convolution took  21.001896143 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.230518102646 seconds to run
+ 
+Batch #: 26
+Running Convolution
+Convolution took  21.04139781 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.178555011749 seconds to run
+ 
+Batch #: 27
+Running Convolution
+Convolution took  21.2540390491 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.256794929504 seconds to run
+ 
+Batch #: 28
+Running Convolution
+Convolution took  21.1917219162 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.252460956573 seconds to run
+ 
+Batch #: 29
+Running Convolution
+Convolution took  21.0423810482 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.170464992523 seconds to run
+ 
+Batch #: 30
+Running Convolution
+Convolution took  21.0220859051 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.187062978745 seconds to run
+ 
+Batch #: 31
+Running Convolution
+Convolution took  21.2369410992 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.238133907318 seconds to run
+ 
+Batch #: 32
+Running Convolution
+Convolution took  20.9587430954 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.237281084061 seconds to run
+ 
+Batch #: 33
+Running Convolution
+Convolution took  21.1518871784 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.211786985397 seconds to run
+ 
+Batch #: 34
+Running Convolution
+Convolution took  21.0861940384 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.199073076248 seconds to run
+ 
+Batch #: 35
+Running Convolution
+Convolution took  20.9076390266 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.196157932281 seconds to run
+ 
+Batch #: 36
+Running Convolution
+Convolution took  20.9513981342 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.163952112198 seconds to run
+ 
+Batch #: 37
+Running Convolution
+Convolution took  20.8283989429 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.13844203949 seconds to run
+ 
+Batch #: 38
+Running Convolution
+Convolution took  21.1954348087 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.134891033173 seconds to run
+ 
+Batch #: 39
+Running Convolution
+Convolution took  20.6892871857 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.136088848114 seconds to run
+ 
+Batch #: 40
+Running Convolution
+Convolution took  20.9620680809 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.110576152802 seconds to run
+ 
+Batch #: 41
+Running Convolution
+Convolution took  20.9154698849 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.116101980209 seconds to run
+ 
+Batch #: 42
+Running Convolution
+Convolution took  20.8680639267 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.129523038864 seconds to run
+ 
+Batch #: 43
+Running Convolution
+Convolution took  20.6913440228 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.136256933212 seconds to run
+ 
+Batch #: 44
+Running Convolution
+Convolution took  20.6918749809 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.14218211174 seconds to run
+ 
+Batch #: 45
+Running Convolution
+Convolution took  20.6851801872 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.115428924561 seconds to run
+ 
+Batch #: 46
+Running Convolution
+Convolution took  20.6743719578 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.128504037857 seconds to run
+ 
+Batch #: 47
+Running Convolution
+Convolution took  20.6686458588 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.129987955093 seconds to run
+ 
+Batch #: 48
+Running Convolution
+Convolution took  20.6707510948 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.146620988846 seconds to run
+ 
+Batch #: 49
+Running Convolution
+Convolution took  20.6548910141 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.124784946442 seconds to run
+ 
+Batch #: 50
+Running Convolution
+Convolution took  20.673732996 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.12877202034 seconds to run
+ 
+Batch #: 51
+Running Convolution
+Convolution took  20.6670849323 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.109205007553 seconds to run
+ 
+Batch #: 52
+Running Convolution
+Convolution took  20.6720421314 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.119168043137 seconds to run
+ 
+Batch #: 53
+Running Convolution
+Convolution took  20.6641278267 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.117047071457 seconds to run
+ 
+Batch #: 54
+Running Convolution
+Convolution took  20.6568169594 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.141665935516 seconds to run
+ 
+Batch #: 55
+Running Convolution
+Convolution took  20.8873081207 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.111650943756 seconds to run
+ 
+Batch #: 56
+Running Convolution
+Convolution took  20.8300898075 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.174423933029 seconds to run
+ 
+Batch #: 57
+Running Convolution
+Convolution took  20.8984501362 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.169831037521 seconds to run
+ 
+Batch #: 58
+Running Convolution
+Convolution took  20.8232729435 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.184708833694 seconds to run
+ 
+Batch #: 59
+Running Convolution
+Convolution took  21.003371954 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.167390108109 seconds to run
+ 
+Batch #: 60
+Running Convolution
+Convolution took  20.8324010372 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.184907913208 seconds to run
+ 

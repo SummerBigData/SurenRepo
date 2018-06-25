@@ -190,7 +190,7 @@ cpdat = np.genfromtxt(datStr, dtype=float)
 #	print 'Grabbing file:', i+2
 #	cpdat = np.concatenate(( cpdat, np.genfromtxt(datStr+str(i+2)+'.out', dtype=float) ))
 
-cpdat = cpdat.reshape((100, 60000, g.pooldim, g.pooldim))[:,:g.m,:,:]
+cpdat = cpdat.reshape((100, 60000, 7, 7))[:,:g.m,:,:]
 # We need this in 2D form. g.100m x 3600  (3 x 3 x 400 = 3600)
 a1 = np.swapaxes(cpdat, 0, 1)
 a1 = a1.reshape(g.m, g.f1)

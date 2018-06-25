@@ -157,7 +157,7 @@ def unLinWAll(vec):
 # Get data. Call the data by acccessing the function in dataPrepdigit
 patches = pullpatches()/255.0
 datsize = 0
-if g.datType == 'train':
+if g.datType == 'training':
 	datsize = 60000
 elif g.datType == 'testing':
 	datsize = 10000
@@ -165,7 +165,7 @@ elif g.datType == 'testing':
 # Yes, this is a really clunky way of doing this, but idk how to do it any better
 imgs = np.zeros((datsize, g.f1))
 y = np.zeros((datsize))
-if g.datType == 'train':
+if g.datType == 'training':
 	imgs, y = dataPrepdigit.GenTrain()	# 60k x 784
 elif g.datType == 'testing':
 	imgs, y = dataPrepdigit.GenTest()	# 10k x 784

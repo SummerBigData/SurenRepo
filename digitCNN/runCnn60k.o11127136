@@ -1,0 +1,17 @@
+/users/PAS1383/osu10171/SurenRepo/digitCNN
+/var/spool/batch/torque/mom_priv/jobs/11127136.oak-batch.osc.edu.SC: line 35:  1830 Killed                  python -u cnndigit.py 60000 35 5e-5 &>outcnnHL35lamb5e-5.log
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=00:05:15
+walltime=00:05:17
+mem=14.238 GB
+vmem=14.684 GB
+-----------------------
+Resource units charged (estimate):
+0.035 RUs
+-----------------------

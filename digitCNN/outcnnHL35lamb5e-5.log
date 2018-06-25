@@ -1,0 +1,19 @@
+Running dataPrep.py, GenTrain
+dataPrep.py's GenTrain took  0.359943151474 seconds to run
+ 
+Running dataPrepdigit.py, GenPatches
+dataPrepdigit.py's GenPatches took  18.6449000835 seconds to run
+ 
+You have chosen: Namespace(eps=0.12, f1=400, f2=35, f3=10, lamb=5e-05, m=60000, numfiles=40, pooldim=2, step=0, tolexp=-4)
+ 
+Grabbing the convolved and pooled data...
+Grabbing file: 1
+Got the data
+ 
+Running dataPrep.py, GenTrain
+dataPrep.py's GenTrain took  0.293910980225 seconds to run
+ 
+Initial W JCost:  2.309917937658638
+Final W JCost 2.3036545738339855
+ 
+cnn.py took  159.112243176 seconds to run

@@ -25,9 +25,11 @@ parser.add_argument("m", help="Number of images, usually 60k or 10k", type=int)
 #parser.add_argument("CPrate", help="Rate at which we convolve and pool, usually 100", type=int)
 parser.add_argument("datType", help="Is this for the 'test' data or 'train' data?", type=str)
 g = parser.parse_args()
-g.f1 = 225
-g.f2 = 100
-g.CPrate = 100
+g.f1 = 225	# 225 for 15 x 15
+g.f2 = 100	# 100
+g.CPrate = 1000
+g.pooldim = 7
+g.numfiles = 40*6
 
 if g.datType != 'test' and g.datType != 'train':
 	print 'Unspecified datType! Try again'
@@ -35,7 +37,7 @@ if g.datType != 'test' and g.datType != 'train':
 patchStr = 'data/patches15m10kpart'
 WAllStr = 'WArrs/AEm10000Lamb10.0beta0.5.out'
 
-saveStr = 'convolvedData/'+ g.datType + 'm' + str(g.m)
+saveStr = 'convolvedData/trainm60kpatches15/'+ g.datType + 'm' + str(g.m) + 'patches15'
 print 'You have chosen:', g
 print ' '
 
@@ -77,6 +79,8 @@ def ConvPrep(W, ZCAmat, b, mpatch):
 
 
 def sig(x):
+	#if np.amin(x) < -1000 or np.amax(x) > 1000:
+	#	print 'abs(x) out of range 1000'
 	return 1.0 / (1.0 + np.exp(-x))
 
 
@@ -87,15 +91,15 @@ def Convolve(imgs, WT, bmean):
 
 	patchdim = int(g.f1**(0.5))
 
-	# 400 x 2k x 57 x 57
-	convImgs = np.zeros((WT.shape[0], imgs.shape[0], imgs.shape[1]-patchdim+1, 		
+	# 100 x 60k x 14 x 14
+	convImgs = np.zeros((WT.shape[0], imgs.shape[0], imgs.shape[1]-patchdim+1, 
 		imgs.shape[2]-patchdim +1))
 
 	for i in range(imgs.shape[0]):			# For each image
 		for f in range(WT.shape[0]):		# For each feature
 			
-			convPatch = np.zeros((imgs.shape[1]-patchdim +1,imgs.shape[2]-patchdim +1))	# 57 x 57
-			convPatch = conv(imgs[i,:,:], WT[f,:,:])	#(64, 64) (8, 8) -> 57 x 57
+			convPatch = np.zeros((imgs.shape[1]-patchdim +1,imgs.shape[2]-patchdim +1))	# 14 x 14
+			convPatch = conv(imgs[i,:,:], WT[f,:,:])	#(28, 28) (8, 8) -> 57 x 57
 			#convPatch /= 3.0 			# We want average of colors, not sum
 			convPatch += bmean[f,0]			# Add the b - WT.xbar term
 			convImgs[f,i,:]= sig(convPatch);	# passing the mean 57 x 57 patch from all channels
@@ -106,13 +110,13 @@ def Convolve(imgs, WT, bmean):
 	return convImgs
 
 
-def Pool(convImgs, pooldim): # convImgs is (400, 2k, 57, 57)
+def Pool(convImgs): # convImgs is (100, 60k, 15, 15)
 	# To see how long the code runs for, we start a timestamp
 	totStart = time.time()
 	print 'Running Pool'
 
-	poolImgs = np.zeros((convImgs.shape[0],convImgs.shape[1],pooldim,pooldim))
-	poolstep = int(convImgs.shape[2]/pooldim)	# assuming square
+	poolImgs = np.zeros((convImgs.shape[0],convImgs.shape[1], g.pooldim, g.pooldim))
+	poolstep = int(convImgs.shape[2]/ g.pooldim)	# assuming square
 	# loop over the 57 x 57, calculate where to store each convImg in poolImgs, and store it
 	for i in range(convImgs.shape[2]):
 		for j in range(convImgs.shape[2]):
@@ -167,7 +171,7 @@ elif g.datType == 'test':
 	imgs, y = dataPrepdigit.GenTest()	# 10k x 784
 
 s = int(imgs.shape[1]**(0.5))
-imgs = imgs[:g.m,:].reshape(( g.m, s, s))
+imgs = imgs[:g.m,:].reshape(( g.m, s, s))/255.0
 y = y[:g.m]
 
 # Whiten data
@@ -178,27 +182,29 @@ y = y[:g.m]
 bestWAll = np.genfromtxt(WAllStr, dtype=float)
 W1, W2, b1, b2 = unLinWAll(bestWAll)	#(225, 100) (225, 1)
 patchdim = int(g.f1**(0.5))
-W = np.swapaxes(W1, 0, 1).reshape((g.f2, patchdim, patchdim))
-print W.shape
+W = np.swapaxes(W1, 0, 1).reshape((g.f2, patchdim, patchdim))	# 100 x 15 x 15
+
 
 # CONVOLVE AND POOL
 # Prepare for Convolution by calculating WT and bmean (b - WT.xbar term)
 #WT, bmean = ConvPrep(W1, ZCAmat, b1, mpatch)	# (400, 8, 8, 3) (400, 1)
 
 # Initialize the data that will be sent back
-poolImgs = np.zeros((W1.shape[0], g.m, 10, 10)) # Number can be 1, 3, 19, or 57. 3 is most reasonable
+# 225 x g.m x 5 x 5
+poolImgs = np.zeros((W1.shape[0], g.m, g.pooldim, g.pooldim)) # Number can be 1, 3, 19, or 57. 3 is most reasonable
 
 # Convolve and Pool the images. We do 100 at a time
 for i in range(int( (imgs.shape[0]+0.0)/g.CPrate ) ):
 	print "Batch #:",i+1
-	convImgs = Convolve(imgs[i*g.CPrate : i*g.CPrate+g.CPrate], W, b1)		# (400, 100, 57, 57)
-	poolImgs[:, i*g.CPrate : i*g.CPrate+g.CPrate, :,:] = Pool(convImgs, 10) # Number can be 1, 3, 19, or 57. 3 is most reasonable
-	# (400, 100, 3, 3)
+	convImgs = Convolve(imgs[i*g.CPrate : i*g.CPrate+g.CPrate], W, b1)		# 100 x 60k x 14 x 14
+	print convImgs.shape
+	poolImgs[:, i*g.CPrate : i*g.CPrate+g.CPrate, :,:] = Pool(convImgs) # Number can be 1, 3, 5, or 15. 5 is most reasonable
+	# (100, 60k, 5, 5)
 	print ' '
 
 poolImgs = np.ravel(poolImgs)
-imglen = len(poolImgs)/4
-for i in range(4):
+imglen = len(poolImgs)/g.numfiles
+for i in range(g.numfiles):
 	np.savetxt(saveStr+'part'+str(i+1)+'.out', poolImgs[i*imglen : (i+1)*imglen] , delimiter=',')
 
 

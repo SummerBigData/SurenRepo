@@ -12,7 +12,7 @@ import time
 import argparse
 #import matplotlib.pyplot as plt
 from scipy.optimize import check_grad
-import dataPrep
+import dataPrepdigit
 
 
 
@@ -30,13 +30,14 @@ parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 #parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
 g = parser.parse_args()
 g.step = 0
-g.f1 = 3600
+g.f1 = 4900
 #g.f2 = 36
-g.f3 = 4
+g.f3 = 10
 g.tolexp = -4
 g.eps = 0.12
+g.numfiles = 40
 
-datStr = 'convolvedData/trainm' + '2000' + 'CPRate100part'
+datStr = 'convolvedData/trainm10000patches15/trainm' + '10000patches15part'
 saveStr = 'WArrs/m' + str(g.m) + 'HL' +str(g.f2)+ 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
 print ' '
@@ -143,17 +144,17 @@ def BackProp(WAll, a1, ymat):
 	return Lin4(D1[:, 1:], D2[:, 1:], D1[:, 0], D2[:, 0])
 
 
-# I am trying to keep the features with their 3 x 3 matrix here, 
-# so the first image's first 9 values (a1[0,:8]) is the linearized 3x3 matrix for the first feature
-def dat2D(cpdat):
-	a1 = np.zeros((cpdat.shape[1], 400*3*3))
-	for i in range(cpdat.shape[1]):
-		# Create a temporary matrix holding linearized data for each image and feature
-		temp = np.zeros((cpdat.shape[0], 9))
-		for j in range(cpdat.shape[0]):
-			temp[j,:] = np.ravel(cpdat[j,i,:,:])
-		a1[i] = np.ravel(temp)
-	return a1
+## I am trying to keep the features with their 3 x 3 matrix here, 
+## so the first image's first 9 values (a1[0,:8]) is the linearized 3x3 matrix for the first feature
+#def dat2D(cpdat):
+#	a1 = np.zeros((cpdat.shape[1], 400*3*3))
+#	for i in range(cpdat.shape[1]):
+#		# Create a temporary matrix holding linearized data for each image and feature
+#		temp = np.zeros((cpdat.shape[0], 9))
+#		for j in range(cpdat.shape[0]):
+#			temp[j,:] = np.ravel(cpdat[j,i,:,:])
+#		a1[i] = np.ravel(temp)
+#	return a1
 
 
 # Generate the y-matrix. This is called only once, so I use loops
@@ -180,22 +181,24 @@ totStart = time.time()
 # DATA PROCESSING
 # Get the convolved and pooled images. 
 print "Grabbing the convolved and pooled data..."
-# These are stored in 4 files, so I stitch them together
+# These are stored in 40 files, so I stitch them together
+print 'Grabbing file: 1'
 cpdat = np.genfromtxt(datStr+'1.out', dtype=float)
-for i in range(3):
+for i in range(g.numfiles-1):
+	print 'Grabbing file:', i+2
 	cpdat = np.concatenate(( cpdat, np.genfromtxt(datStr+str(i+2)+'.out', dtype=float) ))
 
-cpdat = cpdat.reshape((400, 2000, 3, 3))[:,:g.m,:,:]
-# We need this in 2D form. g.m x 3600  (3 x 3 x 400 = 3600)
+cpdat = cpdat.reshape((100, 10000, 7, 7))[:,:g.m,:,:]
+# We need this in 2D form. g.100m x 3600  (3 x 3 x 400 = 3600)
 a1 = np.swapaxes(cpdat, 0, 1)
-a1 = a1.reshape(g.m, 3600)
+a1 = a1.reshape(g.m, g.f1)
 print "Got the data"
 print ' '
 
-# Get the y labels. Labeled in set [1, 4]
-y = scipy.io.loadmat('data/stlTrainSubset.mat')['trainLabels']
+# Get the y labels. Labeled in set [0, 9]
+x, y = dataPrepdigit.GenTrain()
 # Fix the label range to [0,3]
-y = np.ravel(y[:g.m,0])-1
+y = np.ravel(y[:g.m])
 # Generate the y matrix. # 15298 x 10
 ymat = GenYMat(y)
 

@@ -10,7 +10,7 @@ import scipy.io
 import time
 import argparse
 import matplotlib.pyplot as plt
-import dataPrep
+import dataPrepdigit
 
 
 
@@ -23,16 +23,17 @@ parser.add_argument("m", help="Number of images, usually 2k", type=int)
 parser.add_argument("f2", help="Number of Features in hidden layer", type=int)
 parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 g = parser.parse_args()
-g.f1 = 3600
+g.f1 = 4900
 #g.f2 = 36
-g.f3 = 4
+g.f3 = 10
+g.pooldim = 7
+g.numfiles = 40
 
-
-datStr = 'convolvedData/testm' + '3200' + 'CPRate100part' 
+datStr = 'convolvedData/testm10000patches15/testm' + '10000patches15part' 
 #datStr = 'convolvedData/m' + '2000' + 'CPRate100part'
 WAllStr = 'WArrs/m' + str(g.m) + 'HL' +str(g.f2)+ 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
-g.m = 3200
+g.m = 10000
 
 print ' '
 
@@ -134,8 +135,8 @@ def ConfuMat(a3, y):
 	a3avg /= numFeatures
 
 	
-	yAxLabels = ["Plane", "Car", "Cat", "Dog"]
-	xAxLabels = ["Plane", "Car", "Cat", "Dog"]
+	yAxLabels = ["0", "1", "2", "3", '4', '5', '6', '7', '8', '9']
+	xAxLabels = ["0", "1", "2", "3", '4', '5', '6', '7', '8', '9']
 
 
 	fig, ax = plt.subplots()
@@ -148,8 +149,8 @@ def ConfuMat(a3, y):
 	ax.set_xticklabels(xAxLabels)
 	ax.set_yticklabels(yAxLabels)
 	# Add x and y axis labels
-	ax.set_xlabel('Predicted Object')
-	ax.set_ylabel('Actual Object')
+	ax.set_xlabel('Predicted Number')
+	ax.set_ylabel('Actual Number')
 	# Rotate the tick labels and set their alignment.
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
 		 rotation_mode="anchor")
@@ -174,22 +175,27 @@ def ConfuMat(a3, y):
 
 # Get the convolved and pooled images. 
 print "Grabbing the convolved and pooled data..."
-# These are stored in 4 files, so I stitch them together
+
+# These are stored in 40 files, so I stitch them together
+print 'Grabbing file: 1'
 cpdat = np.genfromtxt(datStr+'1.out', dtype=float)
-for i in range(3): 		
+for i in range(g.numfiles-1):
+	print 'Grabbing file:', i+2
 	cpdat = np.concatenate(( cpdat, np.genfromtxt(datStr+str(i+2)+'.out', dtype=float) ))
-cpdat = cpdat.reshape((400, 3200, 3, 3))[:,:g.m,:,:] 
-# We need this in 2D form. g.m x 3600  (3 x 3 x 400 = 3600)
+
+cpdat = cpdat.reshape((100, g.m, g.pooldim, g.pooldim))[:,:g.m,:,:] 
+# We need this in 2D form. g.m x 4900  (7 x 7 x 100 = 4900)
 a1 = np.swapaxes(cpdat, 0, 1)
-a1 = a1.reshape(g.m, 3600)	
+a1 = a1.reshape(g.m, g.f1)	
 print "Got the data"
 print ' '
 
 
-# Get the y labels. Labeled in set [1, 4]
-y = scipy.io.loadmat('data/stlTestSubset.mat')['testLabels'] 
+# Get the y labels. Labeled in set [0, 9]
+imgs, y = dataPrepdigit.GenTest()
+print 'shape of images', imgs.shape
 #y = scipy.io.loadmat('data/stlTrainSubset.mat')['trainLabels']
-y = np.ravel(y[:g.m,0])-1
+y = np.ravel(y[:g.m])
 # Generate the y matrix. # 15298 x 10
 ymat = GenYMat(y)
 
@@ -199,14 +205,17 @@ WAll = np.genfromtxt(WAllStr, dtype=float)
 
 
 # FORWARD PROPAGATE AND CALCULATE PERCENTAGES
+print WAll.shape, a1.shape
 a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)
-imgs = dataPrep.GenSubTest()	# 3.2k x 64 x 64 x 3 
 
+# Generate the percentages
+guessBest = PercentCorrect(a3, y)
+# Generate the confusion Matrix
 ConfuMat(a3, y)
 
 
 
-guessBest = PercentCorrect(a3, y)
+
 
 
 

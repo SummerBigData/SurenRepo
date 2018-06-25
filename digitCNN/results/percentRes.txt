@@ -1,0 +1,12 @@
+
+AE params:	trained on 10k, lamb 10, beta = 0.5
+CandP params:	m = 10k, convdim = 14, pooldim = 7
+
+{
+NN params:	m = 10k, HL = 25, lamb = 1e-4
+[0.97959184,0.98414097,0.94282946,0.95940594,0.95315682,0.94058296, 0.96450939,0.94649805,0.94147844,0.9395441 ]
+Total percent correct: 0.9556
+
+NN params:	m = 10k, HL = 25, lamb = 1e-3
+
+}

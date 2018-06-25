@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u CandP.py 2000 100 >& out2k100p.log
+python -u CandPdigit.py 60000 training >& out60ktest.log

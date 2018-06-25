@@ -31,7 +31,7 @@ g.CPrate = 1000
 g.pooldim = 7
 #g.numfiles = 40*6
 
-if g.datType != 'testing' and g.datType != 'train':
+if g.datType != 'testing' and g.datType != 'training':
 	print 'Unspecified datType! Try again'
 
 patchStr = 'data/patches15m10kpart'
@@ -170,6 +170,7 @@ if g.datType == 'train':
 elif g.datType == 'testing':
 	imgs, y = dataPrepdigit.GenTest()	# 10k x 784
 
+print imgs.shape
 s = int(imgs.shape[1]**(0.5))
 imgs = imgs[:g.m,:].reshape(( g.m, s, s))/255.0
 y = y[:g.m]

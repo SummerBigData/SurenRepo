@@ -31,7 +31,7 @@ g.CPrate = 1000
 g.pooldim = 7
 #g.numfiles = 40*6
 
-if g.datType != 'testing' and g.datType != 'train':
+if g.datType != 'testing' and g.datType != 'training':
 	print 'Unspecified datType! Try again'
 
 patchStr = 'data/patches15m10kpart'
@@ -157,7 +157,7 @@ def unLinWAll(vec):
 # Get data. Call the data by acccessing the function in dataPrepdigit
 patches = pullpatches()/255.0
 datsize = 0
-if g.datType == 'train':
+if g.datType == 'training':
 	datsize = 60000
 elif g.datType == 'testing':
 	datsize = 10000
@@ -165,11 +165,12 @@ elif g.datType == 'testing':
 # Yes, this is a really clunky way of doing this, but idk how to do it any better
 imgs = np.zeros((datsize, g.f1))
 y = np.zeros((datsize))
-if g.datType == 'train':
+if g.datType == 'training':
 	imgs, y = dataPrepdigit.GenTrain()	# 60k x 784
 elif g.datType == 'testing':
 	imgs, y = dataPrepdigit.GenTest()	# 10k x 784
 
+print imgs.shape
 s = int(imgs.shape[1]**(0.5))
 imgs = imgs[:g.m,:].reshape(( g.m, s, s))/255.0
 y = y[:g.m]

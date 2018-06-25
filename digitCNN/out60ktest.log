@@ -1,0 +1,15 @@
+Running dataPrep.py, GenTrain
+dataPrep.py's GenTrain took  0.507302999496 seconds to run
+ 
+Running dataPrepdigit.py, GenPatches
+dataPrepdigit.py's GenPatches took  18.9272959232 seconds to run
+ 
+You have chosen: Namespace(CPrate=1000, datType='testing', f1=225, f2=100, m=60000, pooldim=7)
+ 
+Running dataPrep.py, GenTest
+dataPrep.py's GenTest took  0.155086994171 seconds to run
+ 
+Traceback (most recent call last):
+  File "CandPdigit.py", line 174, in <module>
+    imgs = imgs[:g.m,:].reshape(( g.m, s, s))/255.0
+ValueError: cannot reshape array of size 7840000 into shape (60000,28,28)

@@ -1,4 +1,4 @@
-#PBS -N runCandP2k
+#PBS -N runCandP60k
 #PBS -l walltime=02:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u CandPdigit.py 60000 testing >& out60ktest.log
+python -u CandPdigit.py 60000 training >& out60ktrain.log

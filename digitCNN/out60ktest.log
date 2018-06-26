@@ -1,15 +1,82 @@
 Running dataPrep.py, GenTrain
-dataPrep.py's GenTrain took  0.507302999496 seconds to run
+dataPrep.py's GenTrain took  0.382621049881 seconds to run
  
 Running dataPrepdigit.py, GenPatches
-dataPrepdigit.py's GenPatches took  18.9272959232 seconds to run
+dataPrepdigit.py's GenPatches took  17.8126709461 seconds to run
  
-You have chosen: Namespace(CPrate=1000, datType='testing', f1=225, f2=100, m=60000, pooldim=7)
+You have chosen: Namespace(CPrate=1000, datType='testing', f1=225, f2=100, m=10000, pooldim=2)
  
 Running dataPrep.py, GenTest
-dataPrep.py's GenTest took  0.155086994171 seconds to run
+dataPrep.py's GenTest took  0.0728878974915 seconds to run
  
-Traceback (most recent call last):
-  File "CandPdigit.py", line 174, in <module>
-    imgs = imgs[:g.m,:].reshape(( g.m, s, s))/255.0
-ValueError: cannot reshape array of size 7840000 into shape (60000,28,28)
+(10000, 784)
+Batch #: 1
+Running Convolution
+Convolution took  20.8091289997 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.202072143555 seconds to run
+ 
+Batch #: 2
+Running Convolution
+Convolution took  20.8637871742 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.210312128067 seconds to run
+ 
+Batch #: 3
+Running Convolution
+Convolution took  20.8462820053 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.181549072266 seconds to run
+ 
+Batch #: 4
+Running Convolution
+Convolution took  20.8464930058 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.148006916046 seconds to run
+ 
+Batch #: 5
+Running Convolution
+Convolution took  21.0900230408 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.202085971832 seconds to run
+ 
+Batch #: 6
+Running Convolution
+Convolution took  21.2898950577 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.162791967392 seconds to run
+ 
+Batch #: 7
+Running Convolution
+Convolution took  21.1392958164 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.210052967072 seconds to run
+ 
+Batch #: 8
+Running Convolution
+Convolution took  20.8726689816 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.135793924332 seconds to run
+ 
+Batch #: 9
+Running Convolution
+Convolution took  21.095097065 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.152490854263 seconds to run
+ 
+Batch #: 10
+Running Convolution
+Convolution took  21.0259239674 seconds to run
+(100, 1000, 14, 14)
+Running Pool
+Pooling took  0.184263944626 seconds to run
+ 

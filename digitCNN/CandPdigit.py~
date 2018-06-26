@@ -28,7 +28,7 @@ g = parser.parse_args()
 g.f1 = 225	# 225 for 15 x 15
 g.f2 = 100	# 100
 g.CPrate = 1000
-g.pooldim = 7
+g.pooldim = 2
 #g.numfiles = 40*6
 
 if g.datType != 'testing' and g.datType != 'training':

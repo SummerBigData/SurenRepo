@@ -30,15 +30,16 @@ parser.add_argument("lamb", help="Lambda, usually 1e-4", type=float)
 #parser.add_argument("tolexp", help="Exponent of tolerance of minimize function, good value 10e-4, so -4", type=int)
 g = parser.parse_args()
 g.step = 0
-g.f1 = 400
+
 #g.f2 = 36
 g.f3 = 10
 g.tolexp = -4
 g.eps = 0.12
 g.numfiles = 40
-g.pooldim = 2
+g.pooldim = 7
+g.f1 = 100*g.pooldim**2
 
-datStr = 'convolvedData/trainingm60000patches15.out'
+datStr = 'convolvedData/pooldim7trainingm60000patches15.out'
 saveStr = 'WArrs/m' + str(g.m) + 'HL' +str(g.f2)+ 'lamb' + str(g.lamb) + '.out'
 print 'You have chosen:', g
 print ' '

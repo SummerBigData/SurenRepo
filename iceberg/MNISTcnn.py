@@ -93,14 +93,3 @@ print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 model.save('models/m'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
 model.save_weights('weights/m'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
-
-
-
-
-
-
-
-
-
-
-

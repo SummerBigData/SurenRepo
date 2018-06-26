@@ -21,7 +21,7 @@ g = parser.parse_args()
 
 g.f1 = 75 * 75 * 2
 g.f2 = 500
-g.f3 = 100
+#g.f3 = 100
 g.f4 = 1
 
 print 'You have chosen:', g
@@ -96,8 +96,10 @@ TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
 linband1 = TRb1.reshape((1604, 75*75))[:g.m, :]
 linband2 = TRb2.reshape((1604, 75*75))[:g.m, :]
 x = np.hstack((linband1, linband2))
+x = Norm(x)
 y = TRlabel[:g.m]
 print 'x and y', x.shape, y.shape
+print 'numIcebergs', sum(y)
 
 # KERAS NEURAL NETWORK
 
@@ -108,10 +110,10 @@ model.add(Dense(g.f2, input_dim=g.f1, activation='relu'))
 model.add(Dense(g.f4, activation='sigmoid'))
 
 # Compile model
-model.compile(loss='binary_crossentropy', optimizer='SGD', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # Fit the model
-model.fit(x, y, epochs=100, batch_size=200)
+model.fit(x, y, epochs=30, batch_size=200)
 
 
 # evaluate the model

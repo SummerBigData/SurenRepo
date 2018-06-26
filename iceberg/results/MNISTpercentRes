@@ -1,0 +1,9 @@
+
+
+Network: 784 - 800 - 10
+epochs = 100, batchSize = 300
+0.9594
+
+Network: 784 - 500 - 100 - 10
+epochs = 300, batchSize = 300
+0.9802

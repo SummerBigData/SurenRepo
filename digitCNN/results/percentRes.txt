@@ -40,3 +40,11 @@ Total percent correct: 0.9542
 
 
 }
+
+
+
+AE params:	trained on 10k, lamb 10, beta = 0.5
+CandP params:	m = 10k, convdim = 14, pooldim = 2
+
+
+

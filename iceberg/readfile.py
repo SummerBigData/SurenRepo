@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
+import ijson
 # Keras stuff
 from keras.models import Sequential
 from keras.layers import Dense
@@ -39,7 +40,7 @@ def DataSort(dat):
 	name = np.array(train['id'])
 	label = np.array(train['is_iceberg'])	# 0 or 1
 	angle = np.array(train['inc_angle'])	# angle in degrees
-
+	print sum(label)
 	# Create an array with all the 'na' angles replaced with the average angle
 	# The average angle is 39.2687, the minimum is 24.7546, the maximum is 45.9375
 	onlyAngle = np.zeros((1604))
@@ -86,6 +87,14 @@ def ShowSquare(band1, band2):
 
 train = pd.read_json("data/train.json")	# 1604 x 5
 #test = pd.read_json("data/test.json")	# ? x 5
+
+filename = "data/test.json"
+with open(filename, 'r') as f:
+    objects = ijson.items(f, 'meta.view.columns.item')
+    columns = list(objects)
+
+print columns.shape
+
 
 # Read out the data in the two bands, as 1604 x 75 x 75 arrays
 TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)

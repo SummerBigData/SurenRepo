@@ -165,7 +165,7 @@ def ConfuMat(a3, y):
 
 	ax.set_title("Confusion Matrix for Convolutional Neural Network")
 	fig.tight_layout()
-	plt.savefig('results/ConfusionMatrix.png', format='png', interpolation = 'none')
+	plt.savefig('results/ConfusionMatrixlast.png', format='png', interpolation = 'none')
 	plt.show()
 		
 	

@@ -1,0 +1,16 @@
+/users/PAS1383/osu10171/SurenRepo/digitCNN
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=32gb
+-----------------------
+Resources used:
+cput=00:05:07
+walltime=00:05:20
+mem=0.735 GB
+vmem=1.256 GB
+-----------------------
+Resource units charged (estimate):
+0.071 RUs
+-----------------------

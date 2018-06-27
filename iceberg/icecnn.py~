@@ -7,7 +7,7 @@ import argparse
 # Keras stuff
 from keras.models import Sequential
 from keras.layers import Dense
-
+from keras.preprocessing.image import ImageDataGenerator
 
 
 
@@ -24,7 +24,7 @@ g.f1 = 75 * 75 * 2
 g.f2 = 500
 #g.f3 = 100
 g.f4 = 1
-g.epo = 300
+g.epo = 50#300
 g.bsize = 300
 
 print 'You have chosen:', g
@@ -39,15 +39,12 @@ def DataSort(dat):
 	band2 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_2"]])
 
 	# Read the name, label, and inclination angle as (1604,) arrays
-	name = np.array(train['id'])
-	label = np.array(train['is_iceberg'])	# 0 or 1
-	angle = np.array(train['inc_angle'])	# angle in degrees
-	print sum(label)
+	name = np.array(dat['id'])
+	label = np.array(dat['is_iceberg'])	# 0 or 1
+	angle = np.array(dat['inc_angle'])	# angle in degrees
 	# Create an array with all the 'na' angles replaced with the average angle
 	# The average angle is 39.2687, the minimum is 24.7546, the maximum is 45.9375
 	onlyAngle = np.zeros((1604))
-
-	#onlyAngle = np.zeros((1604-133))		# 133 objects have no angle
 	ind = 0
 	for i in range(1604):
 		if angle[i] == 'na':
@@ -83,6 +80,19 @@ def ShowSquare(band1, band2):
 	imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
 	plt.show()
 
+
+
+def PrepDat(b1, b2, label):
+	linband1 = b1.reshape((1604, 75*75))
+	linband2 = b2.reshape((1604, 75*75))
+	x = np.hstack((linband1, linband2))
+	x = Norm(x)
+	y = label
+	return x, y
+
+
+
+
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
@@ -102,13 +112,33 @@ print columns.shape
 TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
 
 
+
+
+
 # DATA PREP
 
-linband1 = TRb1.reshape((1604, 75*75))[:g.m, :]
-linband2 = TRb2.reshape((1604, 75*75))[:g.m, :]
-x = np.hstack((linband1, linband2))
-x = Norm(x)
-y = TRlabel[:g.m]
+x, y = PrepDat(TRb1, TRb2, TRlabel)
+
+x = x.reshape((1604, 75, 75, 2))
+
+datagen = ImageDataGenerator(
+        featurewise_center=False,  # set input mean to 0 over the dataset
+        samplewise_center=False,  # set each sample mean to 0
+        featurewise_std_normalization=False,  # divide inputs by std of the dataset
+        samplewise_std_normalization=False,  # divide each input by its std
+        zca_whitening=False,  # apply ZCA whitening
+        rotation_range=10,  # randomly rotate images in the range (degrees, 0 to 180)
+        zoom_range = 0.1, # Randomly zoom image 
+        width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+        height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+        horizontal_flip=False,  # randomly flip images
+        vertical_flip=False)  # randomly flip images
+
+
+
+
+
+
 print 'x and y', x.shape, y.shape
 #print 'numIcebergs', sum(y)
 
@@ -122,10 +152,13 @@ model.add(Dense(g.f4, activation='sigmoid'))
 
 # Compile model
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+print model.summary()
 
 # Fit the model
-model.fit(x, y, epochs=g.epo, batch_size=g.bsize)
-
+#model.fit(x, y, epochs=g.epo, batch_size=g.bsize)
+datagen.fit(x)
+model.fit_generator(datagen.flow(x, y, batch_size=g.bsize),
+                    steps_per_epoch=len(x) / (g.bsize+0.0), epochs=g.epo)
 
 # evaluate the model
 scores = model.evaluate(x, y)

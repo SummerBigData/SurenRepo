@@ -1,0 +1,65 @@
+Running dataPrep.py, GenTrain
+dataPrep.py's GenTrain took  0.353404998779 seconds to run
+ 
+Running dataPrepdigit.py, GenPatches
+dataPrepdigit.py's GenPatches took  17.5033290386 seconds to run
+ 
+You have chosen: Namespace(f1=4900, f2=35, f3=10, lamb=0.0001, m=60000, numfiles=40, pooldim=7)
+ 
+Grabbing the convolved and pooled data...
+Grabbing file: 1
+Grabbing file: 2
+Grabbing file: 3
+Grabbing file: 4
+Grabbing file: 5
+Grabbing file: 6
+Grabbing file: 7
+Grabbing file: 8
+Grabbing file: 9
+Grabbing file: 10
+Grabbing file: 11
+Grabbing file: 12
+Grabbing file: 13
+Grabbing file: 14
+Grabbing file: 15
+Grabbing file: 16
+Grabbing file: 17
+Grabbing file: 18
+Grabbing file: 19
+Grabbing file: 20
+Grabbing file: 21
+Grabbing file: 22
+Grabbing file: 23
+Grabbing file: 24
+Grabbing file: 25
+Grabbing file: 26
+Grabbing file: 27
+Grabbing file: 28
+Grabbing file: 29
+Grabbing file: 30
+Grabbing file: 31
+Grabbing file: 32
+Grabbing file: 33
+Grabbing file: 34
+Grabbing file: 35
+Grabbing file: 36
+Grabbing file: 37
+Grabbing file: 38
+Grabbing file: 39
+Grabbing file: 40
+cpdat shape (49000000,)
+Got the data
+ 
+Running dataPrep.py, GenTest
+dataPrep.py's GenTest took  0.293922901154 seconds to run
+ 
+shape of images (10000, 784)
+(14395,) (10000, 4900)
+Traceback (most recent call last):
+  File "cnnVisualdigit.py", line 211, in <module>
+    a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)
+  File "cnnVisualdigit.py", line 74, in ForwardProp
+    W1, W2, b1, b2 = unLinWAll(WAll)
+  File "cnnVisualdigit.py", line 51, in unLinWAll
+    return W1.reshape(g.f2, g.f1) , W2.reshape(g.f3, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f3, 1)
+ValueError: cannot reshape array of size 14395 into shape (35,4900)

@@ -1,7 +1,7 @@
 
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+#import pandas as pd
+#import matplotlib.pyplot as plt
 import argparse
 #import ijson
 # Keras stuff
@@ -11,9 +11,12 @@ from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 import os
+import iceDataPrep
+
 
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
+
 
 # fix random seed for reproducibility
 np.random.seed(7)
@@ -37,33 +40,7 @@ print ' '
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
-def DataSort(dat):
-	band1 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_1"]])
-	band2 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_2"]])
 
-	# Read the name, label, and inclination angle as (1604,) arrays
-	name = np.array(dat['id'])
-	label = np.array(dat['is_iceberg'])	# 0 or 1
-	angle = np.array(dat['inc_angle'])	# angle in degrees
-	# Create an array with all the 'na' angles replaced with the average angle
-	# The average angle is 39.2687, the minimum is 24.7546, the maximum is 45.9375
-	onlyAngle = np.zeros((1604))
-	ind = 0
-	for i in range(1604):
-		if angle[i] == 'na':
-			onlyAngle[i] = 39.2687	
-		else:
-			onlyAngle[i] = angle[i]
-
-	return band1, band2, name, label, angle, onlyAngle
-
-
-def Norm(mat):
-	Min = np.amin(mat)
-	Max = np.amax(mat)
-	nMin = 0
-	nMax = 1
-	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
 
 def ShowSquare(band1, band2): 
 	hspace = np.zeros((75, 5, 3))
@@ -84,7 +61,7 @@ def ShowSquare(band1, band2):
 	plt.show()
 
 
-
+'''
 def PrepDat(b1, b2, label):
 	linband1 = b1.reshape((1604, 75*75))
 	linband2 = b2.reshape((1604, 75*75))
@@ -92,96 +69,84 @@ def PrepDat(b1, b2, label):
 	x = Norm(x)
 	y = label
 	return x, y
-
+'''
 def getModel():
-    #Building the model
-    gmodel=Sequential()
-    #Conv Layer 1
-    gmodel.add(Conv2D(64, kernel_size=(3, 3),activation='relu', input_shape=(75, 75, 3)))
-    gmodel.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
-    gmodel.add(Dropout(0.2))
+	#Building the model
+	gmodel=Sequential()
+	#Conv Layer 1
+	gmodel.add(Conv2D(64, kernel_size=(3, 3),activation='relu', input_shape=(75, 75, 3)))
+	gmodel.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
+	gmodel.add(Dropout(0.2))
+	
+	#Conv Layer 2
+	gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu' ))
+	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+	gmodel.add(Dropout(0.2))
 
-    #Conv Layer 2
-    gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu' ))
-    gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-    gmodel.add(Dropout(0.2))
+	#Conv Layer 3
+	gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+	gmodel.add(Dropout(0.2))
+	
+	#Conv Layer 4
+	gmodel.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+	gmodel.add(Dropout(0.2))
 
-    #Conv Layer 3
-    gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-    gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-    gmodel.add(Dropout(0.2))
+	#Flatten the data for upcoming dense layers
+	gmodel.add(Flatten())
+	
+	#Dense Layers
+	gmodel.add(Dense(512))
+	gmodel.add(Activation('relu'))
+	gmodel.add(Dropout(0.2))
 
-    #Conv Layer 4
-    gmodel.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-    gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-    gmodel.add(Dropout(0.2))
+	#Dense Layer 2
+	gmodel.add(Dense(256))
+	gmodel.add(Activation('relu'))
+	gmodel.add(Dropout(0.2))
+	
+	#Sigmoid Layer
+	gmodel.add(Dense(1))
+	gmodel.add(Activation('sigmoid'))
 
-    #Flatten the data for upcoming dense layers
-    gmodel.add(Flatten())
-
-    #Dense Layers
-    gmodel.add(Dense(512))
-    gmodel.add(Activation('relu'))
-    gmodel.add(Dropout(0.2))
-
-    #Dense Layer 2
-    gmodel.add(Dense(256))
-    gmodel.add(Activation('relu'))
-    gmodel.add(Dropout(0.2))
-
-    #Sigmoid Layer
-    gmodel.add(Dense(1))
-    gmodel.add(Activation('sigmoid'))
-
-    mypotim=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
-    gmodel.compile(loss='binary_crossentropy',
-                  optimizer=mypotim,
-                  metrics=['accuracy'])
-    gmodel.summary()
-    return gmodel
+	mypotim=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
+	gmodel.compile(loss='binary_crossentropy',
+		optimizer=mypotim,
+		metrics=['accuracy'])
+	gmodel.summary()
+	return gmodel
 
 def get_callbacks(filepath, patience=2):
-    es = EarlyStopping('val_loss', patience=patience, mode="min")
-    msave = ModelCheckpoint(filepath, save_best_only=True)
-    return [es, msave]
+	es = EarlyStopping('val_loss', patience=patience, mode="min")
+	msave = ModelCheckpoint(filepath, save_best_only=True)
+	return [es, msave]
 
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
-
+'''
 train = pd.read_json("data/train.json")	# 1604 x 5
 
-'''
+
 filename = "data/test.json"
 with open(filename, 'r') as f:
     objects = ijson.items(f, 'meta.view.columns.item')
     columns = list(objects)
 
 print columns.shape
-'''
+
 
 # Read out the data in the two bands, as 1604 x 75 x 75 arrays
 TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
-
-
-
-
+'''
 
 # DATA PREP
 
-x, y = PrepDat(TRb1, TRb2, TRlabel)
+xtr, ytr, xte, yte = iceDataPrep.dataprep()
 
-xb1 = x[:, :75*75].reshape((1604, 75, 75, 1))
-xb2 = x[:, 75*75:].reshape((1604, 75, 75, 1))
-xbavg = (xb1 + xb2) / 2.0
-x = np.concatenate((xb1, xb2, xbavg ), axis=3)
-
-xtr = x[:1000,:,:,:]
-xte = x[1000:,:,:,:]
-ytr = y[:1000]
-yte = y[1000:]
-
+'''
 datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset
         samplewise_center=False,  # set each sample mean to 0
@@ -194,13 +159,10 @@ datagen = ImageDataGenerator(
         height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
         horizontal_flip=False,  # randomly flip images
         vertical_flip=False)  # randomly flip images
+'''
 
 
-
-
-
-
-print 'x and y', x.shape, y.shape
+print 'x and y', xtr.shape, ytr.shape
 #print 'numIcebergs', sum(y)
 
 # KERAS NEURAL NETWORK
@@ -246,7 +208,13 @@ model.fit(xtr, ytr,
 
 
 # evaluate the model
+
+print 'Accuracy on training data:'
 scores = model.evaluate(xtr, ytr)
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+
+print 'Accuracy on testing data:'
+scores = model.evaluate(xte, yte)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 

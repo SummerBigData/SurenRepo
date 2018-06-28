@@ -38,6 +38,25 @@ def DataSort(dat):
 
 	return band1, band2, name, label, angle, onlyAngle
 
+def ShowSquare(band1, band2): 
+	hspace = np.zeros((75, 5, 3))
+	vspace = np.zeros((5, 5*75 + 5*6, 3))
+	picAll = vspace
+	for i in range(5):
+		pici = hspace
+		for j in range(5):
+			picj = np.zeros((75, 75, 3))
+			picj[:,:,0] = Norm(band1[i*5+j,:,:])
+			picj[:,:,1] = Norm(band2[i*5+j,:,:])
+			pici = np.hstack(( pici, picj, hspace))
+
+		picAll = np.vstack((picAll, pici, vspace))
+
+
+	imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
+	plt.show()
+
+
 def Norm(mat):
 	Min = np.amin(mat)
 	Max = np.amax(mat)
@@ -66,6 +85,28 @@ def dataprep():
 	ytr = TRlabel[:1000]
 	yte = TRlabel[1000:]
 	return xtr, ytr, xte, yte
+
+
+
+def CenterImg():
+	train = pd.read_json("data/train.json")	# 1604 x 5
+	
+	# Read out the data in the two bands, as 1604 x 75 x 75 arrays
+	TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
+	x = (TRb1 + TRb2)/2
+	brightSpots = np.zeros((1604, 20, 20))
+	for i in range(1604-1580):
+		bright = np.unravel_index(np.argmax(x[i]), x[i].shape)
+		print bright
+	
+	#print np.argwhere( np.amax(x[10]) - 0.0001 < x[10] )
+	
+	#ShowSquare(TRb1, TRb2)
+	
+	
+CenterImg()
+
+
 
 
 

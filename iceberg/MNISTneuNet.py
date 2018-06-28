@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import argparse
 # Keras stuff
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPool2D
+from keras.preprocessing.image import ImageDataGenerator
 # REading data
 import struct as st
 import gzip
@@ -19,7 +20,7 @@ import gzip
 np.random.seed(7)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)
+parser.add_argument("m", help="Number of Datapoints, up to 60k", type=int)
 g = parser.parse_args()
 
 g.f1 = 784
@@ -66,24 +67,58 @@ def GenYMat(yvals):
 xdat = read_idx('data/train-images-idx3-ubyte.gz', g.m)
 ydat = read_idx('data/train-labels-idx1-ubyte.gz', g.m)
 	
-x = np.ravel(xdat).reshape((g.m, g.f1))/255.0
+x = np.ravel(xdat).reshape((g.m, 28, 28, 1))/255.0
 y = GenYMat(ydat)
 print 'x and y', x.shape, y.shape
+
+datagen = ImageDataGenerator(
+        featurewise_center=False,  # set input mean to 0 over the dataset
+        samplewise_center=False,  # set each sample mean to 0
+        featurewise_std_normalization=False,  # divide inputs by std of the dataset
+        samplewise_std_normalization=False,  # divide each input by its std
+        zca_whitening=False,  # apply ZCA whitening
+        rotation_range=10,  # randomly rotate images in the range (degrees, 0 to 180)
+        zoom_range = 0.1, # Randomly zoom image 
+        width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+        height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+        horizontal_flip=False,  # randomly flip images
+        vertical_flip=False)  # randomly flip images
+
 
 # KERAS NEURAL NETWORK
 
 # create model
 model = Sequential()
-model.add(Dense(g.f2, input_dim=g.f1, activation='relu'))
-model.add(Dense(g.f3, activation='relu'))
-model.add(Dense(g.f4, activation='softmax'))
+
+model.add(Conv2D(filters = 32, kernel_size = (5,5),padding = 'Same', 
+                 activation ='relu', input_shape = (28,28,1)))
+model.add(Conv2D(filters = 32, kernel_size = (5,5),padding = 'Same', 
+                 activation ='relu'))
+model.add(MaxPool2D(pool_size=(2,2)))
+model.add(Dropout(0.25))
+
+
+model.add(Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', 
+                 activation ='relu'))
+model.add(Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', 
+                 activation ='relu'))
+model.add(MaxPool2D(pool_size=(2,2), strides=(2,2)))
+model.add(Dropout(0.25))
+
+
+model.add(Flatten())
+model.add(Dense(256, activation = "relu"))
+model.add(Dropout(0.5))
+model.add(Dense(10, activation = "softmax"))
 
 # Compile model
 model.compile(optimizer='SGD', loss='categorical_crossentropy', metrics=['accuracy'])
 print model.summary()
 
 # Fit the model
-model.fit(x, y, epochs=g.epo, batch_size=g.bsize)
+datagen.fit(x)
+model.fit_generator(datagen.flow(x, y, batch_size=g.bsize),
+                    steps_per_epoch=len(x) / (g.bsize+0.0), epochs=g.epo)
 
 
 # evaluate the model
@@ -91,11 +126,12 @@ scores = model.evaluate(x, y)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 
-model.save('models/m'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
-model.save_weights('weights/m'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
+#model.save('models/m'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
+#model.save_weights('weights/m'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
 
 
-
+model.save('models//yassinem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
+model.save_weights('weights//yassinem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
 
 
 

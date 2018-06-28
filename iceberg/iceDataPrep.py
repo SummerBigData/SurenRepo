@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import cv2 #as cv
 
 
 
@@ -92,23 +93,106 @@ def CenterImg():
 	train = pd.read_json("data/train.json")	# 1604 x 5
 	
 	# Read out the data in the two bands, as 1604 x 75 x 75 arrays
-	TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
-	x = (TRb1 + TRb2)/2
-	brightSpots = np.zeros((1604, 20, 20))
-	for i in range(1604-1580):
-		bright = np.unravel_index(np.argmax(x[i]), x[i].shape)
-		print bright
+	x1, x2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
+	x = (x1 + x2)/2
 	
-	#print np.argwhere( np.amax(x[10]) - 0.0001 < x[10] )
+	x1c = np.zeros(x.shape)
+	x2c = np.zeros(x.shape)
 	
-	#ShowSquare(TRb1, TRb2)
+	s = 75
+
+	for i in range(25): #1604
+		mat = x[i]
+		mat1 = x1[i]
+		mat2 = x2[i]
+		fillval = np.amin(x[i])
+		#print x[i][0:5, 0:5], fillval
+		# Find current center
+		center = np.unravel_index(np.argmax(mat), mat.shape)
+		#print center
+		
+		if center[0] < 37:
+			shift = 37 - center[0]
+			for j in range(shift):
+				# Delete bottom row of image
+				mat1 = np.delete(mat1, s-1, 0)
+				mat2 = np.delete(mat2, s-1, 0)
+				# Add a row of zeros on top
+				mat1 = np.vstack((np.ones((1, s))*fillval, mat1 ))
+				mat2 = np.vstack((np.ones((1, s))*fillval, mat2 ))
+
+		if center[0] > 37:
+			shift = center[0] - 37
+			for j in range(shift):
+				# Delete top row of image
+				mat1 = np.delete(mat1, 0, 0)
+				mat2 = np.delete(mat2, 0, 0)
+				# Add a row of zeros on bottom
+				mat1 = np.vstack((mat1, np.ones((1, s))*fillval ))
+				mat2 = np.vstack((mat2, np.ones((1, s))*fillval ))
+
+		if center[1] < 37:
+			shift = 37 - center[1]
+			for j in range(shift):
+				# Delete right column of image
+				mat1 = np.delete(mat1, s-1, 1)
+				mat2 = np.delete(mat2, s-1, 1)
+				# Add a column of zeros on left	
+				mat1 = np.hstack((np.ones((s,1))*fillval, mat1 ))	
+				mat2 = np.hstack((np.ones((s,1))*fillval, mat2 ))	
+		
+		if center[1] > 37:
+			shift = center[1] - 37
+			for j in range(shift):
+				# Delete left column of image
+				mat1 = np.delete(mat1, 0, 1)
+				mat2 = np.delete(mat2, 0, 1)
+				# Add a column of zeros on right		
+				mat1 = np.hstack((mat1, np.ones((s,1))*fillval ))	
+				mat2 = np.hstack((mat2, np.ones((s,1))*fillval ))	
+
+		x1c[i] = mat1
+		x2c[i] = mat2
+	
+	return x1, x2, x1c, x2c
+
 	
 	
-CenterImg()
+	
+x1, x2, x1c, x2c = CenterImg()
+xb1 = x1.reshape((1604, 75, 75, 1))
+xb2 = x2.reshape((1604, 75, 75, 1))
+xbavg = (xb1 + xb2) / 2.0
+xbavg = xbavg
+x = np.concatenate((xb1, xb2, xbavg ), axis=3)
 
 
 
+x1dn = np.zeros((x1.shape))
+x2dn = np.zeros((x2.shape))
 
+for i in range(25):
+	xi = Norm(x[i])*255.0
+	xi = xi.astype(np.uint8)
+	#xi = cv2.fromarray(xi)
+	print xi.shape
+	h,w,c = xi.shape
+	x_rgb = cv2.CreateMat(h, w, cv2.CV_32FC3)
+	
+	cv2.cvtColor(xi, x_rgb, cv2.COLOR_BGR2RGB)
+
+
+	dst = cv2.fastNlMeansDenoisingColored(x_rgb,None,10,10,7,21)
+	cv2.imshow(dst)
+	dst = np.asarray(dst.astype(float))
+	print dst[0:5, 0:5, 0]
+	x1dn[i] = np.ravel( dst[:,:,0])
+	x2dn[i] = np.ravel( dst[:,:,1])
+	
+
+ShowSquare(x1dn, x2dn)
+
+ShowSquare(x1c, x2c)
 
 
 

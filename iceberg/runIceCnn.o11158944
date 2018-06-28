@@ -1,0 +1,23 @@
+/users/PAS1383/osu10171/SurenRepo/iceberg
+Lmod has detected the following error: The following module(s) are unknown:
+"python/2.7.13"
+
+   Please check the spelling or version number. Also try "module spider ..."
+
+discarding /usr/local/anaconda/anaconda2/bin from PATH
+prepending /users/PAS1383/osu10171/.conda/envs/local/bin to PATH
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=00:02:29
+walltime=00:02:59
+mem=0.953 GB
+vmem=1.837 GB
+-----------------------
+Resource units charged (estimate):
+0.019 RUs
+-----------------------

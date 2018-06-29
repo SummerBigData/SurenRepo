@@ -144,9 +144,10 @@ def BackProp(WAll, a1):
 	delta3 = np.multiply( -1*(a1 - a3), a3*(1-a3) )
 	# Calculate Sparsity contribution to delta2
 	phat = (1.0 / g.m)*np.sum(a2, axis=0)
+	print phat.shape
 	sparsity = g.beta * ( -g.rho/phat + (1-g.rho)/(1-phat)	)
 	delta2 = np.multiply( np.matmul(delta3, W2) + sparsity.reshape(1, g.f2), a2*(1-a2) )
-
+	print delta2.shape, delta3.shape
 	DW1 = np.dot(delta2.T, a1) 	# (25, 64)
 	DW2 = np.dot(delta3.T, a2)     	# (64, 25)
 	Db1 = np.mean(delta2, axis = 0) # (25,) vector
@@ -174,7 +175,7 @@ totStart = time.time()
 # Get data. Call the data by acccessing the function in dataPrepdigit
 patches = pullpatches()/255.0
 
-print patches.shape, np.amin(patches), np.amax(patches)
+#print patches.shape, np.amin(patches), np.amax(patches)
 # Prepare the W matrices and b vectors and linearize them
 W1 = randMat(g.f2, g.f1)
 W2 = randMat(g.f1, g.f2)

@@ -23,6 +23,8 @@ np.random.seed(7)
 
 parser = argparse.ArgumentParser()
 #parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)
+parser.add_argument("h", help="denoising variable B/W", type=int)
+parser.add_argument("hcolor", help="denoising variable Color", type=int)
 g = parser.parse_args()
 g.m = 1604
 g.f1 = 75 * 75 * 2
@@ -32,7 +34,7 @@ g.f4 = 1
 
 g.epo = 50#300
 g.bsize = 24
-
+saveStr = 'icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize) + 'h' + str(g.h) + 'hcolor' + str(g.hcolor)
 print 'You have chosen:', g
 print ' '
 
@@ -145,7 +147,8 @@ TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
 # DATA PREP
 
 xtr, ytr, xte, yte = iceDataPrep.dataprep()
-
+xtr = iceDataPrep.denoise(xtr, g.h, g.hcolor)
+xte = iceDataPrep.denoise(xte, g.h, g.hcolor)
 '''
 datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset
@@ -183,7 +186,7 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 print model.summary()
 
 
-file_path = 'weights/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)
+file_path = 'weights/' + saveStr
 callbacks = get_callbacks(filepath=file_path, patience=5)
 
 # Fit the model
@@ -218,8 +221,8 @@ scores = model.evaluate(xte, yte)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 
-model.save('models/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
-model.save_weights('weights/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize))
+model.save('models/' + saveStr )
+model.save_weights('weights/' + saveStr)
 
 
 

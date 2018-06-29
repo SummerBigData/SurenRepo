@@ -3,7 +3,7 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import cv2 #as cv
 
 
@@ -282,10 +282,11 @@ def CenterImgWeight():
 
 
 
-def denoise(x1, x2):
+def denoise(x, h, hcolor):
 	print 'Denoising the images'
-	xb1 = x1.reshape((1604, 75, 75, 1))
-	xb2 = x2.reshape((1604, 75, 75, 1))
+	'''
+	xb1 = x1.reshape((x1.shape[0], 75, 75, 1))
+	xb2 = x2.reshape((x1.shape[0], 75, 75, 1))
 	xbavg = (xb1 + xb2) / 2.0
 	xbavg = xbavg
 	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
@@ -293,29 +294,32 @@ def denoise(x1, x2):
 	x1dn = np.zeros((x1.shape))
 	x2dn = np.zeros((x2.shape))
 	xavgdn = np.zeros((x1.shape))
-
-	for i in range(25): #1604
+	'''
+	xdn = np.zeros((x.shape))
+	for i in range(1604): # 1604
 		xi = Norm(x[i])*255.0
 		xi = xi.astype(np.uint8)
 	
 		x_rgb = cv2.cvtColor(xi, cv2.COLOR_BGR2RGB)
-		dst = cv2.fastNlMeansDenoisingColored(x_rgb,10,10,7,21)	#(75, 75, 3)
+		dst = cv2.fastNlMeansDenoisingColored(x_rgb,h,hcolor,7,21)	# 10,10,7,21
 	
-		dst = np.asarray(dst.astype(float))
-	
+		xdn[i] = np.asarray(dst.astype(float))
+		'''
 		x1dn[i] = dst[:,:,0]
 		x2dn[i] = dst[:,:,1]
 		xavgdn[i] = dst[:,:,2]
+		'''
 	print 'done denoising'
-	return x1dn, x2dn, xavgdn
+	return xdn
 
 
 	
-	
-x1, x2, x1c, x2c = CenterImgWeight()
-print x1[0, 20:55,20:55 ]
+#xtr, ytr, xte, yte = dataprep()
+#x1, x2, x1c, x2c = CenterImgWeight()
+#xtr = denoise(xtr, 5, 5)
+
 #x1dn, x2dn, xavgdn = denoise(x1, x2)
-x1cdn, x2cdn, xcavgdn = denoise(x1c, x2c)
+#xdn = denoise(xtr, h, hcolor)
 
 #ShowSquare(x1dn, x2dn,xavgdn)
 # 291, 718, 1568
@@ -329,6 +333,6 @@ x = np.concatenate((x1pic, x2pic, xavg  ) , axis = 2)
 imgplot = plt.imshow(x, cmap="binary", interpolation='none') 
 plt.show()
 '''
-ShowSquare(x1cdn, x2cdn, xcavgdn)
+#ShowSquare(xdn[:,:,:,0], xdn[:,:,:,1], xdn[:,:,:,2])
 
 

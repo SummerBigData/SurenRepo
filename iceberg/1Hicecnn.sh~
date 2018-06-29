@@ -13,7 +13,7 @@ else
 fi
 #
 # Setup GPU code
-module load python/2.7.13
+module load python/2.7.latest
 source activate local
 #
 # This is the command the runs the python script

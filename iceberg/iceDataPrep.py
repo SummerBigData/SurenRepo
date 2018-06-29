@@ -39,16 +39,19 @@ def DataSort(dat):
 
 	return band1, band2, name, label, angle, onlyAngle
 
-def ShowSquare(band1, band2): 
+def ShowSquare(x1, x2, xavg): 
 	hspace = np.zeros((75, 5, 3))
 	vspace = np.zeros((5, 5*75 + 5*6, 3))
 	picAll = vspace
 	for i in range(5):
 		pici = hspace
 		for j in range(5):
+			# Put together the three bands
 			picj = np.zeros((75, 75, 3))
-			picj[:,:,0] = Norm(band1[i*5+j,:,:])
-			picj[:,:,1] = Norm(band2[i*5+j,:,:])
+			picj[:,:,0] = x1[i*5+j,:,:]
+			picj[:,:,1] = x2[i*5+j,:,:]
+			picj[:,:,2] = xavg[i*5+j,:,:]
+			# Include the image in the row
 			pici = np.hstack(( pici, picj, hspace))
 
 		picAll = np.vstack((picAll, pici, vspace))
@@ -89,7 +92,7 @@ def dataprep():
 
 
 
-def CenterImg():
+def CenterImgSpot():
 	train = pd.read_json("data/train.json")	# 1604 x 5
 	
 	# Read out the data in the two bands, as 1604 x 75 x 75 arrays
@@ -100,8 +103,9 @@ def CenterImg():
 	x2c = np.zeros(x.shape)
 	
 	s = 75
+	maxshift = np.zeros((4)) #FIX
 
-	for i in range(25): #1604
+	for i in range(1604): #1604
 		mat = x[i]
 		mat1 = x1[i]
 		mat2 = x2[i]
@@ -113,6 +117,11 @@ def CenterImg():
 		
 		if center[0] < 37:
 			shift = 37 - center[0]
+			if shift == 36:
+				print 'here', i
+			if shift > maxshift[0]:		# FIX
+				maxshift[0] = shift	# FIX
+
 			for j in range(shift):
 				# Delete bottom row of image
 				mat1 = np.delete(mat1, s-1, 0)
@@ -123,6 +132,10 @@ def CenterImg():
 
 		if center[0] > 37:
 			shift = center[0] - 37
+
+			if shift > maxshift[1]:		# FIX
+				maxshift[1] = shift	# FIX
+		
 			for j in range(shift):
 				# Delete top row of image
 				mat1 = np.delete(mat1, 0, 0)
@@ -133,6 +146,10 @@ def CenterImg():
 
 		if center[1] < 37:
 			shift = 37 - center[1]
+
+			if shift > maxshift[2]:		# FIX
+				maxshift[2] = shift	# FIX
+
 			for j in range(shift):
 				# Delete right column of image
 				mat1 = np.delete(mat1, s-1, 1)
@@ -143,6 +160,10 @@ def CenterImg():
 		
 		if center[1] > 37:
 			shift = center[1] - 37
+
+			if shift > maxshift[3]:		# FIX
+				maxshift[3] = shift	# FIX
+
 			for j in range(shift):
 				# Delete left column of image
 				mat1 = np.delete(mat1, 0, 1)
@@ -153,47 +174,161 @@ def CenterImg():
 
 		x1c[i] = mat1
 		x2c[i] = mat2
-	
+	print 'maximum shifts', maxshift
 	return x1, x2, x1c, x2c
 
+
+
+
+
+def CenterImgWeight():
+	train = pd.read_json("data/train.json")	# 1604 x 5
+	
+	# Read out the data in the two bands, as 1604 x 75 x 75 arrays
+	x1, x2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
+	x = (x1 + x2)/2
+	
+	x1c = np.zeros(x.shape)
+	x2c = np.zeros(x.shape)
+	
+	s = 75
+	maxshift = np.zeros((4)) #FIX
+
+	for i in range(25): #1604
+		mat = 1.0/x[i]
+		mat1 = x1[i]
+		mat2 = x2[i]
+		fillval = np.amin(x[i])
+		#print x[i][0:5, 0:5], fillval
+		# Find current center
+		center = np.zeros((2)).astype(int)
+		# Cropping the edges out of the equation
+		ravg = np.sum(mat[5:70, 5:70], axis = 0)
+		ravg /= np.sum(ravg)
+		cavg = np.sum(mat[5:70, 5:70], axis = 1)
+		cavg /= np.sum(cavg)
+		print ravg, cavg
+		index = np.arange(65) + 5.0
+		
+		center0 = np.sum(ravg * index)
+		center1 = np.sum(cavg * index)
+		center[0] = int( round(center0, 0))
+		center[1] = int( round(center1, 0))
+		print i, center
+		#print center
+		
+		if center[0] < 37:
+			shift = 37 - center[0]
+			if shift == 36:
+				print 'here', i
+			if shift > maxshift[0]:		# FIX
+				maxshift[0] = shift	# FIX
+
+			for j in range(shift):
+				# Delete bottom row of image
+				mat1 = np.delete(mat1, s-1, 0)
+				mat2 = np.delete(mat2, s-1, 0)
+				# Add a row of zeros on top
+				mat1 = np.vstack((np.ones((1, s))*fillval, mat1 ))
+				mat2 = np.vstack((np.ones((1, s))*fillval, mat2 ))
+
+		if center[0] > 37:
+			shift = center[0] - 37
+
+			if shift > maxshift[1]:		# FIX
+				maxshift[1] = shift	# FIX
+		
+			for j in range(shift):
+				# Delete top row of image
+				mat1 = np.delete(mat1, 0, 0)
+				mat2 = np.delete(mat2, 0, 0)
+				# Add a row of zeros on bottom
+				mat1 = np.vstack((mat1, np.ones((1, s))*fillval ))
+				mat2 = np.vstack((mat2, np.ones((1, s))*fillval ))
+
+		if center[1] < 37:
+			shift = 37 - center[1]
+
+			if shift > maxshift[2]:		# FIX
+				maxshift[2] = shift	# FIX
+
+			for j in range(shift):
+				# Delete right column of image
+				mat1 = np.delete(mat1, s-1, 1)
+				mat2 = np.delete(mat2, s-1, 1)
+				# Add a column of zeros on left	
+				mat1 = np.hstack((np.ones((s,1))*fillval, mat1 ))	
+				mat2 = np.hstack((np.ones((s,1))*fillval, mat2 ))	
+		
+		if center[1] > 37:
+			shift = center[1] - 37
+
+			if shift > maxshift[3]:		# FIX
+				maxshift[3] = shift	# FIX
+
+			for j in range(shift):
+				# Delete left column of image
+				mat1 = np.delete(mat1, 0, 1)
+				mat2 = np.delete(mat2, 0, 1)
+				# Add a column of zeros on right		
+				mat1 = np.hstack((mat1, np.ones((s,1))*fillval ))	
+				mat2 = np.hstack((mat2, np.ones((s,1))*fillval ))	
+
+		x1c[i] = mat1
+		x2c[i] = mat2
+	print 'maximum shifts', maxshift
+	return x1, x2, x1c, x2c
+
+
+
+
+def denoise(x1, x2):
+	print 'Denoising the images'
+	xb1 = x1.reshape((1604, 75, 75, 1))
+	xb2 = x2.reshape((1604, 75, 75, 1))
+	xbavg = (xb1 + xb2) / 2.0
+	xbavg = xbavg
+	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
+
+	x1dn = np.zeros((x1.shape))
+	x2dn = np.zeros((x2.shape))
+	xavgdn = np.zeros((x1.shape))
+
+	for i in range(25): #1604
+		xi = Norm(x[i])*255.0
+		xi = xi.astype(np.uint8)
+	
+		x_rgb = cv2.cvtColor(xi, cv2.COLOR_BGR2RGB)
+		dst = cv2.fastNlMeansDenoisingColored(x_rgb,10,10,7,21)	#(75, 75, 3)
+	
+		dst = np.asarray(dst.astype(float))
+	
+		x1dn[i] = dst[:,:,0]
+		x2dn[i] = dst[:,:,1]
+		xavgdn[i] = dst[:,:,2]
+	print 'done denoising'
+	return x1dn, x2dn, xavgdn
+
+
 	
 	
-	
-x1, x2, x1c, x2c = CenterImg()
-xb1 = x1.reshape((1604, 75, 75, 1))
-xb2 = x2.reshape((1604, 75, 75, 1))
-xbavg = (xb1 + xb2) / 2.0
-xbavg = xbavg
-x = np.concatenate((xb1, xb2, xbavg ), axis=3)
+x1, x2, x1c, x2c = CenterImgWeight()
+print x1[0, 20:55,20:55 ]
+#x1dn, x2dn, xavgdn = denoise(x1, x2)
+x1cdn, x2cdn, xcavgdn = denoise(x1c, x2c)
 
+#ShowSquare(x1dn, x2dn,xavgdn)
+# 291, 718, 1568
+'''
+x1pic = Norm(x1c[291]).reshape(( 75, 75, 1))
+x2pic = Norm(x2c[291]).reshape((75, 75, 1))
+xavg = np.zeros(( 75, 75, 1))
 
+x = np.concatenate((x1pic, x2pic, xavg  ) , axis = 2)
 
-x1dn = np.zeros((x1.shape))
-x2dn = np.zeros((x2.shape))
-
-for i in range(25):
-	xi = Norm(x[i])*255.0
-	xi = xi.astype(np.uint8)
-	#xi = cv2.fromarray(xi)
-	print xi.shape
-	h,w,c = xi.shape
-	x_rgb = cv2.CreateMat(h, w, cv2.CV_32FC3)
-	
-	cv2.cvtColor(xi, x_rgb, cv2.COLOR_BGR2RGB)
-
-
-	dst = cv2.fastNlMeansDenoisingColored(x_rgb,None,10,10,7,21)
-	cv2.imshow(dst)
-	dst = np.asarray(dst.astype(float))
-	print dst[0:5, 0:5, 0]
-	x1dn[i] = np.ravel( dst[:,:,0])
-	x2dn[i] = np.ravel( dst[:,:,1])
-	
-
-ShowSquare(x1dn, x2dn)
-
-ShowSquare(x1c, x2c)
-
-
+imgplot = plt.imshow(x, cmap="binary", interpolation='none') 
+plt.show()
+'''
+ShowSquare(x1cdn, x2cdn, xcavgdn)
 
 

@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u cnnVisualdigit.py 60000 36 1e-4 >& cnnVisM60kpooldim7.log
+python -u cnnVisualdigit.py 60000 35 1e-4 >& cnnVisM60kpooldim7.log

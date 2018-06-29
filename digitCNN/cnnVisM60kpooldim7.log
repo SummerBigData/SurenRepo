@@ -1,10 +1,10 @@
 Running dataPrep.py, GenTrain
-dataPrep.py's GenTrain took  0.353404998779 seconds to run
+dataPrep.py's GenTrain took  0.376242876053 seconds to run
  
 Running dataPrepdigit.py, GenPatches
-dataPrepdigit.py's GenPatches took  17.5033290386 seconds to run
+dataPrepdigit.py's GenPatches took  17.0527360439 seconds to run
  
-You have chosen: Namespace(f1=4900, f2=35, f3=10, lamb=0.0001, m=60000, numfiles=40, pooldim=7)
+You have chosen: Namespace(f1=4900, f2=35, f3=10, lamb=5e-05, m=60000, numfiles=40, pooldim=7)
  
 Grabbing the convolved and pooled data...
 Grabbing file: 1
@@ -51,15 +51,37 @@ cpdat shape (49000000,)
 Got the data
  
 Running dataPrep.py, GenTest
-dataPrep.py's GenTest took  0.293922901154 seconds to run
+dataPrep.py's GenTest took  0.080451965332 seconds to run
  
 shape of images (10000, 784)
-(14395,) (10000, 4900)
+(171895,) (10000, 4900)
+Number of data points identified correctly per number:
+[ 968.,1122., 996., 984., 957., 858., 932., 992., 933., 964.]
+ 
+Number of total data points identified correctly: 9706.0
+ 
+Percent correct per number:
+[0.9877551 ,0.98854626,0.96511628,0.97425743,0.97454175,0.96188341,
+ 0.97286013,0.96498054,0.95790554,0.95540139]
+ 
+Total percent correct: 0.9706
 Traceback (most recent call last):
-  File "cnnVisualdigit.py", line 211, in <module>
-    a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)
-  File "cnnVisualdigit.py", line 74, in ForwardProp
-    W1, W2, b1, b2 = unLinWAll(WAll)
-  File "cnnVisualdigit.py", line 51, in unLinWAll
-    return W1.reshape(g.f2, g.f1) , W2.reshape(g.f3, g.f2), b1.reshape(g.f2, 1), b2.reshape(g.f3, 1)
-ValueError: cannot reshape array of size 14395 into shape (35,4900)
+  File "cnnVisualdigit.py", line 216, in <module>
+    ConfuMat(a3, y)
+  File "cnnVisualdigit.py", line 143, in ConfuMat
+    fig, ax = plt.subplots()
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/pyplot.py", line 1077, in subplots
+    fig = figure(**fig_kw)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/pyplot.py", line 434, in figure
+    **kwargs)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt4agg.py", line 47, in new_figure_manager
+    return new_figure_manager_given_figure(num, thisFig)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt4agg.py", line 54, in new_figure_manager_given_figure
+    canvas = FigureCanvasQTAgg(figure)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt4agg.py", line 72, in __init__
+    FigureCanvasQT.__init__(self, figure)
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt4.py", line 68, in __init__
+    _create_qApp()
+  File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5.py", line 139, in _create_qApp
+    raise RuntimeError('Invalid DISPLAY variable')
+RuntimeError: Invalid DISPLAY variable

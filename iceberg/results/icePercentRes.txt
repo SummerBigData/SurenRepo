@@ -1,4 +1,4 @@
-
+	
 Model features:
 
 Conv2D(64, kernel_size=(3, 3)
@@ -28,3 +28,17 @@ h = 5, hcolor = 5
 h = 0, hcolor = 0
 39.90%
 }
+
+denoising including normalization: no, denoising using B/W for each band
+
+{
+h = 0
+tr = 91.10%, te = 85.93%
+
+h = 10
+tr = 87.80%, te = 84.44%
+
+h = 20
+tr = 51.20%, te = 39.90%
+
+

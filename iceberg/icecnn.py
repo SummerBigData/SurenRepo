@@ -146,8 +146,8 @@ TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
 # DATA PREP
 
 xtr, ytr, xte, yte = iceDataPrep.dataprep()
-xtr = iceDataPrep.denoise(xtr, g.h)
-xte = iceDataPrep.denoise(xte, g.h)
+#xtr = iceDataPrep.denoise(xtr, g.h)
+#xte = iceDataPrep.denoise(xte, g.h)
 '''
 datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset

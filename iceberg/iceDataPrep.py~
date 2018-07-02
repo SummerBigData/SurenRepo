@@ -358,6 +358,8 @@ for i in range(10):
 ShowSquare(x, 10, 10)
 
 '''
+
+
 '''
 xtr = xtr[2:3, :, :, :]
 xtr[:,:,:,0] = np.zeros((1,75,75))

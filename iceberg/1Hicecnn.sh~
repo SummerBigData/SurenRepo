@@ -17,4 +17,6 @@ module load python/2.7.latest
 source activate local
 #
 # This is the command the runs the python script
-python -u icecnn.py 5 5 >& outIceCnn7-2_2.log
+#python -u icecnn.py $PBS_ARRAYID >& outIceCnn7-2_$PBS_ARRAYID.log
+
+python -u icecnn.py 25 >& outIceCnn7-2_25.log

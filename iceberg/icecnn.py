@@ -33,7 +33,7 @@ g.f4 = 1
 
 g.epo = 50#300
 g.bsize = 24
-saveStr = 'icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize) + 'h' + str(g.h) + 'hcolor' + str(g.hcolor)
+saveStr = 'icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize) + 'h' + str(g.h)
 print 'You have chosen:', g
 print ' '
 

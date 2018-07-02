@@ -45,8 +45,17 @@ Total percent correct: 0.9542
 
 AE params:	trained on 60k, lamb 10, beta = 0.5
 CandP params:	m = 60k, convdim = 14, pooldim = 7
+{
 NN params:	m = 60k, HL = 35, lamb = 5e-5
 
 [0.9877551 ,0.98854626,0.96511628,0.97425743,0.97454175,0.96188341, 0.97286013,0.96498054,0.95790554,0.95540139]
 Total percent correct: 0.9706
+
+
+NN params:	m = 60k, HL = 35, lamb = 1e-4
+[0.98469388,0.99030837,0.96802326,0.97425743,0.97556008,0.97309417, 0.97077244,0.96595331,0.96714579,0.95936571]
+Total percent correct: 0.9731
+}
+
+
 

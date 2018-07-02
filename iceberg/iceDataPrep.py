@@ -288,18 +288,9 @@ def CenterImgWeight():
 '''
 
 
-def denoise(x, h, hcolor):
+def denoise(x,H):
 	print 'Denoising the images'
-	'''
-	xb1 = x1.reshape((x1.shape[0], 75, 75, 1))
-	xb2 = x2.reshape((x1.shape[0], 75, 75, 1))
-	xbavg = (xb1 + xb2) / 2.0
-	xbavg = xbavg
-	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
-
-	x1dn = np.zeros((x1.shape))
-	x2dn = np.zeros((x2.shape))
-	xavgdn = np.zeros((x1.shape))
+	
 	'''
 	xdn = np.zeros((x.shape))
 	for i in range(x.shape[0]): # 1604
@@ -315,11 +306,23 @@ def denoise(x, h, hcolor):
 		
 		# To preserve the original scaling, we renormalize with old min/max
 		xdn[i] = unNormColors(xdn[i], oldMinMax)
-		'''
-		x1dn[i] = dst[:,:,0]
-		x2dn[i] = dst[:,:,1]
-		xavgdn[i] = dst[:,:,2]
-		'''
+	'''
+	
+	xdn = np.zeros((x.shape))
+	xdn[:,:,:,2] = x[:,:,:,2]
+	for i in range(x.shape[0]): # 1604
+		# Force values between 0 and 255, but remember their original scaling
+		xi, oldMinMax = NormColors(x[i], 0, 255.0)
+		
+		xi = xi.astype(np.uint8)
+		for j in range(2):
+			#x_grey = cv2.cvtColor(xi[:, :, j], cv2.CV_RGB2GRAY)
+			dst = cv2.fastNlMeansDenoising(src = xi[:, :, j] ,h=H,templateWindowSize = 7,searchWindowSize = 21)	# 10,10,7,21
+	
+			xdn[i, :, :, j] = np.asarray(dst.astype(float))
+		
+		# To preserve the original scaling, we renormalize with old min/max
+		xdn[i] = unNormColors(xdn[i], oldMinMax)
 	print 'done denoising'
 	return xdn
 
@@ -338,33 +341,37 @@ def unNormColors(mat, oldMinMax):
 
 
 
-	
+'''	
 xtr, ytr, xte, yte = dataprep()
+
 xtr = xtr[0:10, :, :, :]
+#xtr[:,:,:,0] = np.zeros((1,75,75))
+#xtr[:,:,:,2] = np.zeros((1,75,75))
 
-#x1, x2, x1c, x2c = CenterImgWeight()
-xtrdn = denoise(xtr, 0, 0)
-print xtr.shape, xtrdn.shape
-x = np.concatenate(( xtr, xtrdn), axis = 0)
-print x.shape
-ShowSquare(x, 2, 10)
+x = np.zeros((100, 75, 75, 3))
+for i in range(10):
+	for j in range(10):
+		x[i*10+j] = denoise(xtr[i:i+1], j*10)
 
-#x1dn, x2dn, xavgdn = denoise(x1, x2)
-#xdn = denoise(xtr, h, hcolor)
+#x = np.concatenate(( xtr, xtrdn), axis = 0)
 
-#ShowSquare(x1dn, x2dn,xavgdn)
-# 291, 718, 1568
-'''
-x1pic = Norm(x1c[291]).reshape(( 75, 75, 1))
-x2pic = Norm(x2c[291]).reshape((75, 75, 1))
-xavg = np.zeros(( 75, 75, 1))
+ShowSquare(x, 10, 10)
 
-x = np.concatenate((x1pic, x2pic, xavg  ) , axis = 2)
-
-imgplot = plt.imshow(x, cmap="binary", interpolation='none') 
-plt.show()
 '''
 
 
+'''
+xtr = xtr[2:3, :, :, :]
+xtr[:,:,:,0] = np.zeros((1,75,75))
+xtr[:,:,:,2] = np.zeros((1,75,75))
 
+x = np.zeros((16, 75, 75, 3))
+for i in range(4):
+	for j in range(4):
+		x[i*4+j] = denoise(xtr[0:1],i*100, j*3)
 
+#x = np.concatenate(( xtr, xtrdn), axis = 0)
+
+ShowSquare(x, 4, 4)
+
+'''

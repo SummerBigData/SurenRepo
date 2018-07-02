@@ -23,8 +23,7 @@ np.random.seed(8)
 
 parser = argparse.ArgumentParser()
 #parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)
-parser.add_argument("h", help="denoising variable B/W", type=int)
-parser.add_argument("hcolor", help="denoising variable Color", type=int)
+parser.add_argument("h", help="denoising variable for all colors", type=int)
 g = parser.parse_args()
 g.m = 1604
 g.f1 = 75 * 75 * 2
@@ -147,8 +146,8 @@ TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
 # DATA PREP
 
 xtr, ytr, xte, yte = iceDataPrep.dataprep()
-xtr = iceDataPrep.denoise(xtr, g.h, g.hcolor)
-xte = iceDataPrep.denoise(xte, g.h, g.hcolor)
+xtr = iceDataPrep.denoise(xtr, g.h)
+xte = iceDataPrep.denoise(xte, g.h)
 '''
 datagen = ImageDataGenerator(
         featurewise_center=False,  # set input mean to 0 over the dataset

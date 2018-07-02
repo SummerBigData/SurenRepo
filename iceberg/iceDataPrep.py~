@@ -3,7 +3,7 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import cv2 #as cv
 
 
@@ -73,6 +73,13 @@ def Norm(mat, nMin, nMax):
 	normMat = ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
 	return normMat, Min, Max
 
+def FixedNorm(mat, nMin, nMax):
+	nMin = nMin+0.0
+	nMax = nMax+0.0
+	Min = -50.0
+	Max = 35.0
+	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
+
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
@@ -89,7 +96,8 @@ def dataprep():
 	xbavg = (xb1 + xb2) / 2.0
 	#xbavg = np.zeros(xb1.shape)
 	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
-
+	
+	x = FixedNorm(x, 0, 1)
 	xtr = x[:1000,:,:,:]
 	xte = x[1000:,:,:,:]
 	ytr = TRlabel[:1000]
@@ -375,3 +383,14 @@ for i in range(4):
 ShowSquare(x, 4, 4)
 
 '''
+
+xtr, ytr, xte, yte = dataprep()
+#xtr = xtr[0:10, :, :, :]
+#xtrdn = denoise(xtr, 0)
+
+print np.amin(xtr), np.amax(xtr)
+#print np.amin(xtrdn), np.amax(xtrdn)
+
+
+
+

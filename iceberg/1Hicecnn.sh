@@ -19,4 +19,4 @@ source activate local
 # This is the command the runs the python script
 #python -u icecnn.py $PBS_ARRAYID >& outIceCnn7-2_$PBS_ARRAYID.log
 
-python -u icecnn.py 15 >& outIceCnn7-2_none.log
+python -u icecnn.py 0 >& outIceCnn7-2_none.log

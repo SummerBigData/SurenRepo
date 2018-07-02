@@ -35,10 +35,16 @@ denoising including normalization: no, denoising using B/W for each band
 h = 0
 tr = 91.10%, te = 85.93%
 
+h = 5
+tr = 94.00%, te = 87.42%
+
 h = 10
 tr = 87.80%, te = 84.44%
+
+h = 15
+tr = 93.70%, te = 85.93%
 
 h = 20
 tr = 51.20%, te = 39.90%
 
-
+}

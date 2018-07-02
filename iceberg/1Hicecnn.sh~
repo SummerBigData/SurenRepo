@@ -17,4 +17,4 @@ module load python/2.7.latest
 source activate local
 #
 # This is the command the runs the python script
-python -u icecnn.py >& outIceCnn.log
+python -u icecnn.py 5 5 >& outIceCnn.log

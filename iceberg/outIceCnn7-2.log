@@ -1,0 +1,6 @@
+Using TensorFlow backend.
+/users/PAS1383/osu10171/.conda/envs/local/lib/python2.7/site-packages/h5py/__init__.py:34: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+You have chosen: Namespace(bsize=24, epo=50, f1=11250, f2=50, f3=100, f4=1, h=5, hcolor=5, m=1604)
+ 
+Denoising the images

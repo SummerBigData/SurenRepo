@@ -296,7 +296,7 @@ def denoise(x, h, hcolor):
 	xavgdn = np.zeros((x1.shape))
 	'''
 	xdn = np.zeros((x.shape))
-	for i in range(1604): # 1604
+	for i in range(x.shape[0]): # 1604
 		xi = Norm(x[i])*255.0
 		xi = xi.astype(np.uint8)
 	

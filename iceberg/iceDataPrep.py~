@@ -296,7 +296,7 @@ def denoise(x, h, hcolor):
 	xavgdn = np.zeros((x1.shape))
 	'''
 	xdn = np.zeros((x.shape))
-	for i in range(1604): # 1604
+	for i in range(x.shape[0]): # 1604
 		xi = Norm(x[i])*255.0
 		xi = xi.astype(np.uint8)
 	
@@ -314,9 +314,10 @@ def denoise(x, h, hcolor):
 
 
 	
-xtr, ytr, xte, yte = dataprep()
+#xtr, ytr, xte, yte = dataprep()
 #x1, x2, x1c, x2c = CenterImgWeight()
-xtr = denoise(xtr, 5, 5)
+#xtr = denoise(xtr, 5, 5)
+
 #x1dn, x2dn, xavgdn = denoise(x1, x2)
 #xdn = denoise(xtr, h, hcolor)
 

@@ -19,7 +19,7 @@ import iceDataPrep
 
 
 # fix random seed for reproducibility
-np.random.seed(7)
+np.random.seed(8)
 
 parser = argparse.ArgumentParser()
 #parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)

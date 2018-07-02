@@ -1,0 +1,20 @@
+/users/PAS1383/osu10171/SurenRepo/iceberg
+
+The following have been reloaded with a version change:
+  1) python/2.7.8 => python/2.7.latest
+
+
+-----------------------
+Resources requested:
+nodes=1:ppn=1
+mem=16gb
+-----------------------
+Resources used:
+cput=00:15:49
+walltime=00:15:55
+mem=1.060 GB
+vmem=1.994 GB
+-----------------------
+Resource units charged (estimate):
+0.106 RUs
+-----------------------

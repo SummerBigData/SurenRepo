@@ -3,7 +3,7 @@
 
 import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import cv2 #as cv
 
 
@@ -39,34 +39,39 @@ def DataSort(dat):
 
 	return band1, band2, name, label, angle, onlyAngle
 
-def ShowSquare(x1, x2, xavg): 
+def ShowSquare(x, rows, cols): 
 	hspace = np.zeros((75, 5, 3))
-	vspace = np.zeros((5, 5*75 + 5*6, 3))
+	vspace = np.zeros((5, cols*75 + 5*(cols+1), 3))
 	picAll = vspace
-	for i in range(5):
+	for i in range(rows):
 		pici = hspace
-		for j in range(5):
+		for j in range(cols):
 			# Put together the three bands
-			picj = np.zeros((75, 75, 3))
-			picj[:,:,0] = x1[i*5+j,:,:]
-			picj[:,:,1] = x2[i*5+j,:,:]
-			picj[:,:,2] = xavg[i*5+j,:,:]
+			c1, a, b = Norm(x[i*cols+j,:,:,0], 0, 1)
+			c2, a, b = Norm(x[i*cols+j,:,:,1], 0, 1)
+			c3, a, b = Norm(x[i*cols+j,:,:,2], 0, 1)
+			c1 = c1.reshape((75,75,1))
+			c2 = c2.reshape((75,75,1))
+			c3 = c3.reshape((75,75,1))
+			picj = np.concatenate((c1, c2, c3), axis=2)
 			# Include the image in the row
 			pici = np.hstack(( pici, picj, hspace))
 
 		picAll = np.vstack((picAll, pici, vspace))
 
-
 	imgplot = plt.imshow(picAll, cmap="binary", interpolation='none') 
 	plt.show()
 
 
-def Norm(mat):
-	Min = np.amin(mat)
-	Max = np.amax(mat)
-	nMin = 0
-	nMax = 1
-	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
+def Norm(mat, nMin, nMax):
+	# Calculate the old min, max and convert to float values
+	Min = np.amin(mat).astype(float)
+	Max = np.amax(mat).astype(float)
+	nMin = nMin+0.0
+	nMax = nMax+0.0
+	# Calculate the new normalized matrix
+	normMat = ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
+	return normMat, Min, Max
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
@@ -82,6 +87,7 @@ def dataprep():
 	xb1 = TRb1.reshape((1604, 75, 75, 1))
 	xb2 = TRb2.reshape((1604, 75, 75, 1))
 	xbavg = (xb1 + xb2) / 2.0
+	#xbavg = np.zeros(xb1.shape)
 	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
 
 	xtr = x[:1000,:,:,:]
@@ -91,7 +97,7 @@ def dataprep():
 	return xtr, ytr, xte, yte
 
 
-
+'''
 def CenterImgSpot():
 	train = pd.read_json("data/train.json")	# 1604 x 5
 	
@@ -279,7 +285,7 @@ def CenterImgWeight():
 	print 'maximum shifts', maxshift
 	return x1, x2, x1c, x2c
 
-
+'''
 
 
 def denoise(x, h, hcolor):
@@ -297,13 +303,18 @@ def denoise(x, h, hcolor):
 	'''
 	xdn = np.zeros((x.shape))
 	for i in range(x.shape[0]): # 1604
-		xi = Norm(x[i])*255.0
+		# Force values between 0 and 255, but remember their original scaling
+		xi, oldMinMax = NormColors(x[i], 0, 255.0)
+		
 		xi = xi.astype(np.uint8)
-	
+		
 		x_rgb = cv2.cvtColor(xi, cv2.COLOR_BGR2RGB)
 		dst = cv2.fastNlMeansDenoisingColored(x_rgb,h,hcolor,7,21)	# 10,10,7,21
 	
 		xdn[i] = np.asarray(dst.astype(float))
+		
+		# To preserve the original scaling, we renormalize with old min/max
+		xdn[i] = unNormColors(xdn[i], oldMinMax)
 		'''
 		x1dn[i] = dst[:,:,0]
 		x2dn[i] = dst[:,:,1]
@@ -312,11 +323,31 @@ def denoise(x, h, hcolor):
 	print 'done denoising'
 	return xdn
 
+def NormColors(mat, nMin, nMax): # accepts mat.shape -> (75, 75, 3)
+	oldMinMax = np.zeros((3, 2)) # 3 colors, min and max
+	normMat = np.zeros(mat.shape)
+	for i in range(3):
+		normMat[:,:,i],oldMinMax[i,0],oldMinMax[i,1] = Norm(mat[:, :, i], nMin, nMax)
+	return normMat, oldMinMax
+
+def unNormColors(mat, oldMinMax):
+	unNormMat = np.zeros(mat.shape)
+	for i in range(3):
+		unNormMat[:,:,i],a,b = Norm(mat[:, :, i], oldMinMax[i,0], oldMinMax[i,1])
+	return unNormMat
+
+
 
 	
-#xtr, ytr, xte, yte = dataprep()
+xtr, ytr, xte, yte = dataprep()
+xtr = xtr[0:8, :, :, :]
+
 #x1, x2, x1c, x2c = CenterImgWeight()
-#xtr = denoise(xtr, 5, 5)
+xtrdn = denoise(xtr, 0, 0)
+print xtr.shape, xtrdn.shape
+x = np.concatenate(( xtr, xtrdn), axis = 0)
+print x.shape
+ShowSquare(x, 2, 8)
 
 #x1dn, x2dn, xavgdn = denoise(x1, x2)
 #xdn = denoise(xtr, h, hcolor)
@@ -333,6 +364,7 @@ x = np.concatenate((x1pic, x2pic, xavg  ) , axis = 2)
 imgplot = plt.imshow(x, cmap="binary", interpolation='none') 
 plt.show()
 '''
-#ShowSquare(xdn[:,:,:,0], xdn[:,:,:,1], xdn[:,:,:,2])
+
+
 
 

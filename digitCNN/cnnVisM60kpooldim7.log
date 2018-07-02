@@ -1,8 +1,8 @@
 Running dataPrep.py, GenTrain
-dataPrep.py's GenTrain took  0.450646877289 seconds to run
+dataPrep.py's GenTrain took  0.536466121674 seconds to run
  
 Running dataPrepdigit.py, GenPatches
-dataPrepdigit.py's GenPatches took  17.0408599377 seconds to run
+dataPrepdigit.py's GenPatches took  17.4359600544 seconds to run
  
 You have chosen: Namespace(f1=4900, f2=35, f3=10, lamb=0.0001, m=60000, numfiles=40, pooldim=7)
  
@@ -51,7 +51,7 @@ cpdat shape (49000000,)
 Got the data
  
 Running dataPrep.py, GenTest
-dataPrep.py's GenTest took  0.326357841492 seconds to run
+dataPrep.py's GenTest took  0.35679602623 seconds to run
  
 shape of images (10000, 784)
 (171895,) (10000, 4900)
@@ -69,7 +69,7 @@ Traceback (most recent call last):
   File "cnnVisualdigit.py", line 216, in <module>
     ConfuMat(a3, y)
   File "cnnVisualdigit.py", line 143, in ConfuMat
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10, 10)) # (width, height) in inches
   File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/pyplot.py", line 1077, in subplots
     fig = figure(**fig_kw)
   File "/usr/local/anaconda/anaconda2/lib/python2.7/site-packages/matplotlib/pyplot.py", line 434, in figure

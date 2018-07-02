@@ -140,8 +140,8 @@ def ConfuMat(a3, y):
 	xAxLabels = ["0", "1", "2", "3", '4', '5', '6', '7', '8', '9']
 
 
-	fig, ax = plt.subplots()
-	im = ax.imshow(a3avg, cmap="coolwarm",)
+	fig, ax = plt.subplots(figsize=(10, 10))
+	im = ax.imshow(a3avg, cmap="coolwarm", interpolation = 'none')
 
 	# We want to show all ticks...
 	ax.set_xticks(np.arange(len(xAxLabels)))
@@ -173,7 +173,7 @@ def ConfuMat(a3, y):
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 # DATA PROCESSING
-'''
+
 # Get the convolved and pooled images. 
 print "Grabbing the convolved and pooled data..."
 
@@ -200,14 +200,14 @@ print 'shape of images', imgs.shape
 y = np.ravel(y[:g.m])
 # Generate the y matrix. # 15298 x 10
 ymat = GenYMat(y)
-'''
+
 
 # Get the WAll array calculated by cnn.py
 WAll = np.genfromtxt(WAllStr, dtype=float)
-W1, W2, b1, b2 =  unLinWAll(WAll)
+
 
 # FORWARD PROPAGATE AND CALCULATE PERCENTAGES
-print WAll.shape#, a1.shape
+print WAll.shape, a1.shape
 a2, a3, W1, W2, b1, b2 = ForwardProp(WAll, a1)
 
 # Generate the percentages

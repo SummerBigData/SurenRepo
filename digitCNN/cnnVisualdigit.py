@@ -140,8 +140,8 @@ def ConfuMat(a3, y):
 	xAxLabels = ["0", "1", "2", "3", '4', '5', '6', '7', '8', '9']
 
 
-	fig, ax = plt.subplots()
-	im = ax.imshow(a3avg, cmap="coolwarm",)
+	fig, ax = plt.subplots(figsize=(10, 10)) # (width, height) in inches
+	im = ax.imshow(a3avg, cmap="coolwarm", interpolation = 'none')
 
 	# We want to show all ticks...
 	ax.set_xticks(np.arange(len(xAxLabels)))

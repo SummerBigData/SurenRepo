@@ -1,10 +1,10 @@
 Running dataPrep.py, GenTrain
-dataPrep.py's GenTrain took  0.376242876053 seconds to run
+dataPrep.py's GenTrain took  0.450646877289 seconds to run
  
 Running dataPrepdigit.py, GenPatches
-dataPrepdigit.py's GenPatches took  17.0527360439 seconds to run
+dataPrepdigit.py's GenPatches took  17.0408599377 seconds to run
  
-You have chosen: Namespace(f1=4900, f2=35, f3=10, lamb=5e-05, m=60000, numfiles=40, pooldim=7)
+You have chosen: Namespace(f1=4900, f2=35, f3=10, lamb=0.0001, m=60000, numfiles=40, pooldim=7)
  
 Grabbing the convolved and pooled data...
 Grabbing file: 1
@@ -51,20 +51,20 @@ cpdat shape (49000000,)
 Got the data
  
 Running dataPrep.py, GenTest
-dataPrep.py's GenTest took  0.080451965332 seconds to run
+dataPrep.py's GenTest took  0.326357841492 seconds to run
  
 shape of images (10000, 784)
 (171895,) (10000, 4900)
 Number of data points identified correctly per number:
-[ 968.,1122., 996., 984., 957., 858., 932., 992., 933., 964.]
+[ 965.,1124., 999., 984., 958., 868., 930., 993., 942., 968.]
  
-Number of total data points identified correctly: 9706.0
+Number of total data points identified correctly: 9731.0
  
 Percent correct per number:
-[0.9877551 ,0.98854626,0.96511628,0.97425743,0.97454175,0.96188341,
- 0.97286013,0.96498054,0.95790554,0.95540139]
+[0.98469388,0.99030837,0.96802326,0.97425743,0.97556008,0.97309417,
+ 0.97077244,0.96595331,0.96714579,0.95936571]
  
-Total percent correct: 0.9706
+Total percent correct: 0.9731
 Traceback (most recent call last):
   File "cnnVisualdigit.py", line 216, in <module>
     ConfuMat(a3, y)

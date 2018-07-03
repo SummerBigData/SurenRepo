@@ -1,5 +1,5 @@
-#PBS -N runIceCnn1aug
-#PBS -l walltime=04:00:00
+#PBS -N runIceAngle
+#PBS -l walltime=01:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
 #PBS -j oe
@@ -21,4 +21,4 @@ source activate local
 
 #python -u icecnn.py $PBS_ARRAYID >& outIceCnn7-2_$PBS_ARRAYID.log
 
-python -u icecnn.py >& outIceCnn7-3_1aug.log
+python -u iceguessAngle.py >& outIceAngle7-3_0.log

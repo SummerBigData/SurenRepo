@@ -139,7 +139,7 @@ def ConfuMat(a3, y):
 	yAxLabels = ["0", "1", "2", "3", '4', '5', '6', '7', '8', '9']
 	xAxLabels = ["0", "1", "2", "3", '4', '5', '6', '7', '8', '9']
 
-
+	
 	fig, ax = plt.subplots(figsize=(10, 10)) # (width, height) in inches
 	im = ax.imshow(a3avg, cmap="coolwarm", interpolation = 'none')
 

@@ -76,11 +76,93 @@ def Norm(mat, nMin, nMax):
 def FixedNorm(mat, nMin, nMax):
 	nMin = nMin+0.0
 	nMax = nMax+0.0
-	Min = -50.0
-	Max = 35.0
+	Min = 23
+	Max = 47
 	return ((mat - Min) / (Max - Min)) * (nMax - nMin) + nMin
 
-#----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
+def augmentDenoise(xtr, ytr, h):
+	# denoise the data and add it with the old data
+	xtrdn = denoise(xtr, h)
+	xtraug = np.concatenate((xtr, xtrdn), axis=0)	#(2000, 75, 75, 3)
+	# Prepare the y values too
+	ytraug = np.concatenate( (ytr, ytr), axis=0)
+	# Shuffle the data
+	xtraug, ytraug = shuffleData(xtraug, ytraug)
+	
+	return xtraug, ytraug 
+
+def augmentTranslate(x, y, trimsize, numshifts):
+	# Choose whether to shift top left, top right, bottom left, or bottom right
+	shiftdir = np.random.randint(4, size =(x.shape[0], numshifts))
+	origsize = x.shape[1]
+	newsize = origsize - trimsize
+	newx = np.zeros((x.shape[0]*numshifts, newsize, newsize, 3))
+	newy = np.zeros((x.shape[0]*numshifts))
+
+	for i in range(x.shape[0]): # For each image
+		for j in range(numshifts):	# For each choice in shift
+			xi = x[i]
+			# For shift top left
+			if shiftdir[i,j] == 0:
+				for k in range(trimsize):
+					xi = np.delete(xi, -1, 0)
+					xi = np.delete(xi, -1, 1)
+			# For shift top right
+			if shiftdir[i,j] == 1:
+				for k in range(trimsize):		
+					xi = np.delete(xi, -1, 0)
+					xi = np.delete(xi, 0, 1)
+			# For shift bottom left
+			if shiftdir[i,j] == 2:
+				for k in range(trimsize):		
+					xi = np.delete(xi, 0, 0)
+					xi = np.delete(xi, -1, 1)
+			# For shift bottom right
+			if shiftdir[i,j] == 3:
+				for k in range(trimsize):		
+					xi = np.delete(xi, 0, 0)
+					xi = np.delete(xi, 0, 1)
+			# Save the x and y values
+			newx[i*numshifts+j] = xi
+			newy[i*numshifts+j] = y[i]
+
+	# Shuffle the data
+	newx, newy = shuffleData(newx, newy)
+
+	return newx, newy
+
+def iceDataPrep.augmentTranslateCentertrim(x, trimsize):
+	if trimsize % 2 == 1:
+		print ' '
+		print 'Trimsize is not even!'
+		print ' '
+	newshape = x.shape[1] - trimsize
+	xnew = np.zeros((x.shape[0], newshape, newshape, 3))
+	for i in range(x.shape[0]):
+		xi = x[i]
+		for j in range(trimsize/2):
+			xi = np.delete(xi, 0, 0)
+			xi = np.delete(xi, 0, 1)
+			xi = np.delete(xi, -1, 0)
+			xi = np.delete(xi, -1, 1)		
+		xnew[i] = xi
+	return xnew
+
+
+def shuffleData(xtr, ytr):
+	imgsize = xtr.shape[1]
+	# Linearize the x features and columize the y data
+	xtr = xtr.reshape((xtr.shape[0], imgsize*imgsize*3))
+	ytr = ytr.reshape((xtr.shape[0], 1))
+	# Stick them together and shuffle them
+	augdat = np.hstack((ytr, xtr))	#(2000, 16876)
+	np.random.shuffle(augdat)
+	
+	xtrshuffle = augdat[:, 1:].reshape((xtr.shape[0], imgsize, imgsize, 3))
+	ytrshuffle = np.ravel(augdat[:, 0])
+	return xtrshuffle, ytrshuffle
+
+
 
 
 def dataprep():
@@ -97,12 +179,51 @@ def dataprep():
 	#xbavg = np.zeros(xb1.shape)
 	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
 	
-	x = FixedNorm(x, 0, 1)
+	#x = FixedNorm(x, 0, 1)
 	xtr = x[:1000,:,:,:]
 	xte = x[1000:,:,:,:]
+	atr = TRangle[:1000]
+	ate = TRangle[1000:]
 	ytr = TRlabel[:1000]
 	yte = TRlabel[1000:]
-	return xtr, ytr, xte, yte
+	return xtr, ytr, atr, xte, yte, ate
+
+
+
+def dataprepAngle():
+	train = pd.read_json("data/train.json")	# 1604 x 5
+	
+	# Read out the data in the two bands, as 1604 x 75 x 75 arrays
+	TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
+	x1 = TRb1[0:1]
+	x2 = TRb2[0:1]
+	ang = TRangle[0:1]
+
+	for i in range(1604-1):
+		if TRangle[i+1] != 'na':
+			x1 = np.concatenate((x1, np.array([TRb1[i+1]]) ), axis=0)
+			x2 = np.concatenate((x2, np.array([TRb2[i+1]]) ), axis=0)
+			tempang = np.array([TRangle[i+1]])
+			ang = np.concatenate((ang, tempang), axis=0)
+	# DATA PREP
+	xb1 = x1.reshape((x1.shape[0], 75, 75, 1))
+	xb2 = x2.reshape((x1.shape[0], 75, 75, 1))
+	xbavg = (xb1 + xb2) / 2.0
+	#xbavg = np.zeros(xb1.shape)
+	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
+	
+	#ang = FixedNorm(ang, 0, 1)
+	print np.amin(ang), np.amax(ang)
+	
+	xtr = x[:1000,:,:,:]
+	xte = x[1000:,:,:,:]
+	atr = ang[:1000].astype(float)
+	ate = ang[1000:].astype(float)
+	
+	return xtr, atr, xte, ate
+
+
+
 
 
 '''
@@ -349,6 +470,13 @@ def unNormColors(mat, oldMinMax):
 
 
 
+
+#----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
+
+
+
+
+
 '''	
 xtr, ytr, xte, yte = dataprep()
 
@@ -384,11 +512,16 @@ ShowSquare(x, 4, 4)
 
 '''
 
+'''
 xtr, ytr, xte, yte = dataprep()
-#xtr = xtr[0:10, :, :, :]
-#xtrdn = denoise(xtr, 0)
+xtraug, ytraug = AugmentData( xtr, ytr, 5)
 
-print np.amin(xtr), np.amax(xtr)
+print xtraug.shape, ytraug.shape, xtr.shape, ytr.shape
+'''
+
+
+
+#print np.amin(xtr), np.amax(xtr)
 #print np.amin(xtrdn), np.amax(xtrdn)
 
 

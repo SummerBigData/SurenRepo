@@ -1,0 +1,85 @@
+Using TensorFlow backend.
+/users/PAS1383/osu10171/.conda/envs/local/lib/python2.7/site-packages/h5py/__init__.py:34: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+You have chosen: Namespace(bsize=100, epo=70, f1=11250, f2=50, f3=100, f4=1, h=0, imgsize=71, m=1604, trimsize=4)
+ 
+x and y (4000, 71, 71, 3) (4000,)
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_1 (Conv2D)            (None, 69, 69, 64)        1792      
+_________________________________________________________________
+max_pooling2d_1 (MaxPooling2 (None, 34, 34, 64)        0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 34, 34, 64)        0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 32, 32, 128)       73856     
+_________________________________________________________________
+max_pooling2d_2 (MaxPooling2 (None, 16, 16, 128)       0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 16, 16, 128)       0         
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, 14, 14, 128)       147584    
+_________________________________________________________________
+max_pooling2d_3 (MaxPooling2 (None, 7, 7, 128)         0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 7, 7, 128)         0         
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, 5, 5, 64)          73792     
+_________________________________________________________________
+max_pooling2d_4 (MaxPooling2 (None, 2, 2, 64)          0         
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 2, 2, 64)          0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 256)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 512)               131584    
+_________________________________________________________________
+activation_1 (Activation)    (None, 512)               0         
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 512)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 256)               131328    
+_________________________________________________________________
+activation_2 (Activation)    (None, 256)               0         
+_________________________________________________________________
+dropout_6 (Dropout)          (None, 256)               0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 1)                 257       
+_________________________________________________________________
+activation_3 (Activation)    (None, 1)                 0         
+=================================================================
+Total params: 560,193
+Trainable params: 560,193
+Non-trainable params: 0
+_________________________________________________________________
+Train on 4000 samples, validate on 604 samples
+Epoch 1/70
+2018-07-05 15:45:28.803826: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2018-07-05 15:45:28.803867: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+249s - loss: 0.8232 - acc: 0.5437 - val_loss: 0.5887 - val_acc: 0.5977
+Epoch 2/70
+246s - loss: 0.5326 - acc: 0.7303 - val_loss: 0.4763 - val_acc: 0.7334
+Epoch 3/70
+244s - loss: 0.4365 - acc: 0.7990 - val_loss: 0.4345 - val_acc: 0.7815
+Epoch 4/70
+243s - loss: 0.4127 - acc: 0.8172 - val_loss: 0.3900 - val_acc: 0.8179
+Epoch 5/70
+242s - loss: 0.3841 - acc: 0.8282 - val_loss: 0.3706 - val_acc: 0.8411
+Epoch 6/70
+242s - loss: 0.3590 - acc: 0.8390 - val_loss: 0.3490 - val_acc: 0.8245
+Epoch 7/70
+242s - loss: 0.3197 - acc: 0.8695 - val_loss: 0.3730 - val_acc: 0.7881
+Epoch 8/70
+241s - loss: 0.3004 - acc: 0.8667 - val_loss: 0.3423 - val_acc: 0.8377
+Epoch 9/70
+242s - loss: 0.2844 - acc: 0.8745 - val_loss: 0.2887 - val_acc: 0.8609
+Epoch 10/70
+241s - loss: 0.2586 - acc: 0.8823 - val_loss: 0.2950 - val_acc: 0.8742
+Epoch 11/70
+242s - loss: 0.2374 - acc: 0.8965 - val_loss: 0.3078 - val_acc: 0.8709
+Epoch 12/70
+241s - loss: 0.2402 - acc: 0.8895 - val_loss: 0.3063 - val_acc: 0.8477
+Epoch 13/70
+239s - loss: 0.2323 - acc: 0.8975 - val_loss: 0.2791 - val_acc: 0.8791
+Epoch 14/70

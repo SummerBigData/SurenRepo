@@ -1,4 +1,4 @@
-#PBS -N runIceCnn1aug
+#PBS -N runiCnndn10tr4
 #PBS -l walltime=04:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
@@ -21,4 +21,4 @@ source activate local
 
 #python -u icecnn.py $PBS_ARRAYID >& outIceCnn7-2_$PBS_ARRAYID.log
 
-python -u icecnn.py >& outIceCnn7-3_1aug.log
+python -u icecnn.py 10 4  >& outiCnn7-5_dn10tr4.log

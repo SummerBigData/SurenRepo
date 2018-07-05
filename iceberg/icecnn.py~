@@ -6,7 +6,7 @@ import argparse
 #import ijson
 # Keras stuff
 import keras
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Activation
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
@@ -24,8 +24,8 @@ np.random.seed(7)
 
 parser = argparse.ArgumentParser()
 #parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)
-#parser.add_argument("h", help="denoising variable for all colors", type=int)
-parser.add_argument("trimsize", help="how many pixels on each side do we trim for data augmentation?", type=int)
+parser.add_argument("h", help="denoising variable for all colors", type=int)
+parser.add_argument("trimsize", help="how many pixels do we trim for data augmentation (even #)?", type=int)
 g = parser.parse_args()
 g.m = 1604
 g.f1 = 75 * 75 * 2
@@ -33,9 +33,10 @@ g.f2 = 50
 g.f3 = 100
 g.f4 = 1
 g.imgsize = 75 - g.trimsize
-g.epo = 60#300
-g.bsize = 24
-saveStr = 'icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize) #+ 'h' + str(g.h)
+g.epo = 70#300
+g.bsize = 100
+#saveStr = 'icem'+str(g.m)+'epo'+str(g.epo)+'bsize'+str(g.bsize)+'trimsize'+str(g.trimsize)
+saveStr = 'iceEpo'+str(g.epo)+'Bsize'+str(g.bsize)+'h'+str(g.h)+'Trimsize'+str(g.trimsize)
 print 'You have chosen:', g
 print ' '
 
@@ -64,15 +65,6 @@ def ShowSquare(band1, band2):
 	plt.show()
 
 
-'''
-def PrepDat(b1, b2, label):
-	linband1 = b1.reshape((1604, 75*75))
-	linband2 = b2.reshape((1604, 75*75))
-	x = np.hstack((linband1, linband2))
-	x = Norm(x)
-	y = label
-	return x, y
-'''
 def getModel():
 	#Building the model
 	gmodel=Sequential()
@@ -120,9 +112,9 @@ def getModel():
 	gmodel.summary()
 	return gmodel
 
-def get_callbacks(filepath, patience=2):
+def get_callbacks(filepath, patience=5):
 	es = EarlyStopping('val_loss', patience=patience, mode="min")
-	msave = ModelCheckpoint(filepath, save_best_only=True)
+	msave = ModelCheckpoint(filepath, monitor='val_loss',save_best_only=True,save_weights_only=True)
 	return [es, msave]
 
 
@@ -147,13 +139,26 @@ TRb1, TRb2, TRname, TRlabel, TRangle, TRonlyAngle = DataSort(train)
 
 # DATA PREP
 
+# Grab the training (tr) and testing (te) data and labels
 xtr, ytr, atr, xte, yte, ate = iceDataPrep.dataprep()
+
+# Add back the angle info as the third chanel
+#xtr = iceDataPrep.addAngles(xtr, atr)
+#xte = iceDataPrep.addAngles(xte, ate)
+
+# Denoise the images
 #xtr = iceDataPrep.denoise(xtr, g.h)
 #xte = iceDataPrep.denoise(xte, g.h)
 
-#xtr, ytr = iceDataPrep.augmentDenoise( xtr, ytr, 10)
-xtr, ytr = iceDataPrep.augmentTranslate(xtr, ytr, g.trimsize, 4)
-xte = iceDataPrep.augmentTranslateCentertrim(xte, g.trimsize)
+# Denoise the images as an augmentation to the dataset. doubles dataset size
+if g.h != 0:
+	xtr, ytr = iceDataPrep.augmentDenoise(xtr, ytr, g.h)
+
+# Trim and translate the training set and center trim the test set. quadruples dataset size
+if g.trimsize != 0:
+	xtr, ytr = iceDataPrep.augmentTranslate(xtr, ytr, g.trimsize, 4)
+	xte = iceDataPrep.augmentTranslateCentertrim(xte, g.trimsize)
+
 
 '''
 datagen = ImageDataGenerator(
@@ -187,12 +192,13 @@ model.add(Dense(g.f3, activation='relu'))
 model.add(Dense(g.f4, activation='sigmoid'))
 '''
 model = getModel()
+#model = load_model('models/iceModel')
 # Compile model
 #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 #print model.summary()
 
 
-file_path = 'weights/' + saveStr
+file_path = 'weights/' + saveStr + '.hdf5' #'{epoch:02d}-{val_loss:.2f}.hdf5'
 callbacks = get_callbacks(filepath=file_path, patience=5)
 
 # Fit the model
@@ -211,12 +217,13 @@ model.fit_generator(datagen.flow(xtr, ytr, batch_size=g.bsize),
 model.fit(xtr, ytr,
 	batch_size=g.bsize,
 	epochs=g.epo,
-	verbose=1,
-	validation_data=(xte, yte) ) 
-	#callbacks=callbacks)
+	verbose=2,
+	validation_data=(xte, yte),
+	callbacks=callbacks)
 
 
 # evaluate the model
+model.load_weights(file_path)
 
 print 'Accuracy on training data:'
 scores = model.evaluate(xtr, ytr)
@@ -227,8 +234,8 @@ scores = model.evaluate(xte, yte)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 
-model.save('models/' + saveStr )
-model.save_weights('weights/' + saveStr)
+model.save('models/iceModel' + str(g.imgsize) )
+#model.save_weights('weights/' + saveStr)
 
 
 

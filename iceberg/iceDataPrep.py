@@ -36,7 +36,6 @@ def DataSort(dat):
 			onlyAngle[i] = 39.2687	
 		else:
 			onlyAngle[i] = angle[i]
-
 	return band1, band2, name, label, angle, onlyAngle
 
 def ShowSquare(x, rows, cols): 
@@ -88,7 +87,6 @@ def augmentDenoise(xtr, ytr, h):
 	ytraug = np.concatenate( (ytr, ytr), axis=0)
 	# Shuffle the data
 	xtraug, ytraug = shuffleData(xtraug, ytraug)
-	
 	return xtraug, ytraug 
 
 def augmentTranslate(x, y, trimsize, numshifts):
@@ -128,9 +126,9 @@ def augmentTranslate(x, y, trimsize, numshifts):
 
 	# Shuffle the data
 	newx, newy = shuffleData(newx, newy)
-
 	return newx, newy
 
+# To keep input and output dimensions the same, we trim the output to have the same dimensions
 def augmentTranslateCentertrim(x, trimsize):
 	if trimsize % 2 == 1:
 		print ' '
@@ -148,22 +146,26 @@ def augmentTranslateCentertrim(x, trimsize):
 		xnew[i] = xi
 	return xnew
 
+def addAngles(x, ang): # Expecting shape: x -> (m, width, height, 3) and ang -> (angle,)
+	for i in range(x.shape[0]):
+		for j in range(x.shape[1]):
+			for k in range(x.shape[2]):
+				x[i,j,k,2] = ang[i]
+	return x
+
 
 def shuffleData(xtr, ytr):
 	imgsize = xtr.shape[1]
-	# Linearize the x features and columize the y data
+	# Linearize the x features and columnize the y data
 	xtr = xtr.reshape((xtr.shape[0], imgsize*imgsize*3))
 	ytr = ytr.reshape((xtr.shape[0], 1))
 	# Stick them together and shuffle them
 	augdat = np.hstack((ytr, xtr))	#(2000, 16876)
 	np.random.shuffle(augdat)
-	
+	# Seperate augdat and reshape back to original dimensions
 	xtrshuffle = augdat[:, 1:].reshape((xtr.shape[0], imgsize, imgsize, 3))
 	ytrshuffle = np.ravel(augdat[:, 0])
 	return xtrshuffle, ytrshuffle
-
-
-
 
 def dataprep():
 
@@ -182,8 +184,8 @@ def dataprep():
 	#x = FixedNorm(x, 0, 1)
 	xtr = x[:1000,:,:,:]
 	xte = x[1000:,:,:,:]
-	atr = TRangle[:1000]
-	ate = TRangle[1000:]
+	atr = TRonlyAngle[:1000]
+	ate = TRonlyAngle[1000:]
 	ytr = TRlabel[:1000]
 	yte = TRlabel[1000:]
 	return xtr, ytr, atr, xte, yte, ate
@@ -219,7 +221,6 @@ def dataprepAngle():
 	xte = x[1000:,:,:,:]
 	atr = ang[:1000].astype(float)
 	ate = ang[1000:].astype(float)
-	
 	return xtr, atr, xte, ate
 
 
@@ -419,7 +420,6 @@ def CenterImgWeight():
 
 def denoise(x,H):
 	print 'Denoising the images'
-	
 	'''
 	xdn = np.zeros((x.shape))
 	for i in range(x.shape[0]): # 1604
@@ -436,22 +436,22 @@ def denoise(x,H):
 		# To preserve the original scaling, we renormalize with old min/max
 		xdn[i] = unNormColors(xdn[i], oldMinMax)
 	'''
-	
 	xdn = np.zeros((x.shape))
-	xdn[:,:,:,2] = x[:,:,:,2]
 	for i in range(x.shape[0]): # 1604
 		# Force values between 0 and 255, but remember their original scaling
 		xi, oldMinMax = NormColors(x[i], 0, 255.0)
 		
 		xi = xi.astype(np.uint8)
+		# Only need to loop through the first two colors (two bands)
 		for j in range(2):
 			#x_grey = cv2.cvtColor(xi[:, :, j], cv2.CV_RGB2GRAY)
 			dst = cv2.fastNlMeansDenoising(src = xi[:, :, j] ,h=H,templateWindowSize = 7,searchWindowSize = 21)	# 10,10,7,21
 	
 			xdn[i, :, :, j] = np.asarray(dst.astype(float))
-		
 		# To preserve the original scaling, we renormalize with old min/max
 		xdn[i] = unNormColors(xdn[i], oldMinMax)
+	# Keep the angle info the same
+	xdn[:,:,:,2] = x[:,:,:,2]
 	print 'done denoising'
 	return xdn
 

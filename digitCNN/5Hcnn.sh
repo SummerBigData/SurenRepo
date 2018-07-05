@@ -1,4 +1,4 @@
-#PBS -N runCnn60k
+#PBS -N runCnn60kHL45lamb1e-4
 #PBS -l walltime=02:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=128GB
@@ -16,4 +16,4 @@ fi
 module load python/2.7.8
 #
 # This is the command the runs the python script
-python -u cnndigit.py 60000 35 1e-4 >& outcnnHL35lamb1e-4.log
+python -u cnndigit.py 60000 45 1e-4 >& outcnnHL45lamb1e-4.log

@@ -48,11 +48,13 @@ h = 20
 tr = 51.20%, te = 39.90%
 
 }
+
 denoising as addition to dataset, running for x epochs hard
 {
-
+h = 10
 99.25%, 87.25%
 }
+
 No denoising, normalizing whole dataset
 {
 
@@ -83,4 +85,21 @@ Guessing the angle:
  [15.991367]
  [16.464506]
  [18.040327]]
+
+Translate augmented, numshifts (per picture) = 4
+Total images trained on: 4k
+epochs=60
+{
+ended prematurely at ep=59
+trimsize = 4
+tr = 98.15%, te = 87.58%
+
+
+}
+
+48.80%
+
+
+
+
 

@@ -1,13 +1,13 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import argparse
 # Keras stuff
 import json
 from keras.models import Sequential, load_model
 from keras.layers import Dense
-
+import iceDataPrep
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
 
@@ -15,27 +15,28 @@ from keras.layers import Dense
 np.random.seed(7)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)
-parser.add_argument("epo", help="Number of Datapoints, up to 300", type=int)
-parser.add_argument("bsize", help="Number of Datapoints, up to 300", type=int)
+#parser.add_argument("m", help="Number of Datapoints, up to 1604", type=int)
+#parser.add_argument("epo", help="Number of Datapoints, up to 300", type=int)
+#parser.add_argument("bsize", help="Number of Datapoints, up to 300", type=int)
 #parser.add_argument("datType", help="'Test' data or 'Train' data?", type=str)
+parser.add_argument("h", help="denoising variable for all colors", type=int)
+parser.add_argument("trimsize", help="how many pixels do we trim for data augmentation (even #)?", type=int)
 g = parser.parse_args()
-
+g.m = 1604
 g.f1 = 75 * 75 * 2
 g.f2 = 500
 #g.f3 = 100
 g.f4 = 1
-
+g.epo = 70
+g.bsize = 24
 #if g.datType == 'Test':
 #	g.testm = 8424
-
-g.testm = 1604
 
 print 'You have chosen:', g
 print ' '
 
-modelStr = 'models/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)
-weightStr = 'weights/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)
+#modelStr = 'models/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)
+weightStr = 'weights/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)+'h'+str(g.h)+'trimsize'+str(g.trimsize)
 
 
 
@@ -99,10 +100,12 @@ def PrepDat(TEb1, TEb2, TElabel):
 def binaryaccuracy(model, testX, testY):   
 	prediction = model.predict(testX)
 	gotright = 0
-	for i in range(g.testm):
-		if prediction[i] == testY[i]:
+	for i in range(testX.shape[0]):
+		if testY[i] == 0 and prediction[i] < 0.5:
 			gotright += 1
-	accur = gotright / (g.testm + 0.0)
+		elif testY[i] == 1 and prediction[i] > 0.5:
+			gotright += 1
+	accur = gotright / (testX.shape[0] + 0.0)
 	return accur, prediction
 
 def Norm(mat):
@@ -124,8 +127,6 @@ def GenYMat(yvals):
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
 
-print 'reading data'
-
 #test = pd.read_json("data/train.json")	# ? x 5
 '''
 if g.datType == 'Test':
@@ -134,30 +135,16 @@ if g.datType == 'Test':
 	dat = json.loads(json_data)
 '''
 
-dat = pd.read_json("data/train.json")
 
-print 'got data'
-
-
-#TEb1, TEb2, TEname, TEangle = DataSortTest(dat)
-
-TEb1, TEb2, TEname, TElabel, TEangle, TEonlyAngle= DataSortTrain(dat)
-
-
-x, y = PrepDat(TEb1, TEb2, TElabel)
-
-
-#y = GenYMat(y)
-
-
-print x.shape, y.shape
+xtr, ytr, atr, xte, yte, ate = iceDataPrep.dataprep()
 
 
 
-model = load_model(modelStr)
+
+model = load_model('models/iceModel')
 model.load_weights(weightStr)
 
-accuracy, prediction = binaryaccuracy(model, x, y)
+accuracy, prediction = binaryaccuracy(model, xte, yte)
 
 print accuracy
 

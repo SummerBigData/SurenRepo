@@ -11,7 +11,7 @@ from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Activati
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
-import os
+import os.path # To check if a file exists
 import iceDataPrep
 
 
@@ -112,7 +112,8 @@ def getModel():
 	gmodel.summary()
 	return gmodel
 
-def get_callbacks(filepath, patience=5):
+# We choose a high patience so the algorthim keeps searching even after finding a maximum
+def get_callbacks(filepath, patience=8):	
 	es = EarlyStopping('val_loss', patience=patience, mode="min")
 	msave = ModelCheckpoint(filepath, monitor='val_loss',save_best_only=True,save_weights_only=True)
 	return [es, msave]
@@ -181,21 +182,13 @@ print 'x and y', xtr.shape, ytr.shape
 
 # KERAS NEURAL NETWORK
 
-# create model
-'''
-model = Sequential()
-model.add(Conv2D(filters = g.f2, kernel_size = (5,5),padding = 'Valid', 
-                 activation ='relu', input_shape = (75,75,3)))
-#model.add(Dense(g.f2, input_shape=(75,75,3), activation='relu'))
-model.add(Flatten())
-model.add(Dense(g.f3, activation='relu'))
-model.add(Dense(g.f4, activation='sigmoid'))
-'''
-model = getModel()
-#model = load_model('models/iceModel')
-# Compile model
-#model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-#print model.summary()
+
+
+# Get or make the model. Need a different model for each trimsize
+if os.path.exists('models/iceModel' + str(g.imgsize) ):
+	model = load_model('models/iceModel' + str(g.imgsize) )
+else:
+	model = getModel()
 
 
 file_path = 'weights/' + saveStr + '.hdf5' #'{epoch:02d}-{val_loss:.2f}.hdf5'

@@ -96,8 +96,29 @@ tr = 98.15%, te = 87.58%
 
 
 }
+{
+denoise = 0 translate = 4
+tr = 89.98%%, te = 87.91%
 
-48.80%
+denoise = 0 translate = 8
+tr = 93.97%, te = 87.91%
+
+denoise = 5 translate = 0
+tr = 93.40%, te = 87.09%
+
+denoise = 5 translate = 4
+tr = 94.95%, te = 88.08%
+
+denoise = 5 translate = 8
+tr = 95.12%, te = 87.75%
+
+denoise = 10 translate = 0
+tr = 90.20%, te = 90.23%
+
+denoise = 10 translate = 4
+tr = 51.20%, te = 39.90% 
+}
+
 
 
 

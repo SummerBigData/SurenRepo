@@ -128,6 +128,15 @@ def augmentTranslate(x, y, trimsize, numshifts):
 	newx, newy = shuffleData(newx, newy)
 	return newx, newy
 
+
+def augmentNewTranslate(x, y, trimsize, numshifts):
+	# FIX
+	# Shuffle the data
+	newx, newy = shuffleData(newx, newy)
+	return newx, newy
+
+
+
 # To keep input and output dimensions the same, we trim the output to have the same dimensions
 def augmentTranslateCentertrim(x, trimsize):
 	if trimsize % 2 == 1:
@@ -190,6 +199,24 @@ def dataprep():
 	yte = TRlabel[1000:]
 	return xtr, ytr, atr, xte, yte, ate
 
+def DataSortTest(dat):
+
+	band1 = np.zeros((len(dat), 5625))
+	band2 = np.zeros((len(dat), 5625))
+	name = np.zeros(( len(dat) )).astype(str)
+	angle = np.zeros(( len(dat) ))
+
+	for i in range(len(dat)):
+
+		band1[i] = np.array(dat[i]['band_1'])
+		band2[i] = np.array(dat[i]['band_2'])
+	
+	# Read the name, label, and inclination angle as (5625,) arrays
+		name[i] = np.array(dat[i]['id'])
+	#label = np.array(dat['is_iceberg'])	# 0 or 1
+		angle[i] = np.array(dat[i]['inc_angle'])	# angle in degrees
+
+	return band1, band2, name, angle
 
 
 def dataprepAngle():

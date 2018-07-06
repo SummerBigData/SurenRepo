@@ -1,0 +1,36 @@
+Using TensorFlow backend.
+/users/PAS1383/osu10171/.conda/envs/local/lib/python2.7/site-packages/h5py/__init__.py:34: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+ 
+2.7.13 |Anaconda 2.1.0 (64-bit)| (default, Dec 20 2016, 23:09:15) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]
+ 
+You have chosen: Namespace(bsize=100, epo=70, f1=11250, f2=50, f3=100, f4=1, h=10, imgsize=75, m=1604, pseuSize=500, trimsize=0)
+ 
+x and y (1500, 75, 75, 3) (1500,)
+2018-07-06 15:54:52.015694: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2018-07-06 15:54:52.016101: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+Train on 1500 samples, validate on 604 samples
+Epoch 1/70
+166s - loss: 0.3288 - acc: 0.6053 - val_loss: 0.2827 - val_acc: 0.8560
+Epoch 2/70
+167s - loss: 0.2850 - acc: 0.6067 - val_loss: 0.2580 - val_acc: 0.8825
+Epoch 3/70
+169s - loss: 0.2606 - acc: 0.6173 - val_loss: 0.2669 - val_acc: 0.8626
+Epoch 4/70
+169s - loss: 0.2429 - acc: 0.6213 - val_loss: 0.2744 - val_acc: 0.8692
+Epoch 5/70
+166s - loss: 0.2493 - acc: 0.6107 - val_loss: 0.3161 - val_acc: 0.8642
+Epoch 6/70
+167s - loss: 0.2580 - acc: 0.6140 - val_loss: 0.2577 - val_acc: 0.8891
+Epoch 7/70
+167s - loss: 0.2328 - acc: 0.6260 - val_loss: 0.2704 - val_acc: 0.8725
+Epoch 8/70
+171s - loss: 0.2271 - acc: 0.6260 - val_loss: 0.2515 - val_acc: 0.8974
+Epoch 9/70
+171s - loss: 0.2326 - acc: 0.6200 - val_loss: 0.2640 - val_acc: 0.8874
+Epoch 10/70
+171s - loss: 0.2329 - acc: 0.6240 - val_loss: 0.2811 - val_acc: 0.8791
+Epoch 11/70
+168s - loss: 0.2261 - acc: 0.6233 - val_loss: 0.3065 - val_acc: 0.8659
+Epoch 12/70

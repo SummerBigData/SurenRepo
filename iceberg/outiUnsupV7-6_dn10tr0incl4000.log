@@ -1,0 +1,26 @@
+Using TensorFlow backend.
+/users/PAS1383/osu10171/.conda/envs/local/lib/python2.7/site-packages/h5py/__init__.py:34: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+ 
+2.7.13 |Anaconda 2.1.0 (64-bit)| (default, Dec 20 2016, 23:09:15) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]
+ 
+You have chosen: Namespace(bsize=100, epo=70, f1=11250, f2=50, f3=100, f4=1, h=10, imgsize=75, m=1604, pseuSize=4000, trimsize=0)
+ 
+x and y (5000, 75, 75, 3) (5000,)
+2018-07-06 15:54:31.851403: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2018-07-06 15:54:31.851440: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+Train on 5000 samples, validate on 604 samples
+Epoch 1/70
+324s - loss: 0.4001 - acc: 0.1850 - val_loss: 0.2718 - val_acc: 0.8725
+Epoch 2/70
+324s - loss: 0.3355 - acc: 0.1866 - val_loss: 0.2648 - val_acc: 0.8709
+Epoch 3/70
+323s - loss: 0.3285 - acc: 0.1894 - val_loss: 0.2529 - val_acc: 0.9023
+Epoch 4/70
+322s - loss: 0.3241 - acc: 0.1902 - val_loss: 0.2493 - val_acc: 0.8940
+Epoch 5/70
+322s - loss: 0.3181 - acc: 0.1890 - val_loss: 0.2666 - val_acc: 0.8775
+Epoch 6/70
+322s - loss: 0.3218 - acc: 0.1896 - val_loss: 0.2461 - val_acc: 0.8990
+Epoch 7/70

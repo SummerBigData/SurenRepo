@@ -14,7 +14,11 @@ from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 import os.path # To check if a file exists
 import iceDataPrep
 
-
+# Print the exact architecture being used
+import sys
+print ' '
+print(sys.version)
+print ' '
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
 
@@ -186,13 +190,13 @@ print 'x and y', xtr.shape, ytr.shape
 
 # Get or make the model. Need a different model for each trimsize
 if os.path.exists('models/iceModel' + str(g.imgsize) ):
-	model = load_model('models/iceModel')
+	model = load_model('models/iceModel' + str(g.imgsize) )
 else:
 	model = getModel()
 
 
 file_path = 'weights/' + saveStr + '.hdf5' #'{epoch:02d}-{val_loss:.2f}.hdf5'
-callbacks = get_callbacks(filepath=file_path, patience=5)
+callbacks = get_callbacks(filepath=file_path, patience=8)
 
 # Fit the model
 #model.fit(x, y, epochs=g.epo, batch_size=g.bsize)
@@ -207,7 +211,7 @@ model.fit_generator(datagen.flow(xtr, ytr, batch_size=g.bsize),
 '''
 
 #gmodel=getModel()
-model.fit(xtr, ytr,
+model.fit(xtrNew, ytrNew,
 	batch_size=g.bsize,
 	epochs=g.epo,
 	verbose=2,
@@ -219,7 +223,7 @@ model.fit(xtr, ytr,
 model.load_weights(file_path)
 
 print 'Accuracy on training data:'
-scores = model.evaluate(xtr, ytr)
+scores = model.evaluate(xtrNew, ytrNew)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 print 'Accuracy on testing data:'
@@ -227,7 +231,7 @@ scores = model.evaluate(xte, yte)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 
-model.save('models/iceModel' + str(g.imgsize) )
+#model.save('models/iceModel' + str(g.imgsize) )
 #model.save_weights('weights/' + saveStr)
 
 

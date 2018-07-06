@@ -14,7 +14,11 @@ from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 import os.path # To check if a file exists
 import iceDataPrep
 
-
+# Print the exact architecture being used
+import sys
+print ' '
+print(sys.version)
+print ' '
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
 
@@ -192,7 +196,7 @@ else:
 
 
 file_path = 'weights/' + saveStr + '.hdf5' #'{epoch:02d}-{val_loss:.2f}.hdf5'
-callbacks = get_callbacks(filepath=file_path, patience=5)
+callbacks = get_callbacks(filepath=file_path, patience=8)
 
 # Fit the model
 #model.fit(x, y, epochs=g.epo, batch_size=g.bsize)

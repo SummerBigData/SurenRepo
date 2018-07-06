@@ -94,11 +94,11 @@ ended prematurely at ep=59
 trimsize = 4
 tr = 98.15%, te = 87.58%
 
-
 }
+
 {
 denoise = 0 translate = 4
-tr = 89.98%%, te = 87.91%
+tr = 89.98%, te = 87.91%
 
 denoise = 0 translate = 8
 tr = 93.97%, te = 87.91%
@@ -117,10 +117,39 @@ tr = 90.20%, te = 90.23%
 
 denoise = 10 translate = 4
 tr = 51.20%, te = 39.90% 
+
+denoise = 10 translate = 8
+tr = 95.30%, te = 88.41%
+
+denoise = 0 translate = 0
+tr = 93.30%, te = 88.25%
+
+denoise = 10 translate = 4
+tr = 96.96%, te = 89.74%
+
+}
+
+denoise = 10 translate = 0
+{
+incl. 250
+tr = 93.90%, te = 88.25%
+
+
+
 }
 
 
 
+
+
+
+Terminal version:
+2.7.13 |Anaconda 2.1.0 (64-bit)| (default, Dec 20 2016, 23:09:15) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]
+
+Qsub version:
+2.7.13 |Anaconda 2.1.0 (64-bit)| (default, Dec 20 2016, 23:09:15) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]
 
 
 

@@ -36,7 +36,6 @@ def DataSort(dat):
 			onlyAngle[i] = 39.2687	
 		else:
 			onlyAngle[i] = angle[i]
-
 	return band1, band2, name, label, angle, onlyAngle
 
 def ShowSquare(x, rows, cols): 
@@ -88,7 +87,6 @@ def augmentDenoise(xtr, ytr, h):
 	ytraug = np.concatenate( (ytr, ytr), axis=0)
 	# Shuffle the data
 	xtraug, ytraug = shuffleData(xtraug, ytraug)
-	
 	return xtraug, ytraug 
 
 def augmentTranslate(x, y, trimsize, numshifts):
@@ -128,8 +126,16 @@ def augmentTranslate(x, y, trimsize, numshifts):
 
 	# Shuffle the data
 	newx, newy = shuffleData(newx, newy)
-
 	return newx, newy
+
+
+def augmentNewTranslate(x, y, trimsize, numshifts):
+	# FIX
+	# Shuffle the data
+	newx, newy = shuffleData(newx, newy)
+	return newx, newy
+
+
 
 # To keep input and output dimensions the same, we trim the output to have the same dimensions
 def augmentTranslateCentertrim(x, trimsize):
@@ -157,9 +163,6 @@ def addAngles(x, ang): # Expecting shape: x -> (m, width, height, 3) and ang -> 
 	return x
 
 
-
-
-
 def shuffleData(xtr, ytr):
 	imgsize = xtr.shape[1]
 	# Linearize the x features and columnize the y data
@@ -172,9 +175,6 @@ def shuffleData(xtr, ytr):
 	xtrshuffle = augdat[:, 1:].reshape((xtr.shape[0], imgsize, imgsize, 3))
 	ytrshuffle = np.ravel(augdat[:, 0])
 	return xtrshuffle, ytrshuffle
-
-
-
 
 def dataprep():
 
@@ -199,6 +199,27 @@ def dataprep():
 	yte = TRlabel[1000:]
 	return xtr, ytr, atr, xte, yte, ate
 
+def DataSortTest(dat):
+	'''
+	band1 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_1"]])
+	band2 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_2"]])
+	'''
+	band1 = np.zeros((len(dat), 5625))
+	band2 = np.zeros((len(dat), 5625))
+	name = np.zeros(( len(dat) )).astype(str)
+	angle = np.zeros(( len(dat) ))
+
+	for i in range(len(dat)):
+
+		band1[i] = np.array(dat[i]['band_1'])
+		band2[i] = np.array(dat[i]['band_2'])
+	
+	# Read the name, label, and inclination angle as (5625,) arrays
+		name[i] = np.array(dat[i]['id'])
+	#label = np.array(dat['is_iceberg'])	# 0 or 1
+		angle[i] = np.array(dat[i]['inc_angle'])	# angle in degrees
+
+	return band1, band2, name, angle
 
 
 def dataprepAngle():
@@ -230,7 +251,6 @@ def dataprepAngle():
 	xte = x[1000:,:,:,:]
 	atr = ang[:1000].astype(float)
 	ate = ang[1000:].astype(float)
-	
 	return xtr, atr, xte, ate
 
 
@@ -430,7 +450,6 @@ def CenterImgWeight():
 
 def denoise(x,H):
 	print 'Denoising the images'
-	
 	'''
 	xdn = np.zeros((x.shape))
 	for i in range(x.shape[0]): # 1604
@@ -447,9 +466,7 @@ def denoise(x,H):
 		# To preserve the original scaling, we renormalize with old min/max
 		xdn[i] = unNormColors(xdn[i], oldMinMax)
 	'''
-	
 	xdn = np.zeros((x.shape))
-	
 	for i in range(x.shape[0]): # 1604
 		# Force values between 0 and 255, but remember their original scaling
 		xi, oldMinMax = NormColors(x[i], 0, 255.0)
@@ -461,7 +478,6 @@ def denoise(x,H):
 			dst = cv2.fastNlMeansDenoising(src = xi[:, :, j] ,h=H,templateWindowSize = 7,searchWindowSize = 21)	# 10,10,7,21
 	
 			xdn[i, :, :, j] = np.asarray(dst.astype(float))
-		
 		# To preserve the original scaling, we renormalize with old min/max
 		xdn[i] = unNormColors(xdn[i], oldMinMax)
 	# Keep the angle info the same

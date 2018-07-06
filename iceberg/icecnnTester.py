@@ -28,7 +28,7 @@ g.f2 = 500
 #g.f3 = 100
 g.f4 = 1
 g.epo = 70
-g.bsize = 24
+g.bsize = 100
 #if g.datType == 'Test':
 #	g.testm = 8424
 
@@ -36,20 +36,19 @@ print 'You have chosen:', g
 print ' '
 
 #modelStr = 'models/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)
-weightStr = 'weights/icem'+str(g.m)+'epo'+ str(g.epo)+'bsize'+ str(g.bsize)+'h'+str(g.h)+'trimsize'+str(g.trimsize)
+weightStr = 'iceEpo'+str(g.epo)+'Bsize'+str(g.bsize)+'h'+str(g.h)+'Trimsize'+str(g.trimsize)
 
 
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
 
 
-
+'''
 def DataSortTest(dat):
-	'''
-	band1 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_1"]])
-	band2 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_2"]])
-	'''
-	print len(dat)
+	
+	#band1 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_1"]])
+	#band2 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_2"]])
+	
 	band1 = np.zeros((len(dat), 5625))
 	band2 = np.zeros((len(dat), 5625))
 	name = np.zeros(( len(dat) )).astype(str)
@@ -66,7 +65,7 @@ def DataSortTest(dat):
 		angle[i] = np.array(dat[i]['inc_angle'])	# angle in degrees
 
 	return band1, band2, name, angle
-
+'''
 
 def DataSortTrain(dat):
 	band1 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_1"]])
@@ -108,6 +107,17 @@ def binaryaccuracy(model, testX, testY):
 	accur = gotright / (testX.shape[0] + 0.0)
 	return accur, prediction
 
+def binaryprediction(model, testX):
+	prediction = model.predict(testX)
+	binaryPred = np.zeros((prediction.shape[0])).astype(int)
+	for i in range(testX.shape[0]):
+		if prediction[i] < 0.5:
+			binaryPred[i] = 0
+		else:
+			binaryPred[i] = 1
+	return binaryPred
+
+
 def Norm(mat):
 	Min = np.amin(mat)
 	Max = np.amax(mat)
@@ -126,27 +136,46 @@ def GenYMat(yvals):
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
 
+# DATA PREP
 
 #test = pd.read_json("data/train.json")	# ? x 5
+
+#xtr, ytr, atr, xte, yte, ate = iceDataPrep.dataprep()
+
+
+json_data = open("data/test.json").read()
+dat = json.loads(json_data)
+
+b1, b2, name, angle  = iceDataPrep.DataSortTest(dat)
+
+xb1 = b1.reshape((b1.shape[0], 75, 75, 1))
+xb2 = b2.reshape((b1.shape[0], 75, 75, 1))
+xbavg = (xb1 + xb2) / 2.0
+#xbavg = np.zeros(xb1.shape)
+xte = np.concatenate((xb1, xb2, xbavg ), axis=3)
+
+
+
+
+
+# Load the model and weights and make the predictions
+model = load_model('models/iceModel'+str(75 - g.trimsize) )
+model.load_weights('weights/'+weightStr + '.hdf5')
+
+prediction = model.predict(xte)
+binaryPred = binaryprediction(model, xte)
+# Display some info and save the predictions
+#accuracy, prediction = binaryaccuracy(model, xte, yte)
 '''
-if g.datType == 'Test':
-	json_data = open("data/test.json").read()
-	global dat
-	dat = json.loads(json_data)
+print prediction[0:30]
+print prediction.dtype
+print prediction.shape
 '''
+np.savetxt('icePredtr0dn10.out', prediction, delimiter=',')
+np.savetxt('iceBinPredtr0dn10.out', binaryPred, delimiter=',')
+#print accuracy
 
 
-xtr, ytr, atr, xte, yte, ate = iceDataPrep.dataprep()
-
-
-
-
-model = load_model('models/iceModel')
-model.load_weights(weightStr)
-
-accuracy, prediction = binaryaccuracy(model, xte, yte)
-
-print accuracy
 
 
 

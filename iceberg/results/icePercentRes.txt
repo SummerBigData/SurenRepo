@@ -97,6 +97,9 @@ tr = 98.15%, te = 87.58%
 }
 
 {
+denoise = 0 translate = 0
+tr = 93.30%, te = 88.25%
+
 denoise = 0 translate = 4
 tr = 89.98%, te = 87.91%
 
@@ -114,27 +117,79 @@ tr = 95.12%, te = 87.75%
 
 denoise = 10 translate = 0
 tr = 90.20%, te = 90.23%
+val_acc
+tr = 97.50%, te = 90.89%
 
 denoise = 10 translate = 4
 tr = 51.20%, te = 39.90% 
+denoise = 10 translate = 4
+tr = 96.96%, te = 89.74%
 
 denoise = 10 translate = 8
 tr = 95.30%, te = 88.41%
 
-denoise = 0 translate = 0
-tr = 93.30%, te = 88.25%
+denoise = 15 translate = 0
+tr = 93.15%, te = 91.56%
 
-denoise = 10 translate = 4
-tr = 96.96%, te = 89.74%
+denoise = 15 translate = 4
+tr = 96.16%, te = 88.91%
 
+denoise = 15 translate = 8
+tr = 94.88%, te = 88.41%
+
+denoise = 20 translate = 0
+tr = 93.25%, te = 89.74%
+
+denoise = 20 translate = 4
+tr = 96.67%, te = 88.08%
+
+denoise = 20 translate = 8
+tr = 94.92%, te = 86.59%
+
+denoise = 11
+tr = 98.30%, te = 90.56%
+
+denoise = 12
+tr = 98.10%, te = 90.56%
+
+denoise = 13
+tr = 97.35%, te = 89.90%
+
+denoise = 14
+tr = 97.15%, te = 90.23%
+
+denoise = 16
+tr = 97.85%, te = 89.90%
+
+denoise = 17
+tr = 96.80%, te = 91.06%
+
+denoise = 18
+tr = 97.30%, te = 90.23%
+
+denoise = 12
+tr = , te = 
 }
 
 denoise = 10 translate = 0
 {
 incl. 250
-tr = , te = 
+tr = 76.72% , te = 90.23%
 
+incl. 500
+tr = 61.67% , te = 88.91%
 
+incl. 1000
+tr = 47.00% , te = 89.07%
+
+incl. 2000
+tr = 32.70% , te = 90.23%
+
+incl. 4000
+tr = 19.86% , te = 90.89%
+
+incl. 8000
+tr = 11.49%, te = 89.74%
 
 }
 

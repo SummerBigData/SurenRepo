@@ -118,8 +118,8 @@ def getModel():
 
 # We choose a high patience so the algorthim keeps searching even after finding a maximum
 def get_callbacks(filepath, patience=8):	
-	es = EarlyStopping('val_loss', patience=patience, mode="min")
-	msave = ModelCheckpoint(filepath, monitor='val_loss',save_best_only=True,save_weights_only=True)
+	es = EarlyStopping('val_acc', patience=patience, mode="max")
+	msave = ModelCheckpoint(filepath, monitor='val_acc',save_best_only=True,save_weights_only=True)
 	return [es, msave]
 
 

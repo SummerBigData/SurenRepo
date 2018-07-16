@@ -211,7 +211,7 @@ model.fit_generator(datagen.flow(xtr, ytr, batch_size=g.bsize),
 '''
 
 #gmodel=getModel()
-model.fit(xtrNew, ytrNew,
+model.fit(xtr, ytr,
 	batch_size=g.bsize,
 	epochs=g.epo,
 	verbose=2,
@@ -223,7 +223,7 @@ model.fit(xtrNew, ytrNew,
 model.load_weights(file_path)
 
 print 'Accuracy on training data:'
-scores = model.evaluate(xtrNew, ytrNew)
+scores = model.evaluate(xtr, ytr)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 print 'Accuracy on testing data:'
@@ -231,7 +231,7 @@ scores = model.evaluate(xte, yte)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 
-#model.save('models/iceModel' + str(g.imgsize) )
+model.save('models/iceModel' + str(g.imgsize) )
 #model.save_weights('weights/' + saveStr)
 
 

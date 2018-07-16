@@ -2,6 +2,7 @@
 import numpy as np
 #import pandas as pd
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import argparse
 
 # Keras stuff
@@ -116,7 +117,7 @@ print 'x and y', dat.shape
 
 # KERAS NEURAL NETWORK
 
-'''
+
 # Encoder
 inputs = Input(shape=(g.f1, ), name='encoder_input')
 x = Dense(g.f2, activation='relu')(inputs)
@@ -141,34 +142,41 @@ outputs = Dense(g.f1, activation='sigmoid')(x)
 # instantiate decoder model
 decoder = Model(latent_inputs, outputs, name='decoder')
 decoder.summary()
-'''
 
+'''
 # Encoder
 inputs = Input(shape=(75, 75, 3), name='encoder_input')
+#Conv Layer 1
 c1 = Conv2D(64, kernel_size=(3, 3),activation='relu')(inputs)
-	gmodel.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2)))
-	gmodel.add(Dropout(0.2))
+p1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(c1)
+d1 = Dropout(0.2)(p1)
 	
-	#Conv Layer 2
-	gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu' ))
-	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-	gmodel.add(Dropout(0.2))
+#Conv Layer 2
+c2 = Conv2D(128, kernel_size=(3, 3), activation='relu' )(d1)
+p2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c2)
+d2 = Dropout(0.2)(p2)
 
-	#Conv Layer 3
-	gmodel.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-	gmodel.add(Dropout(0.2))
-	
-	#Conv Layer 4
-	gmodel.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-	gmodel.add(Dropout(0.2))
+#Conv Layer 3
+c3 = Conv2D(64, kernel_size=(3, 3), activation='relu' )(d2)
+p3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c3)
+d3 = Dropout(0.2)(p3)
 
-	#Flatten the data for upcoming dense layers
-	gmodel.add(Flatten())
+#Flatten the data for upcoming dense layer
+f1 = Flatten()(d3)
 
+x = Dense(g.f2, activation='relu')(inputs)
+z_mean = Dense(g.f3, name='z_mean')(x)
+z_log_var = Dense(g.f3, name='z_log_var')(x)
 
+# use reparameterization trick to push the sampling out as input
+# note that "output_shape" isn't necessary with the TensorFlow backend
+z = Lambda(sampling, output_shape=(g.f3,), name='z')([z_mean, z_log_var])
 
+# instantiate encoder model
+encoder = Model(inputs, [z_mean, z_log_var, z], name='encoder')
+encoder.summary()
+
+'''
 
 
 # Build VAE

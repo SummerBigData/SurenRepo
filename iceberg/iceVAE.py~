@@ -8,7 +8,7 @@ import argparse
 # Keras stuff
 import keras
 from keras.models import load_model, Model
-from keras.layers import Dense, Input, Lambda
+from keras.layers import Dense, Input, Lambda, Conv2D, Deconv3D, Flatten, Reshape
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 from keras.losses import mse, binary_crossentropy
@@ -103,10 +103,10 @@ def get_callbacks(filepath, patience=8):
 
 # Grab the training (tr) and testing (te) data and labels
 xtr, ytr, atr, xte, yte, ate = iceDataPrep.dataprep()
-xtr = xtr.reshape((xtr.shape[0], g.f1))
-xte = xte.reshape((xte.shape[0], g.f1))
+#xtr = xtr.reshape((xtr.shape[0], g.f1))
+#xte = xte.reshape((xte.shape[0], g.f1))
 
-dat = np.vstack((xtr, xte))
+dat = np.concatenate((xtr, xte), axis=0)
 dat, oldmin, oldmax = iceDataPrep.Norm(dat, 0, 1)
 label = np.concatenate((ytr, yte), axis=0)
 
@@ -117,7 +117,7 @@ print 'x and y', dat.shape
 
 # KERAS NEURAL NETWORK
 
-
+'''
 # Encoder
 inputs = Input(shape=(g.f1, ), name='encoder_input')
 x = Dense(g.f2, activation='relu')(inputs)
@@ -148,28 +148,45 @@ decoder.summary()
 inputs = Input(shape=(75, 75, 3), name='encoder_input')
 #Conv Layer 1
 c1 = Conv2D(64, kernel_size=(3, 3),activation='relu')(inputs)
-p1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(c1)
-d1 = Dropout(0.2)(p1)
-	
+#p1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(c1)
+#d1 = Dropout(0.2)(p1)
 #Conv Layer 2
-c2 = Conv2D(128, kernel_size=(3, 3), activation='relu' )(d1)
-p2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c2)
-d2 = Dropout(0.2)(p2)
-
+c2 = Conv2D(128, kernel_size=(3, 3), activation='relu' )(c1)
+#p2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c2)
+#d2 = Dropout(0.2)(p2)
 #Conv Layer 3
-c3 = Conv2D(64, kernel_size=(3, 3), activation='relu' )(d2)
-p3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c3)
-d3 = Dropout(0.2)(p3)
+c3 = Conv2D(64, kernel_size=(3, 3), activation='relu' )(c2)
+#p3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c3)
+#d3 = Dropout(0.2)(p3)
+#Flatten the data for upcoming dense layer
+f1 = Flatten()(c3)
+#Add hidden layer
+x = Dense(g.f2, activation='relu')(f1)
+z_mean = Dense(g.f3, name='z_mean')(x)
+z_log_var = Dense(g.f3, name='z_log_var')(x)
+# use reparameterization trick to push the sampling out as input
+# note that "output_shape" isn't necessary with the TensorFlow backend
+z = Lambda(sampling, output_shape=(g.f3,), name='z')([z_mean, z_log_var])
+# instantiate encoder model
+encoder = Model(inputs, [z_mean, z_log_var, z], name='encoder')
+encoder.summary()
 
-	gmodel.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-	gmodel.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-	gmodel.add(Dropout(0.2))
-
-	#Flatten the data for upcoming dense layers
-	gmodel.add(Flatten())
 
 
-'''
+# Decoder
+latent_inputs = Input(shape=(g.f3,), name='z_sampling')
+x = Dense(g.f2, activation='relu')(latent_inputs)
+#outputs = Dense(g.f1, activation='sigmoid')(x)
+y = Dense(75*75*3* 64, activation='relu')(x)
+re = Reshape((75, 75, 3, 64))(y)
+dc1 = Deconv3D(64, kernel_size=(3, 3), activation='relu')(re)
+dc2 = Deconv3D(128, kernel_size=(3, 3), activation='relu')(dc1)
+outputs = Deconv3D(64, kernel_size=(3, 3), activation='relu')(dc2)
+
+# instantiate decoder model
+decoder = Model(latent_inputs, outputs, name='decoder')
+decoder.summary()
+
 
 
 # Build VAE

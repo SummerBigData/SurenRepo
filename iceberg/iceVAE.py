@@ -8,7 +8,7 @@ import argparse
 # Keras stuff
 import keras
 from keras.models import load_model, Model
-from keras.layers import Dense, Input, Lambda, Conv2D, Conv3DTranspose, Flatten, Reshape
+from keras.layers import Dense, Input, Lambda, Conv2D, Conv2DTranspose, Flatten, Reshape
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 from keras.losses import mse, binary_crossentropy
@@ -147,15 +147,15 @@ decoder.summary()
 # Encoder
 inputs = Input(shape=(75, 75, 3), name='encoder_input')
 #Conv Layer 1
-c1 = Conv2D(64, kernel_size=(3, 3),activation='relu')(inputs)
+c1 = Conv2D(64, kernel_size=(3, 3),activation='relu', padding='same')(inputs)
 #p1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(c1)
 #d1 = Dropout(0.2)(p1)
 #Conv Layer 2
-c2 = Conv2D(128, kernel_size=(3, 3), activation='relu' )(c1)
+c2 = Conv2D(128, kernel_size=(3, 3), activation='relu', padding='same')(c1)
 #p2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c2)
 #d2 = Dropout(0.2)(p2)
 #Conv Layer 3
-c3 = Conv2D(64, kernel_size=(3, 3), activation='relu' )(c2)
+c3 = Conv2D(64, kernel_size=(3, 3), activation='relu', padding='same')(c2)
 #p3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c3)
 #d3 = Dropout(0.2)(p3)
 #Flatten the data for upcoming dense layer
@@ -177,12 +177,14 @@ encoder.summary()
 latent_inputs = Input(shape=(g.f3,), name='z_sampling')
 x = Dense(g.f2, activation='relu')(latent_inputs)
 #outputs = Dense(g.f1, activation='sigmoid')(x)
-y = Dense(75*75*3* 64, activation='relu')(x)
-re = Reshape((75, 75, 3, 64))(y)
-dc1 = Conv3DTranspose(64, kernel_size=(3, 3), activation='relu')(re)
-dc2 = Conv3DTranspose(128, kernel_size=(3, 3), activation='relu')(dc1)
-outputs = Conv3DTranspose(64, kernel_size=(3, 3), activation='relu')(dc2)
-
+y = Dense(75*75* 64, activation='relu')(x)
+re = Reshape((75, 75, 64))(y)
+dc1 = Conv2DTranspose(64, kernel_size=(3, 3), activation='relu', padding='same')(re)
+dc2 = Conv2DTranspose(128, kernel_size=(3, 3), activation='relu', padding='same')(dc1)
+dc3 = Conv2DTranspose(64, kernel_size=(3, 3), activation='relu', padding='same')(dc2)
+dc4 = Conv2DTranspose(3, kernel_size=(3, 3), activation='relu', padding='same')(dc2)
+outputs = dc4
+#outputs = Reshape((75, 75, 3))(dc4)
 # instantiate decoder model
 decoder = Model(latent_inputs, outputs, name='decoder')
 decoder.summary()

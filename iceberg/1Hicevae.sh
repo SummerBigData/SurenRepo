@@ -1,4 +1,4 @@
-#PBS -N runiVAE7-16
+#PBS -N runiVAE7-18
 #PBS -l walltime=01:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=16GB
@@ -21,4 +21,4 @@ source activate local
 
 #python -u icecnn.py $PBS_ARRAYID >& outIceCnn7-2_$PBS_ARRAYID.log
 
-python -u iceVAE.py >& outiVAE7-16.log
+python -u iceVAE.py >& outiVAE7-18.log

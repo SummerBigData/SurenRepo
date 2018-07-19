@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 #import matplotlib.pyplot as plt
-import cv2 #as cv
+
 
 
 
@@ -446,6 +446,7 @@ def CenterImgWeight():
 
 
 def denoise(x,H):
+	import cv2 #as cv
 	print 'Denoising the images'
 	'''
 	xdn = np.zeros((x.shape))

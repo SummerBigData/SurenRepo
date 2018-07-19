@@ -3,7 +3,7 @@ Using TensorFlow backend.
   from ._conv import register_converters as _register_converters
 You have chosen: Namespace(bsize=128, epo=50, f1=16875, f2=512, f3=2, m=1604)
  
-x and y (1604, 16875)
+x and y (10028, 16875) (10028,)
 ____________________________________________________________________________________________________
 Layer (type)                     Output Shape          Param #     Connected to                     
 ====================================================================================================
@@ -11,15 +11,19 @@ encoder_input (InputLayer)       (None, 16875)         0
 ____________________________________________________________________________________________________
 dense_1 (Dense)                  (None, 512)           8640512     encoder_input[0][0]              
 ____________________________________________________________________________________________________
-z_mean (Dense)                   (None, 2)             1026        dense_1[0][0]                    
+dense_2 (Dense)                  (None, 512)           262656      dense_1[0][0]                    
 ____________________________________________________________________________________________________
-z_log_var (Dense)                (None, 2)             1026        dense_1[0][0]                    
+dense_3 (Dense)                  (None, 512)           262656      dense_2[0][0]                    
+____________________________________________________________________________________________________
+z_mean (Dense)                   (None, 2)             1026        dense_3[0][0]                    
+____________________________________________________________________________________________________
+z_log_var (Dense)                (None, 2)             1026        dense_3[0][0]                    
 ____________________________________________________________________________________________________
 z (Lambda)                       (None, 2)             0           z_mean[0][0]                     
                                                                    z_log_var[0][0]                  
 ====================================================================================================
-Total params: 8,642,564
-Trainable params: 8,642,564
+Total params: 9,167,876
+Trainable params: 9,167,876
 Non-trainable params: 0
 ____________________________________________________________________________________________________
 _________________________________________________________________
@@ -27,129 +31,36 @@ Layer (type)                 Output Shape              Param #
 =================================================================
 z_sampling (InputLayer)      (None, 2)                 0         
 _________________________________________________________________
-dense_2 (Dense)              (None, 512)               1536      
+dense_4 (Dense)              (None, 512)               1536      
 _________________________________________________________________
-dense_3 (Dense)              (None, 16875)             8656875   
+dense_5 (Dense)              (None, 512)               262656    
+_________________________________________________________________
+dense_6 (Dense)              (None, 512)               262656    
+_________________________________________________________________
+dense_7 (Dense)              (None, 16875)             8656875   
 =================================================================
-Total params: 8,658,411
-Trainable params: 8,658,411
+Total params: 9,183,723
+Trainable params: 9,183,723
 Non-trainable params: 0
 _________________________________________________________________
-iceVAE.py:186: UserWarning: Output "decoder" missing from loss dictionary. We assume this was done on purpose, and we will not be expecting any data to be passed to "decoder" during training.
+print 2 (?,) (?,)
+iceVAE.py:181: UserWarning: Output "decoder" missing from loss dictionary. We assume this was done on purpose, and we will not be expecting any data to be passed to "decoder" during training.
   vae.compile(optimizer='adam', loss=None)
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-encoder_input (InputLayer)   (None, 16875)             0         
-_________________________________________________________________
-encoder (Model)              [(None, 2), (None, 2), (N 8642564   
-_________________________________________________________________
-decoder (Model)              (None, 16875)             8658411   
-=================================================================
-Total params: 17,300,975
-Trainable params: 17,300,975
-Non-trainable params: 0
-_________________________________________________________________
-Train on 1604 samples, validate on 1604 samples
+Train on 10028 samples, validate on 10028 samples
 Epoch 1/50
-2018-07-16 16:22:46.713846: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
-2018-07-16 16:22:46.713880: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
-19s - loss: 4822212.5083 - val_loss: 2250.0074
+2018-07-19 13:21:12.461466: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2018-07-19 13:21:12.461976: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+124s - loss: 828.0136 - val_loss: 13.0815
 Epoch 2/50
-18s - loss: 1691.1188 - val_loss: 854.9482
+123s - loss: 2.5887 - val_loss: 1.6587
 Epoch 3/50
-18s - loss: 503.0240 - val_loss: 286.8012
+122s - loss: 15.8353 - val_loss: 4.4696
 Epoch 4/50
-18s - loss: 204.4246 - val_loss: 154.0221
+123s - loss: 2.1019 - val_loss: 1.5592
 Epoch 5/50
-18s - loss: 142.5503 - val_loss: 125.9068
+123s - loss: 1.5485 - val_loss: 2.1683
 Epoch 6/50
-18s - loss: 119.1597 - val_loss: 107.6929
+123s - loss: 15.9895 - val_loss: 1.9248
 Epoch 7/50
-18s - loss: 104.4682 - val_loss: 97.4333
+123s - loss: 1.5651 - val_loss: 1.5392
 Epoch 8/50
-18s - loss: 93.2056 - val_loss: 86.2189
-Epoch 9/50
-18s - loss: 86.1766 - val_loss: 79.9876
-Epoch 10/50
-18s - loss: 79.8061 - val_loss: 78.7202
-Epoch 11/50
-18s - loss: 79.1502 - val_loss: 76.2351
-Epoch 12/50
-18s - loss: 75.0126 - val_loss: 69.8532
-Epoch 13/50
-18s - loss: 68.9236 - val_loss: 67.1918
-Epoch 14/50
-18s - loss: 68.5631 - val_loss: 63.7543
-Epoch 15/50
-18s - loss: 64.0878 - val_loss: 69.3415
-Epoch 16/50
-18s - loss: 62.7854 - val_loss: 65.0649
-Epoch 17/50
-18s - loss: 59.9615 - val_loss: 58.3324
-Epoch 18/50
-18s - loss: 58.9857 - val_loss: 55.2351
-Epoch 19/50
-18s - loss: 56.3588 - val_loss: 54.7060
-Epoch 20/50
-18s - loss: 56.3191 - val_loss: 55.9482
-Epoch 21/50
-18s - loss: 53.2611 - val_loss: 57.5239
-Epoch 22/50
-18s - loss: 53.7356 - val_loss: 51.6784
-Epoch 23/50
-18s - loss: 53.9437 - val_loss: 49.8647
-Epoch 24/50
-18s - loss: 48.4660 - val_loss: 47.4580
-Epoch 25/50
-18s - loss: 46.9550 - val_loss: 46.5050
-Epoch 26/50
-18s - loss: 46.9893 - val_loss: 45.3773
-Epoch 27/50
-18s - loss: 46.1038 - val_loss: 47.3639
-Epoch 28/50
-18s - loss: 46.9395 - val_loss: 43.7574
-Epoch 29/50
-18s - loss: 43.9429 - val_loss: 44.9173
-Epoch 30/50
-18s - loss: 43.1119 - val_loss: 49.6422
-Epoch 31/50
-18s - loss: 48.6507 - val_loss: 50.5176
-Epoch 32/50
-19s - loss: 43.3705 - val_loss: 45.1343
-Epoch 33/50
-18s - loss: 42.1529 - val_loss: 40.0825
-Epoch 34/50
-18s - loss: 40.0392 - val_loss: 40.1105
-Epoch 35/50
-18s - loss: 39.4069 - val_loss: 38.6858
-Epoch 36/50
-18s - loss: 38.4299 - val_loss: 38.7634
-Epoch 37/50
-18s - loss: 37.8363 - val_loss: 37.5249
-Epoch 38/50
-18s - loss: 36.9049 - val_loss: 36.6068
-Epoch 39/50
-18s - loss: 36.9896 - val_loss: 38.0063
-Epoch 40/50
-18s - loss: 36.7733 - val_loss: 35.6002
-Epoch 41/50
-18s - loss: 35.0434 - val_loss: 34.7679
-Epoch 42/50
-19s - loss: 35.0111 - val_loss: 37.6661
-Epoch 43/50
-19s - loss: 37.1850 - val_loss: 35.6092
-Epoch 44/50
-18s - loss: 35.0981 - val_loss: 34.2570
-Epoch 45/50
-18s - loss: 34.1287 - val_loss: 33.3176
-Epoch 46/50
-18s - loss: 34.7312 - val_loss: 32.5336
-Epoch 47/50
-18s - loss: 33.7375 - val_loss: 32.5609
-Epoch 48/50
-18s - loss: 31.8432 - val_loss: 31.4479
-Epoch 49/50
-18s - loss: 31.6267 - val_loss: 31.9027
-Epoch 50/50
-18s - loss: 32.4176 - val_loss: 31.0924

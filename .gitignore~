@@ -1,3 +1,8 @@
 digitCNN/convolvedData/trainingm60000patches15.out
+digitCNN/convolvedData/pooldim7trainingm60000patches15.out
+digitCNN/convolvedData/testingm10000patches15.out
 
 iceberg/data/train.json
+iceberg/data/test.json
+
+iceberg/weights/iceVAE50Bsize128.hdf5

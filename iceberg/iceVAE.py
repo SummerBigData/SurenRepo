@@ -4,11 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 import argparse
-
+import json
 # Keras stuff
 import keras
 from keras.models import load_model, Model
-from keras.layers import Dense, Input, Lambda, Conv2D, Conv3DTranspose, Flatten, Reshape
+from keras.layers import Dense, Input, Lambda, Conv2D, Conv2DTranspose, Flatten, Reshape
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 from keras.losses import mse, binary_crossentropy
@@ -66,11 +66,11 @@ def ShowSquare(band1, band2):
 def plotLatDim(encoder, dat, label):
 	z_mean, _, _ = encoder.predict(dat, batch_size=g.bsize)
 	plt.figure(figsize=(12, 10))
-    	plt.scatter(z_mean[:, 0], z_mean[:, 1], c=label)
+    	plt.scatter(z_mean[:, 0], z_mean[:, 1], c=label, s=4)
     	plt.colorbar()
     	plt.xlabel("z[0]")
     	plt.ylabel("z[1]")
-    	plt.savefig('results/VAElatDim.png')
+    	plt.savefig('results/VAEhlAll.png')
     	plt.show()
 
 
@@ -87,14 +87,27 @@ def sampling(args):
 	dim = K.int_shape(z_mean)[1]
 	# by default, random_normal has mean=0 and std=1.0
 	epsilon = K.random_normal(shape=(batch, dim))
-	return z_mean + K.exp(0.5 * z_log_var) * epsilon\
+	return z_mean + K.exp(0.5 * z_log_var) * epsilon
 
 
 # We choose a high patience so the algorthim keeps searching even after finding a maximum
-def get_callbacks(filepath, patience=8):	
-	es = EarlyStopping('val_acc', patience=patience, mode="max")
-	msave = ModelCheckpoint(filepath, monitor='val_acc',save_best_only=True,save_weights_only=True)
+def get_callbacks(filepath, patience=5):	
+	es = EarlyStopping('val_loss', patience=patience, mode="min")
+	msave = ModelCheckpoint(filepath, monitor='val_loss',save_best_only=True,save_weights_only=True)
 	return [es, msave]
+
+def getTest():
+# Grab the unlabeled data
+	json_data = open("data/test.json").read()
+	dat = json.loads(json_data)
+	b1, b2, name, angle  = iceDataPrep.DataSortTest(dat)
+	# Reshape it
+	xb1 = b1.reshape((b1.shape[0], 75, 75, 1))
+	xb2 = b2.reshape((b1.shape[0], 75, 75, 1))
+	xbavg = (xb1 + xb2) / 2.0
+	#xbavg = np.zeros(xb1.shape)
+	xte = np.concatenate((xb1, xb2, xbavg ), axis=3)
+	return xte
 
 
 #----------STARTS HERE----------STARTS HERE----------STARTS HERE----------STARTS HERE
@@ -103,26 +116,34 @@ def get_callbacks(filepath, patience=8):
 
 # Grab the training (tr) and testing (te) data and labels
 xtr, ytr, atr, xte, yte, ate = iceDataPrep.dataprep()
-#xtr = xtr.reshape((xtr.shape[0], g.f1))
-#xte = xte.reshape((xte.shape[0], g.f1))
-
-dat = np.concatenate((xtr, xte), axis=0)
+xunlab = getTest()
+yunlab = np.ones((xunlab.shape[0]))*0.5 # We make them have the same label for plotting purposes
+# Stitch data together into one
+dat = np.concatenate((xtr, xte, xunlab), axis=0)
 dat, oldmin, oldmax = iceDataPrep.Norm(dat, 0, 1)
-label = np.concatenate((ytr, yte), axis=0)
+label = np.concatenate((ytr, yte, yunlab), axis=0)
 
-print 'x and y', dat.shape
+# Shuffle the data
+dat, label = iceDataPrep.shuffleData(dat, label)
+
+# Reshape data into 2D
+dat = dat.reshape((dat.shape[0], g.f1))
+
+print 'x and y', dat.shape, label.shape
 #print 'numIcebergs', sum(y)
 
 
 
 # KERAS NEURAL NETWORK
 
-'''
+
 # Encoder
 inputs = Input(shape=(g.f1, ), name='encoder_input')
-x = Dense(g.f2, activation='relu')(inputs)
-z_mean = Dense(g.f3, name='z_mean')(x)
-z_log_var = Dense(g.f3, name='z_log_var')(x)
+d1 = Dense(g.f2, activation='relu')(inputs)
+d2 = Dense(g.f2, activation='relu')(d1)
+d3 = Dense(g.f2, activation='relu')(d2)
+z_mean = Dense(g.f3, name='z_mean')(d3)
+z_log_var = Dense(g.f3, name='z_log_var')(d3)
 
 # use reparameterization trick to push the sampling out as input
 # note that "output_shape" isn't necessary with the TensorFlow backend
@@ -136,85 +157,43 @@ encoder.summary()
 
 # Decoder
 latent_inputs = Input(shape=(g.f3,), name='z_sampling')
-x = Dense(g.f2, activation='relu')(latent_inputs)
-outputs = Dense(g.f1, activation='sigmoid')(x)
+d1 = Dense(g.f2, activation='relu')(latent_inputs)
+d2 = Dense(g.f2, activation='relu')(d1)
+d3 = Dense(g.f2, activation='relu')(d2)
+outputs = Dense(g.f1, activation='sigmoid')(d3)
 
 # instantiate decoder model
 decoder = Model(latent_inputs, outputs, name='decoder')
 decoder.summary()
-
-'''
-# Encoder
-inputs = Input(shape=(75, 75, 3), name='encoder_input')
-#Conv Layer 1
-c1 = Conv2D(64, kernel_size=(3, 3),activation='relu')(inputs)
-#p1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(c1)
-#d1 = Dropout(0.2)(p1)
-#Conv Layer 2
-c2 = Conv2D(128, kernel_size=(3, 3), activation='relu' )(c1)
-#p2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c2)
-#d2 = Dropout(0.2)(p2)
-#Conv Layer 3
-c3 = Conv2D(64, kernel_size=(3, 3), activation='relu' )(c2)
-#p3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(c3)
-#d3 = Dropout(0.2)(p3)
-#Flatten the data for upcoming dense layer
-f1 = Flatten()(c3)
-#Add hidden layer
-x = Dense(g.f2, activation='relu')(f1)
-z_mean = Dense(g.f3, name='z_mean')(x)
-z_log_var = Dense(g.f3, name='z_log_var')(x)
-# use reparameterization trick to push the sampling out as input
-# note that "output_shape" isn't necessary with the TensorFlow backend
-z = Lambda(sampling, output_shape=(g.f3,), name='z')([z_mean, z_log_var])
-# instantiate encoder model
-encoder = Model(inputs, [z_mean, z_log_var, z], name='encoder')
-encoder.summary()
-
-
-
-# Decoder
-latent_inputs = Input(shape=(g.f3,), name='z_sampling')
-x = Dense(g.f2, activation='relu')(latent_inputs)
-#outputs = Dense(g.f1, activation='sigmoid')(x)
-y = Dense(75*75*3* 64, activation='relu')(x)
-re = Reshape((75, 75, 3, 64))(y)
-dc1 = Conv3DTranspose(64, kernel_size=(3, 3), activation='relu')(re)
-dc2 = Conv3DTranspose(128, kernel_size=(3, 3), activation='relu')(dc1)
-outputs = Conv3DTranspose(64, kernel_size=(3, 3), activation='relu')(dc2)
-
-# instantiate decoder model
-decoder = Model(latent_inputs, outputs, name='decoder')
-decoder.summary()
-
-
 
 # Build VAE
 # instantiate VAE model
 outputs = decoder(encoder(inputs)[2])
 vae = Model(inputs, outputs, name='vae_mlp')
-
-reconstruction_loss = mse(inputs, outputs)* g.f1
+reconstruction_loss = mse(inputs , outputs)#* g.f1
+#reconstruction_loss = np.sum(np.sum(reconstruction_loss, axis = 1), axis = 2) / (75.0**2)
 kl_loss = 1 + z_log_var - K.square(z_mean) - K.exp(z_log_var)
 kl_loss = K.sum(kl_loss, axis=-1)
 kl_loss *= -0.5
-vae_loss = K.mean(reconstruction_loss + kl_loss)
+vae_loss = K.mean(reconstruction_loss + kl_loss)* g.f2
+print 'print 2', reconstruction_loss.shape, kl_loss.shape
 vae.add_loss(vae_loss)
 vae.compile(optimizer='adam', loss=None)
-vae.summary()
+#vae.summary()
 
 
 
 file_path = 'weights/' + saveStr + '.hdf5' #'{epoch:02d}-{val_loss:.2f}.hdf5'
-'''
-callbacks = get_callbacks(filepath=file_path, patience=8)
-'''
+
+callbacks = get_callbacks(filepath=file_path, patience=5)
+
 # Fit VAE
 vae.fit(dat,
 	epochs=g.epo,
 	batch_size=g.bsize,
 	verbose=2,
-	validation_data=(dat, None))
+	validation_data=(dat, None),
+	callbacks=callbacks)
 
 vae.save_weights(file_path)
 

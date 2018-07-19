@@ -1,7 +1,7 @@
 #PBS -N runiVAEcnn7-19
 #PBS -l walltime=00:30:00
 #PBS -l nodes=1:ppn=1
-#PBS -l mem=16GB
+#PBS -l mem=32GB
 #PBS -j oe
 # uncomment if using qsub
 if [ -z "$PBS_O_WORKDIR" ] 

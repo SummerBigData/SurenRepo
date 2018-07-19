@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 #import matplotlib.pyplot as plt
-import cv2 #as cv
+
 
 
 
@@ -190,6 +190,9 @@ def dataprep():
 	#xbavg = np.zeros(xb1.shape)
 	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
 	
+	# Shuffle the data
+	x, TRlabel = shuffleData(x, TRlabel)
+
 	#x = FixedNorm(x, 0, 1)
 	xtr = x[:1000,:,:,:]
 	xte = x[1000:,:,:,:]
@@ -200,10 +203,7 @@ def dataprep():
 	return xtr, ytr, atr, xte, yte, ate
 
 def DataSortTest(dat):
-	'''
-	band1 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_1"]])
-	band2 = np.array([np.array(band).astype(np.float32).reshape(75, 75) for band in dat["band_2"]])
-	'''
+
 	band1 = np.zeros((len(dat), 5625))
 	band2 = np.zeros((len(dat), 5625))
 	name = np.zeros(( len(dat) )).astype(str)
@@ -449,6 +449,7 @@ def CenterImgWeight():
 
 
 def denoise(x,H):
+	import cv2 #as cv
 	print 'Denoising the images'
 	'''
 	xdn = np.zeros((x.shape))

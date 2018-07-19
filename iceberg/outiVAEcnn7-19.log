@@ -1,0 +1,13 @@
+Using TensorFlow backend.
+/users/PAS1383/osu10171/.conda/envs/local/lib/python2.7/site-packages/h5py/__init__.py:34: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+You have chosen: Namespace(bsize=128, epo=25, f1=16875, f2=512, f3=2, m=1604)
+ 
+x and y (10028, 75, 75, 3)
+inp, outp (?, ?) (?, ?, ?, 3) print 2 (?,) (?,)
+iceVAEcnn.py:205: UserWarning: Output "decoder" missing from loss dictionary. We assume this was done on purpose, and we will not be expecting any data to be passed to "decoder" during training.
+  vae.compile(optimizer='adam', loss=None)
+Train on 10028 samples, validate on 10028 samples
+Epoch 1/25
+2018-07-19 14:26:43.484694: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2018-07-19 14:26:43.485195: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.

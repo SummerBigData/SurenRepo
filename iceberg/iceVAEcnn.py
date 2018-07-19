@@ -206,10 +206,10 @@ vae.compile(optimizer='adam', loss=None)
 #vae.summary()
 
 # Save the model
-encoder.save('vaeModels/iceEncoder' + saveStr + '.hdf5')
-decoder.save('vaeModels/iceDecoder' + saveStr + '.hdf5')
-vae.save('vaeModels/iceVae' + saveStr + '.hdf5')
-print 'Saved the models'
+#encoder.save('vaeModels/iceEncoder' + saveStr + '.hdf5')
+#decoder.save('vaeModels/iceDecoder' + saveStr + '.hdf5')
+#vae.save('vaeModels/iceVae' + saveStr + '.hdf5')
+#print 'Saved the models'
 
 weight_path = 'weights/' + saveStr + '.hdf5' #'{epoch:02d}-{val_loss:.2f}.hdf5'
 

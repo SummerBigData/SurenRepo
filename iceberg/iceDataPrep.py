@@ -9,7 +9,7 @@ import pandas as pd
 
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
-
+np.random.seed(8)
 
 
 
@@ -190,6 +190,9 @@ def dataprep():
 	#xbavg = np.zeros(xb1.shape)
 	x = np.concatenate((xb1, xb2, xbavg ), axis=3)
 	
+	# Shuffle the data
+	x, TRlabel = shuffleData(x, TRlabel)
+
 	#x = FixedNorm(x, 0, 1)
 	xtr = x[:1000,:,:,:]
 	xte = x[1000:,:,:,:]

@@ -64,3 +64,7 @@ Epoch 6/50
 Epoch 7/50
 123s - loss: 1.5651 - val_loss: 1.5392
 Epoch 8/50
+123s - loss: 1.5267 - val_loss: 1.5375
+Epoch 9/50
+123s - loss: 1.5430 - val_loss: 1.5387
+Epoch 10/50
